@@ -6,3 +6,7 @@
 1. 검색 데이터 저장은 SQLite를 사용한다. 
 2. 가능한 MVVM 아키텍쳐 패턴을 적용하도록 한다.
 # 구현 과정
+1. database.kt파일을 생성하여 데이터베이스 생성 및 관리
+2. SearchRepo에서 데이터 CRUD 작업 
+3. SearchViewModel에서 데이터 처리 및 제공
+4. MainActivity에서 데이터 활용
