@@ -15,6 +15,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var resultLayout: LinearLayout
     private lateinit var noResultTextView: TextView
     private lateinit var recyclerView: RecyclerView
+    private lateinit var placeRepository: PlaceRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +29,9 @@ class MainActivity : AppCompatActivity() {
 
         val dbHelper = PlaceDbHelper(this)
 
-        val db = dbHelper.writableDatabase
+        placeRepository = PlaceRepository(this)
+
+        placeRepository.insertInitialData()
 
     }
 
