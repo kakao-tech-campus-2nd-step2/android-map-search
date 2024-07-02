@@ -24,7 +24,7 @@ class PlaceRepository(context: Context) {
 
         db.insert(MyPlaceContract.Place.TABLE_NAME, null, values)
     }
-    
+
 
 
 }
