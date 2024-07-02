@@ -1,11 +1,11 @@
-# android-map-keyword STEP 1
+# android-map-keyword STEP 2
 
 ## 개요
-android-map-keyword STEP1에서는 Android Studio에서 간단한 검색창 뷰를 구현하고, 로컬 데이터베이스를 생성합니다.
-- `EditText`가 아닌 `SearchView`라는 새로운 뷰를 적용해보았습니다.
-- `SQLiteOpenHelper` 클래스를 오버라이딩하는 `DBHelper` 클래스를 만들고, 해당 클래스의 메소드를 통해 로컬 데이터베이스에 샘플 데이터를 추가했습니다.
+android-map-keyword STEP2에서는 STEP1에서 생성한 로컬 데이터베이스에 들어있는 장소들에 대한 검색 기능을 구현합니다.
+이 때, MVVM 패턴을 적용합니다.
 
 ## 기능
-- `SearchView`를 통한 검색어 입력
-- `DBHelper` - `onCreate`, `onUpgrade`, `insert` 메소드를 이용해 DB 생성, 업그레이드, 데이터 삽입이 가능
-- 검색어 입력 시 실시간으로 결과 표시(STEP 2)
+- 검색어를 입력하면 검색 결과 세로 스크롤이 되는 검색 결과 목록이 표시됨
+- 검색어는 X를 눌러서 삭제 가능
+- 검색 결과 목록에서 하나의 항목을 선택 가능, 선택된 항목은 가로 스크롤 가능한 검색어 저장 목록에 추가
+- 저장된 검색어는 X를 눌러서 삭제 가능, 앱을 재실행해도 검색어 저장 목록은 유지
