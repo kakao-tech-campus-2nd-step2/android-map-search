@@ -17,10 +17,20 @@
 
     <ListView
         android:id="@+id/ListView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_width="380dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="50dp"
         android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerHor"
+        android:layout_width="380dp"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="70dp"/>
+
 
     <EditText
         android:id="@+id/text"

@@ -13,6 +13,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ReportFragment.Companion.reportFragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.databinding.ActivityMainBinding
 
 class MainActivity2 : AppCompatActivity() {
@@ -28,6 +31,10 @@ class MainActivity2 : AppCompatActivity() {
         setContentView(binding.root)
         enableEdgeToEdge()
 
+        val recyclerView = RecyclerView = findViewById(R.id.recyclerHor)
+        recyclerView.layoutMessager = LinearLayoutManager(this)
+        recyclerView.reportFragment = itemAdapter
+
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -35,9 +42,7 @@ class MainActivity2 : AppCompatActivity() {
         }
 
         databaseHelper = MyDatabaseHelper(this)
-
         binding.close.setOnClickListener { clearSearchText() }
-
         searchAndDisplayResults()
     }
 
