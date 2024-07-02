@@ -2,7 +2,7 @@ package campus.tech.kakao.map
 
 import android.provider.BaseColumns
 
-object MyPlace {
+object MyPlaceContract {
     object Place : BaseColumns {
         const val TABLE_NAME = "place"
         const val COLUMN_NAME = "name"
