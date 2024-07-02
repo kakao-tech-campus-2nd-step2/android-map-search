@@ -15,15 +15,16 @@
         android:layout_gravity="center"/>
 
     <EditText
+        android:id="@+id/text"
         android:hint="검색어를 입력해주세요."
         android:layout_marginLeft="15dp"
         android:layout_marginTop="20dp"
         android:layout_width="380dp"
         android:layout_height="50dp"/>
 
-    <ImageView
+    <Button
         android:id="@+id/close"
-        android:src="@drawable/close"
+        android:background="@drawable/close"
         android:layout_marginLeft="360dp"
         android:layout_marginTop="20dp"
         android:layout_width="30dp"

@@ -5,7 +5,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class Database(context: Context) : SQLiteOpenHelper(context, "database_name.db", null, 1) {
+class Database(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1) {
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL(
             "CREATE TABLE search_data (" +
