@@ -26,6 +26,9 @@ class MainActivity : AppCompatActivity() {
         noResultTextView = findViewById(R.id.no_result_textview)
         recyclerView = findViewById(R.id.recyclerView)
 
+        val dbHelper = PlaceDbHelper(this)
+
+        val db = dbHelper.writableDatabase
 
     }
 
