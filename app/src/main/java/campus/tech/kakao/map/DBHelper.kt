@@ -32,5 +32,6 @@ class DBHelper(context: Context, version: Int) : SQLiteOpenHelper(context, "Plac
         values.put("address", address)
         return db.insert("PlaceTable", null, values)
     }
+
     data class Place(val idx: Int, val name: String, val category: String, val address: String)
 }
