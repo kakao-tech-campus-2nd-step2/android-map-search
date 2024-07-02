@@ -12,6 +12,7 @@
 4. MainActivity에서 데이터 활용
 5. "검색 결과가 없습니다." 단어의 경우 visibility로 처리, 단어와 연관된 database가 없을때 보여짐
 6. ListView를 사용해서 데이터베이스에서 결과를 가져와 표시해줌
+7. 더미 데이터 생성(database.kt에 구현)
 # 소감 및 의문점
 1. 안드로이드 에뮬레이터가 컴퓨터 사양이 부족한지 자꾸 꺼졌다가 켜집니다.
 2. intent-filter 문제인 것 같았는데 android:exported="true" 로 해봐도 똑같습니다..
