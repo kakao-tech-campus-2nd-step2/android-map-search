@@ -66,4 +66,5 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
          _places.value = results
      }
     }
+
 }

@@ -3,6 +3,7 @@ package campus.tech.kakao.map
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -11,7 +12,8 @@ import campus.tech.kakao.map.viewmodel.SearchViewModel
 
 class SearchHistoryRecyclerViewAdapter(
     private var searchHistoryList: MutableList<SearchResult>,
-    private val searchViewModel: SearchViewModel
+    private val searchViewModel: SearchViewModel,
+    private val searchEditText: EditText
 ): RecyclerView.Adapter<SearchHistoryRecyclerViewAdapter.SearchHistoryViewHolder>() {
 
     class SearchHistoryViewHolder(view: View): RecyclerView.ViewHolder(view) {
@@ -30,9 +32,8 @@ class SearchHistoryRecyclerViewAdapter(
         return SearchHistoryViewHolder(view)
     }
 
-    override fun getItemCount(): Int {
-        return searchHistoryList.size
-    }
+    override fun getItemCount(): Int = searchHistoryList.size
+
 
     override fun onBindViewHolder(holder: SearchHistoryViewHolder, position: Int) {
         val item = searchHistoryList[position]
@@ -42,6 +43,8 @@ class SearchHistoryRecyclerViewAdapter(
             searchViewModel.deleteSearchResult(item.id)
         }
         holder.itemView.setOnClickListener {
+            searchEditText.setText(item.keyword)
+            searchViewModel.addSearchResult(item.keyword)
             searchViewModel.searchPlaces(item.keyword)
         }
     }

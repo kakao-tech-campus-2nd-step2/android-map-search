@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        searchHistoryAdapter = SearchHistoryRecyclerViewAdapter(mutableListOf(), searchViewModel)
+        searchHistoryAdapter = SearchHistoryRecyclerViewAdapter(mutableListOf(), searchViewModel, searchEditText)
         searchHistoryRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         searchHistoryRecyclerView.adapter = searchHistoryAdapter
 
@@ -107,6 +107,5 @@ class MainActivity : AppCompatActivity() {
     private fun loadInitialData() {
         searchViewModel.getAllSearchResults()
         // searchViewModel.getAllPlaces()       // case: 첫 화면에 모든 장소 출력
-        placeResultRecyclerView.visibility = View.GONE
     }
 }

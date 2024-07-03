@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import campus.tech.kakao.map.model.Place
 import campus.tech.kakao.map.model.PlaceData
 
 class PlaceResultRecyclerViewAdapter(
@@ -29,9 +28,7 @@ class PlaceResultRecyclerViewAdapter(
         return PlaceViewHolder(view)
     }
 
-    override fun getItemCount(): Int {
-        return placeList.size
-    }
+    override fun getItemCount(): Int = placeList.size
 
     override fun onBindViewHolder(holder: PlaceViewHolder, position: Int) {
         val item = placeList[position]
