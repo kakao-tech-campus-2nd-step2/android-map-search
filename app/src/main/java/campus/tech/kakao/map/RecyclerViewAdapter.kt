@@ -1,5 +1,6 @@
 package campus.tech.kakao.map
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +23,13 @@ class RecyclerViewAdapter(
             name = itemView.findViewById(R.id.place_name)
             location = itemView.findViewById(R.id.place_location)
             category = itemView.findViewById(R.id.place_category)
-            // itemView.setOnClickListener {  }
+
+            itemView.setOnClickListener {
+                val position: Int = bindingAdapterPosition
+                val place = placeList.get(position)
+
+                Log.d("mylog", place.name)
+            }
         }
     }
 

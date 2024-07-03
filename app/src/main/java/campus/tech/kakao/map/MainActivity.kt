@@ -25,8 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var placeRepository: PlaceRepository
     private var placeList = mutableListOf<Place>()
-    private var cafeList = mutableListOf<Place>()
-    private var pharmacyList = mutableListOf<Place>()
+    private lateinit var adapter: RecyclerViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,16 +37,16 @@ class MainActivity : AppCompatActivity() {
         noResultTextView = findViewById(R.id.no_result_textview)
         recyclerView = findViewById(R.id.recyclerView)
 
-        val dbHelper = PlaceDbHelper(this)
-
         placeRepository = PlaceRepository(this)
 
         placeRepository.reset()
         placeRepository.insertInitialData()
 
         placeList = placeRepository.returnPlaceList()
-        cafeList = placeRepository.returnCafeList()
-        pharmacyList = placeRepository.returnPharmacyList()
+
+        adapter = RecyclerViewAdapter(placeList, LayoutInflater.from(this))
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(this)
 
         input.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -57,9 +56,11 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        //recyclerView.adapter = RecyclerViewAdapter(placeList, LayoutInflater.from(this))
-        //recyclerView.layoutManager = LinearLayoutManager(this)
+        researchCloseButton.setOnClickListener {
+            input.setText("")
+        }
     }
+
     private fun filterList(query: String) {
         val filteredList = placeList.filter {
             it.category == query
@@ -71,8 +72,8 @@ class MainActivity : AppCompatActivity() {
         } else {
             noResultTextView.isGone = true
             recyclerView.isVisible = true
-            recyclerView.adapter = RecyclerViewAdapter(filteredList as MutableList<Place>, LayoutInflater.from(this))
-            recyclerView.layoutManager = LinearLayoutManager(this)
+            adapter.placeList = filteredList.toMutableList()
+            adapter.notifyDataSetChanged()
         }
     }
 

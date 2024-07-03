@@ -23,7 +23,7 @@ class PlaceRepository(context: Context) {
 
     fun reset() {
         val db = dbHelper.writableDatabase
-        db.execSQL("DELETE FROM " + MyPlaceContract.Place.TABLE_NAME)
+        db.execSQL("DELETE FROM ${MyPlaceContract.Place.TABLE_NAME}")
     }
 
     fun insertInitialData() {
