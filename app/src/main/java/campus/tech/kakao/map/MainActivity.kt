@@ -25,8 +25,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var placeRepository: PlaceRepository
     private var placeList = mutableListOf<Place>()
+    private var researchList = mutableListOf<Place>()
     private lateinit var resultAdapter: RecyclerViewAdapter
-    //private lateinit var tapAdapter: TapViewAdapter
+    private lateinit var tapAdapter: TapViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,12 +49,9 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = resultAdapter
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        //val dbHelper = PlaceDbHelper(this)
-        //val db = dbHelper.writableDatabase
-        //createMyResearchTable(db)
-        // tabAdapter = TabViewAdapter()
-        // tabRecyclerView.adapter = tabAdapter
-        // tabRecyclerView.layoutManger = LinearLayoutManger(this, LinearLayoutManager.HORIZONTAL)
+        tapAdapter = TapViewAdapter(researchList, LayoutInflater.from(this))
+        tabRecyclerView.adapter = tapAdapter
+        tabRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         input.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -84,4 +82,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun addResearchList(place: Place) {
+        researchList.add(place)
+
+    }
 }
