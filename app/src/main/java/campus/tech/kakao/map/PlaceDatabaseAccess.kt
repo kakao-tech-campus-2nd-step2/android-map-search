@@ -39,6 +39,23 @@ class PlaceDatabaseAccess(context: Context) {
         return dataList
     }
 
+    fun searchPlace(keyword: String): List<PlaceDataModel> {
+        val db = dbHelper.readableDatabase
+        val cursor: Cursor = db.rawQuery("SELECT * FROM ${PlaceContract.Place.TABLE_NAME} WHERE ${PlaceContract.Place.COLUMN_NAME} LIKE ?", arrayOf("%$keyword%"))
+        val dataList = mutableListOf<PlaceDataModel>()
+
+        if (cursor.moveToFirst()) {
+            do {
+                val name = cursor.getString(cursor.getColumnIndexOrThrow(PlaceContract.Place.COLUMN_NAME))
+                val address = cursor.getString(cursor.getColumnIndexOrThrow(PlaceContract.Place.COLUMN_ADDRESS))
+                val category = cursor.getString(cursor.getColumnIndexOrThrow(PlaceContract.Place.COLUMN_CATEGORY))
+                dataList.add(PlaceDataModel(name, address, category))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return dataList
+    }
+
     fun hasData(): Boolean {
         val db = dbHelper.readableDatabase
         val cursor: Cursor = db.rawQuery("SELECT COUNT(*) FROM ${PlaceContract.Place.TABLE_NAME}", null)
