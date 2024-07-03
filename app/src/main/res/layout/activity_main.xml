@@ -38,6 +38,7 @@
             android:contentDescription="Clear text"/>
     </LinearLayout>
 
+
     <TextView
         android:id="@+id/resultTextView"
         android:layout_width="match_parent"
