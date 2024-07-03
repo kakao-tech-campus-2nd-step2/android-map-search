@@ -24,7 +24,8 @@
             android:hint="검색어를 입력해 주세요"
             android:padding="8dp"
             android:background="@null"
-            android:layout_alignParentTop="true"
+            android:imeOptions="actionDone"
+            android:inputType="text"
              />
 
         <ImageView
