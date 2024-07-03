@@ -44,6 +44,43 @@ class SearchRepository(context: Context) {
         }
     }
 
+    suspend fun updateSearchResult(keyword: String) {
+        withContext(Dispatchers.IO) {
+            val db = dbHelper.writableDatabase
+            val sql = "UPDATE ${Search.TABLE_NAME} SET ${Search.COLUMN_TIMESTAMP} = CURRENT_TIMESTAMP WHERE ${Search.COLUMN_KEYWORD} = ?"
+            db.execSQL(sql, arrayOf(keyword))
+        }
+    }
+
+    suspend fun addOrUpdateSearchResult(keyword: String) {
+        withContext(Dispatchers.IO) {
+            val db = dbHelper.readableDatabase
+            val cursor = db.query(
+                Search.TABLE_NAME,
+                arrayOf(Search.COLUMN_ID),
+                "${Search.COLUMN_KEYWORD} = ?",
+                arrayOf(keyword),
+                null,
+                null,
+                null
+            )
+
+            if (cursor.moveToFirst()) {
+                cursor.close()
+                updateSearchResult(keyword)
+            } else {
+                addSearchResult(keyword)
+            }
+        }
+    }
+
+    suspend fun deleteSearchResult(id: Int) {
+        withContext(Dispatchers.IO) {
+            val db = dbHelper.writableDatabase
+            db.delete(Search.TABLE_NAME, "${Search.COLUMN_ID} = ?", arrayOf(id.toString()))
+        }
+    }
+
     suspend fun getAllPlaces(): List<PlaceData> {
         return withContext(Dispatchers.IO) {
             val db = dbHelper.readableDatabase
