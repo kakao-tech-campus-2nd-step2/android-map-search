@@ -11,8 +11,8 @@ object MyPlaceContract {
         const val COLUMN_CATEGORY = "category"
     }
 
-    object MyResearch : BaseColumns {
-        const val TABLE_NAME = "myresearch"
+    object Research : BaseColumns {
+        const val TABLE_NAME = "research"
         const val COLUMN_NAME = "name"
         const val COLUMN_IMG = "img"
         const val COLUMN_LOCATION = "location"

@@ -25,13 +25,13 @@ class PlaceRepository(context: MainActivity) {
 
         try {
             val values = ContentValues().apply {
-                put(MyPlaceContract.Place.COLUMN_IMG, place.img)
-                put(MyPlaceContract.Place.COLUMN_NAME, place.name)
-                put(MyPlaceContract.Place.COLUMN_CATEGORY, place.category)
-                put(MyPlaceContract.Place.COLUMN_LOCATION, place.location)
+                put(MyPlaceContract.Research.COLUMN_NAME, place.name)
+                put(MyPlaceContract.Research.COLUMN_IMG, place.img)
+                put(MyPlaceContract.Research.COLUMN_LOCATION, place.location)
+                put(MyPlaceContract.Research.COLUMN_CATEGORY, place.category)
             }
 
-            val newRowId = db.insert(MyPlaceContract.MyResearch.TABLE_NAME, null, values)
+            val newRowId = db.insert(MyPlaceContract.Research.TABLE_NAME, null, values)
             if (newRowId == -1L) {
                 Log.e("PlaceRepository", "Failed to insert row for ${place.name}")
             } else {
@@ -45,6 +45,7 @@ class PlaceRepository(context: MainActivity) {
     fun reset() {
         val db = dbHelper.writableDatabase
         db.execSQL("DELETE FROM ${MyPlaceContract.Place.TABLE_NAME}")
+        db.execSQL("DELETE FROM ${MyPlaceContract.Research.TABLE_NAME}")
     }
 
     fun insertInitialData() {

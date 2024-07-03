@@ -1,8 +1,11 @@
 package campus.tech.kakao.map
 
+import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
+import android.provider.BaseColumns
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.ImageView
@@ -37,16 +40,18 @@ class MainActivity : AppCompatActivity() {
         tabRecyclerView = findViewById(R.id.tab_recyclerview)
 
         placeRepository = PlaceRepository(this)
-
         placeRepository.reset()
-        placeRepository.insertInitialData()
-
+        placeRepository.insertInitialData() // 검색결과를 보여주기 위한 전체 Place table에 데이터삽입
         placeList = placeRepository.returnPlaceList()
+        Log.d("mylog", placeList.size.toString())
 
         resultAdapter = RecyclerViewAdapter(placeList, LayoutInflater.from(this), placeRepository)
         recyclerView.adapter = resultAdapter
         recyclerView.layoutManager = LinearLayoutManager(this)
 
+        //val dbHelper = PlaceDbHelper(this)
+        //val db = dbHelper.writableDatabase
+        //createMyResearchTable(db)
         // tabAdapter = TabViewAdapter()
         // tabRecyclerView.adapter = tabAdapter
         // tabRecyclerView.layoutManger = LinearLayoutManger(this, LinearLayoutManager.HORIZONTAL)
@@ -78,6 +83,18 @@ class MainActivity : AppCompatActivity() {
             resultAdapter.placeList = filteredList.toMutableList()
             resultAdapter.notifyDataSetChanged()
         }
+    }
+
+    private fun createMyResearchTable(db: SQLiteDatabase) {
+        val SQL_CREATE_MYRESEARCH_TABLE =
+            "CREATE TABLE ${MyPlaceContract.Research.TABLE_NAME} (" +
+                    "${BaseColumns._ID} INTEGER PRIMARY KEY," +
+                    "${MyPlaceContract.Research.COLUMN_IMG} INTEGER," +
+                    "${MyPlaceContract.Research.COLUMN_NAME} TEXT," +
+                    "${MyPlaceContract.Research.COLUMN_CATEGORY} TEXT," +
+                    "${MyPlaceContract.Research.COLUMN_LOCATION} TEXT)"
+
+        db.execSQL(SQL_CREATE_MYRESEARCH_TABLE)
     }
 
 }
