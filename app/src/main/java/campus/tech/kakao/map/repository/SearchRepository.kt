@@ -3,6 +3,8 @@ package campus.tech.kakao.map.repository
 import android.content.ContentValues
 import android.content.Context
 import campus.tech.kakao.map.model.DatabaseHelper
+import campus.tech.kakao.map.model.Place
+import campus.tech.kakao.map.model.PlaceData
 import campus.tech.kakao.map.model.Search
 import campus.tech.kakao.map.model.SearchResult
 import kotlinx.coroutines.Dispatchers
@@ -39,6 +41,40 @@ class SearchRepository(context: Context) {
                 put(Search.COLUMN_KEYWORD, keyword)
             }
             db.insert(Search.TABLE_NAME, null, values)
+        }
+    }
+
+    suspend fun getAllPlaces(): List<PlaceData> {
+        return withContext(Dispatchers.IO) {
+            val db = dbHelper.readableDatabase
+            val cursor = db.rawQuery("SELECT * FROM ${Place.TABLE_NAME}", null)
+            val places = mutableListOf<PlaceData>()
+
+            if (cursor.moveToFirst()) {
+                do {
+                    val place = PlaceData(
+                        cursor.getInt(cursor.getColumnIndexOrThrow(Place.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(Place.COLUMN_NAME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(Place.COLUMN_LOCATION)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(Place.COLUMN_CATEGORY))
+                    )
+                    places.add(place)
+                } while (cursor.moveToNext())
+            }
+            cursor.close()
+            places
+        }
+    }
+
+    suspend fun addPlace(name: String, location: String, category: String) {
+        withContext(Dispatchers.IO) {
+            val db = dbHelper.writableDatabase
+            val values = ContentValues().apply {
+                put(Place.COLUMN_NAME, name)
+                put(Place.COLUMN_LOCATION, location)
+                put(Place.COLUMN_CATEGORY, category)
+            }
+            db.insert(Place.TABLE_NAME, null, values)
         }
     }
 }

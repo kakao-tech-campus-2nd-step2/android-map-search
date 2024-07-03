@@ -3,6 +3,7 @@ package campus.tech.kakao.map.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import campus.tech.kakao.map.model.PlaceData
 import campus.tech.kakao.map.model.SearchResult
 import campus.tech.kakao.map.repository.SearchRepository
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +18,9 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
     private val _searchResults = MutableStateFlow<List<SearchResult>>(emptyList())
     val searchResults: StateFlow<List<SearchResult>> get() = _searchResults
 
+    private val _places = MutableStateFlow<List<PlaceData>>(emptyList())
+    val places: StateFlow<List<PlaceData>> get() = _places
+
     fun getAllSearchResults() {
         viewModelScope.launch {
             val results = withContext(Dispatchers.IO) {
@@ -30,6 +34,22 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch(Dispatchers.IO) {
             repository.addSearchResult(keyword)
             getAllSearchResults()  // 최신 데이터를 가져오기 위해 호출
+        }
+    }
+
+    fun getAllPlaces() {
+        viewModelScope.launch {
+            val placesList = withContext(Dispatchers.IO) {
+                repository.getAllPlaces()
+            }
+            _places.value = placesList
+        }
+    }
+
+    fun addPlace(name: String, location: String, category: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.addPlace(name, location, category)
+            getAllPlaces()  // 최신 데이터를 가져오기 위해 호출
         }
     }
 }
