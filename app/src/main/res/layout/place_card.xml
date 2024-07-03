@@ -6,7 +6,8 @@
     
     <ImageView
         android:id="@+id/place_img"
-        android:layout_width="wrap_content"
+        android:layout_weight="1"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:src="@drawable/cafe"    />
     
@@ -26,7 +27,7 @@
             android:layout_weight="2"
             android:gravity="center"
             android:text="장소"
-            android:textSize="30sp" />
+            android:textSize="25sp" />
 
         <TextView
             android:id="@+id/place_location"
@@ -35,7 +36,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="location"
-            android:textSize="20sp"
+            android:textSize="15sp"
             android:textColor="#494848"/>
     </LinearLayout>
 

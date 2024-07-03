@@ -37,8 +37,8 @@ class RecyclerViewAdapter(
         var place: Place = placeList.get(position)
 
         var img = when (place.category) {
-            "cafe" -> R.drawable.cafe
-            "pharmacy" -> R.drawable.hospital
+            "카페" -> R.drawable.cafe
+            "약국" -> R.drawable.hospital
             else -> R.drawable.location
         }
 
