@@ -41,26 +41,12 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <androidx.recyclerview.widget.RecyclerView
         android:background="#80CFBFEC"
-        android:id="@+id/tab_form"
+        android:id="@+id/tab_recyclerview"
         android:layout_height="0dp"
         android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:layout_weight="1">
-
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <LinearLayout
-                android:id="@+id/tab_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal" />
-
-        </HorizontalScrollView>
-    </LinearLayout>
+        android:layout_weight="1" />
 
     <LinearLayout
         android:id="@+id/result_form"

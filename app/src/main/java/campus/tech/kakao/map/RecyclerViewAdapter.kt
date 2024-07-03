@@ -6,11 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 
 class RecyclerViewAdapter(
     var placeList: MutableList<Place>,
-    var inflater: LayoutInflater
+    var inflater: LayoutInflater,
+    var placeRepository: PlaceRepository
 ) : RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -25,10 +27,12 @@ class RecyclerViewAdapter(
             category = itemView.findViewById(R.id.place_category)
 
             itemView.setOnClickListener {
-                val position: Int = bindingAdapterPosition
-                val place = placeList.get(position)
-
-                Log.d("mylog", place.name)
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val place = placeList[position]
+                    placeRepository.insertLog(place)
+                    Log.d("mylog", place.name)
+                }
             }
         }
     }

@@ -6,12 +6,10 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -19,13 +17,13 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var input: EditText
     private lateinit var researchCloseButton: ImageView
-    private lateinit var scrollviewContainer: LinearLayout
-    private lateinit var resultLayout: LinearLayout
+    private lateinit var tabRecyclerView: RecyclerView
     private lateinit var noResultTextView: TextView
     private lateinit var recyclerView: RecyclerView
     private lateinit var placeRepository: PlaceRepository
     private var placeList = mutableListOf<Place>()
-    private lateinit var adapter: RecyclerViewAdapter
+    private lateinit var resultAdapter: RecyclerViewAdapter
+    private lateinit var tapAdapter: TapViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,9 +31,10 @@ class MainActivity : AppCompatActivity() {
 
         input = findViewById(R.id.input)
         researchCloseButton = findViewById(R.id.close_button)
-        scrollviewContainer = findViewById(R.id.tab_container)
+        tabRecyclerView = findViewById(R.id.tab_recyclerview)
         noResultTextView = findViewById(R.id.no_result_textview)
         recyclerView = findViewById(R.id.recyclerView)
+        tabRecyclerView = findViewById(R.id.tab_recyclerview)
 
         placeRepository = PlaceRepository(this)
 
@@ -44,9 +43,13 @@ class MainActivity : AppCompatActivity() {
 
         placeList = placeRepository.returnPlaceList()
 
-        adapter = RecyclerViewAdapter(placeList, LayoutInflater.from(this))
-        recyclerView.adapter = adapter
+        resultAdapter = RecyclerViewAdapter(placeList, LayoutInflater.from(this), placeRepository)
+        recyclerView.adapter = resultAdapter
         recyclerView.layoutManager = LinearLayoutManager(this)
+
+        // tabAdapter = TabViewAdapter()
+        // tabRecyclerView.adapter = tabAdapter
+        // tabRecyclerView.layoutManger = LinearLayoutManger(this, LinearLayoutManager.HORIZONTAL)
 
         input.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -72,8 +75,8 @@ class MainActivity : AppCompatActivity() {
         } else {
             noResultTextView.isGone = true
             recyclerView.isVisible = true
-            adapter.placeList = filteredList.toMutableList()
-            adapter.notifyDataSetChanged()
+            resultAdapter.placeList = filteredList.toMutableList()
+            resultAdapter.notifyDataSetChanged()
         }
     }
 
