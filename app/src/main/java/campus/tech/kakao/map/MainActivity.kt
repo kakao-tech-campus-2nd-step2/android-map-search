@@ -16,6 +16,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var noResultTextView: TextView
     private lateinit var recyclerView: RecyclerView
     private lateinit var placeRepository: PlaceRepository
+    private var cafeList = mutableListOf<Place>()
+    private var pharmacyList = mutableListOf<Place>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +33,9 @@ class MainActivity : AppCompatActivity() {
 
         placeRepository = PlaceRepository(this)
 
-        placeRepository.insertInitialData()
+        //placeRepository.insertInitialData()
+        cafeList = placeRepository.returnCafeList()
+        pharmacyList = placeRepository.returnPharmacyList()
 
     }
 

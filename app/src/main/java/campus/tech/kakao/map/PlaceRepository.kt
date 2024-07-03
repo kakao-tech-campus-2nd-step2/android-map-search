@@ -5,7 +5,8 @@ import android.content.Context
 
 class PlaceRepository(context: Context) {
     private val dbHelper = PlaceDbHelper(context)
-
+    private val cafeList = mutableListOf<Place>()
+    private val pharmacyList = mutableListOf<Place>()
     fun insertPlace(place: Place) {
         val db = dbHelper.writableDatabase
 
@@ -22,13 +23,18 @@ class PlaceRepository(context: Context) {
     fun insertInitialData() {
         for (i in 1..10) {
             val place = Place(R.drawable.cafe, "카페$i", "강원도 춘천시 퇴계동{$i}번길", "cafe")
+            cafeList.add(place)
             insertPlace(place)
         }
 
         for (i in 1..15){
             val place = Place(R.drawable.hospital, "약국$i", "강원도 강릉시 남부로{$i}번길", "pharmacy")
+            pharmacyList.add(place)
             insertPlace(place)
         }
     }
+
+    fun returnCafeList() = cafeList
+    fun returnPharmacyList() = pharmacyList
 
 }
