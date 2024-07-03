@@ -114,4 +114,33 @@ class SearchRepository(context: Context) {
             db.insert(Place.TABLE_NAME, null, values)
         }
     }
+
+    suspend fun searchPlaces(keyword: String): List<PlaceData> {
+        return withContext(Dispatchers.IO) {
+            val db = dbHelper.readableDatabase
+            val cursor = db.query(
+                Place.TABLE_NAME,
+                null,
+                "${Place.COLUMN_NAME} LIKE ? OR ${Place.COLUMN_CATEGORY} LIKE ?",
+                arrayOf("%$keyword%", "%$keyword%"),
+                null,
+                null,
+                null
+            )
+            val places = mutableListOf<PlaceData>()
+            if (cursor.moveToFirst()) {
+                do {
+                    val place = PlaceData(
+                        cursor.getInt(cursor.getColumnIndexOrThrow(Place.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(Place.COLUMN_NAME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(Place.COLUMN_LOCATION)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(Place.COLUMN_CATEGORY))
+                    )
+                    places.add(place)
+                } while (cursor.moveToNext())
+            }
+            cursor.close()
+            places
+        }
+    }
 }

@@ -48,12 +48,22 @@
 
 
     <TextView
-        android:id="@+id/resultTextView"
+        android:id="@+id/resultPlaceDataTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
         android:text="검색 결과가 없습니다."
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/placeResultRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
         />
 
 </androidx.appcompat.widget.LinearLayoutCompat>
