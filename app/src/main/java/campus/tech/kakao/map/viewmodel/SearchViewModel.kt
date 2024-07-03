@@ -32,8 +32,15 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
 
     fun addSearchResult(keyword: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.addSearchResult(keyword)
+            repository.addOrUpdateSearchResult(keyword)
             getAllSearchResults()  // 최신 데이터를 가져오기 위해 호출
+        }
+    }
+
+    fun deleteSearchResult(id: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteSearchResult(id)
+            getAllSearchResults()
         }
     }
 
@@ -52,4 +59,12 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
             getAllPlaces()  // 최신 데이터를 가져오기 위해 호출
         }
     }
+
+    fun searchPlaces(keyword: String) {
+     viewModelScope.launch {
+         val results = repository.searchPlaces(keyword)
+         _places.value = results
+     }
+    }
+
 }

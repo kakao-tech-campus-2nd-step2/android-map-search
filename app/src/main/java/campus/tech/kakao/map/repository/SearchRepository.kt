@@ -44,6 +44,43 @@ class SearchRepository(context: Context) {
         }
     }
 
+    suspend fun updateSearchResult(keyword: String) {
+        withContext(Dispatchers.IO) {
+            val db = dbHelper.writableDatabase
+            val sql = "UPDATE ${Search.TABLE_NAME} SET ${Search.COLUMN_TIMESTAMP} = CURRENT_TIMESTAMP WHERE ${Search.COLUMN_KEYWORD} = ?"
+            db.execSQL(sql, arrayOf(keyword))
+        }
+    }
+
+    suspend fun addOrUpdateSearchResult(keyword: String) {
+        withContext(Dispatchers.IO) {
+            val db = dbHelper.readableDatabase
+            val cursor = db.query(
+                Search.TABLE_NAME,
+                arrayOf(Search.COLUMN_ID),
+                "${Search.COLUMN_KEYWORD} = ?",
+                arrayOf(keyword),
+                null,
+                null,
+                null
+            )
+
+            if (cursor.moveToFirst()) {
+                cursor.close()
+                updateSearchResult(keyword)
+            } else {
+                addSearchResult(keyword)
+            }
+        }
+    }
+
+    suspend fun deleteSearchResult(id: Int) {
+        withContext(Dispatchers.IO) {
+            val db = dbHelper.writableDatabase
+            db.delete(Search.TABLE_NAME, "${Search.COLUMN_ID} = ?", arrayOf(id.toString()))
+        }
+    }
+
     suspend fun getAllPlaces(): List<PlaceData> {
         return withContext(Dispatchers.IO) {
             val db = dbHelper.readableDatabase
@@ -75,6 +112,35 @@ class SearchRepository(context: Context) {
                 put(Place.COLUMN_CATEGORY, category)
             }
             db.insert(Place.TABLE_NAME, null, values)
+        }
+    }
+
+    suspend fun searchPlaces(keyword: String): List<PlaceData> {
+        return withContext(Dispatchers.IO) {
+            val db = dbHelper.readableDatabase
+            val cursor = db.query(
+                Place.TABLE_NAME,
+                null,
+                "${Place.COLUMN_NAME} LIKE ? OR ${Place.COLUMN_CATEGORY} LIKE ?",
+                arrayOf("%$keyword%", "%$keyword%"),
+                null,
+                null,
+                null
+            )
+            val places = mutableListOf<PlaceData>()
+            if (cursor.moveToFirst()) {
+                do {
+                    val place = PlaceData(
+                        cursor.getInt(cursor.getColumnIndexOrThrow(Place.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(Place.COLUMN_NAME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(Place.COLUMN_LOCATION)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(Place.COLUMN_CATEGORY))
+                    )
+                    places.add(place)
+                } while (cursor.moveToNext())
+            }
+            cursor.close()
+            places
         }
     }
 }

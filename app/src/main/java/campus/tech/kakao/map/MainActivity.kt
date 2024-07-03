@@ -1,74 +1,111 @@
 package campus.tech.kakao.map
 
 import android.os.Bundle
-import android.util.Log
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.viewmodel.SearchViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var searchEditText: EditText
+    private lateinit var clearButton: ImageView
+    private lateinit var resultPlaceDataTextView: TextView
+    private lateinit var searchHistoryRecyclerView: RecyclerView
+    private lateinit var placeResultRecyclerView: RecyclerView
     private val searchViewModel: SearchViewModel by viewModels()
+    private lateinit var searchHistoryAdapter: SearchHistoryRecyclerViewAdapter
+    private lateinit var placeResultAdapter: PlaceResultRecyclerViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        searchEditText = findViewById(R.id.searchEditText)
+        initializeViews()
+        setupRecyclerView()
+        setupListeners()
+        observeViewModel()
+        loadInitialData()
+    }
 
-        // EditText에서 Enter 키를 눌렀을 때 로그를 찍고, 데이터베이스에 저장
-        searchEditText.setOnEditorActionListener { v, actionId, event ->
+    private fun initializeViews() {
+        searchEditText = findViewById(R.id.searchEditText)
+        clearButton = findViewById(R.id.clearButton)
+        searchHistoryRecyclerView = findViewById(R.id.searchHistoryRecyclerView)
+        placeResultRecyclerView = findViewById(R.id.placeResultRecyclerView)
+        resultPlaceDataTextView = findViewById(R.id.resultPlaceDataTextView)
+    }
+
+    private fun setupRecyclerView() {
+        searchHistoryAdapter = SearchHistoryRecyclerViewAdapter(mutableListOf(), searchViewModel, searchEditText)
+        searchHistoryRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        searchHistoryRecyclerView.adapter = searchHistoryAdapter
+
+        placeResultAdapter = PlaceResultRecyclerViewAdapter(mutableListOf())
+        placeResultRecyclerView.layoutManager = LinearLayoutManager(this)
+        placeResultRecyclerView.adapter = placeResultAdapter
+    }
+
+    private fun setupListeners() {
+        searchEditText.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                val keyword = v.text.toString()
-                searchViewModel.addSearchResult(keyword)
-                Log.d("testt", "Entered keyword: $keyword")
+                handleSearch(v.text.toString().trim())
                 true
             } else {
                 false
             }
         }
 
-        searchViewModel.getAllSearchResults()
-        searchViewModel.getAllPlaces()
-
-        // insertBulkData()
+        clearButton.setOnClickListener {
+            searchEditText.text.clear()
+        }
     }
 
-    private fun insertBulkData() {
-        val places = listOf(
-            Triple("cafe99thStreet1", "대전광역시 유성구 대학로 99", "카페"),
-            Triple("cafe99thStreet2", "대전광역시 유성구 대학로 99", "카페"),
-            Triple("cafe99thStreet3", "대전광역시 유성구 대학로 99", "카페"),
-            Triple("cafe99thStreet4", "대전광역시 유성구 대학로 99", "카페"),
-            Triple("cafecafe", "대전광역시 유성구 대학로 2", "카페"),
-            Triple("cafe99", "대전광역시 유성구 대학로 3", "카페"),
-            Triple("MegaCoffee", "대전광역시 유성구 대학로 4", "카페"),
-            Triple("starbucks", "대전광역시 유성구 대학로 5", "카페"),
-            Triple("CaffeBene", "대전광역시 유성구 대학로 6", "카페"),
-            Triple("composeCoffee", "대전광역시 유성구 대학로 7", "카페"),
-            Triple("EdiyaCoffee", "대전광역시 유성구 대학로 8", "카페"),
-            Triple("cinema 1", "대전광역시 유성구 궁동 1", "영화관"),
-            Triple("cinema 2", "대전광역시 유성구 궁동 2", "영화관"),
-            Triple("cinema 3", "대전광역시 유성구 궁동 3", "영화관"),
-            Triple("cinema 4", "대전광역시 유성구 궁동 4", "영화관"),
-            Triple("cinema 5", "대전광역시 유성구 궁동 5", "영화관"),
-            Triple("cinema 6", "대전광역시 유성구 궁동 6", "영화관"),
-            Triple("cinema 7", "대전광역시 유성구 궁동 7", "영화관"),
-            Triple("cinema 8", "대전광역시 유성구 궁동 8", "영화관"),
-            Triple("cinema 9", "대전광역시 유성구 궁동 9", "영화관"),
-            Triple("cinema 10", "대전광역시 유성구 궁동 10", "영화관"),
-        )
+    private fun handleSearch(keyword: String) {
+        if (keyword.isNotEmpty()) {
+            searchViewModel.addSearchResult(keyword)
+            searchViewModel.searchPlaces(keyword)
+        } else {
+            showEmptySearchToast()
+        }
+    }
+
+    private fun showEmptySearchToast() {
+        Toast.makeText(this, "검색어를 입력해 주세요", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            searchViewModel.searchResults.collect { results ->
+                searchHistoryAdapter.updateData(results)
+            }
+        }
 
         lifecycleScope.launch {
-            places.forEach { place ->
-                searchViewModel.addPlace(place.first, place.second, place.third)
+            searchViewModel.places.collect { places ->
+                if (places.isEmpty()) {
+                    resultPlaceDataTextView.visibility = View.VISIBLE
+                    placeResultRecyclerView.visibility = View.GONE
+                } else {
+                    resultPlaceDataTextView.visibility = View.GONE
+                    placeResultRecyclerView.visibility = View.VISIBLE
+                    placeResultAdapter.updateData(places)
+                }
             }
-            Log.d("testt", "Bulk data insertion completed.")
         }
+    }
+
+    private fun loadInitialData() {
+        searchViewModel.getAllSearchResults()
+        // searchViewModel.getAllPlaces()       // case: 첫 화면에 모든 장소 출력
     }
 }

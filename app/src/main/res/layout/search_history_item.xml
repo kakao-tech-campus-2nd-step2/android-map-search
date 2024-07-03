@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingHorizontal="8dp"
+    android:layout_marginHorizontal="4dp"
+    android:background="@drawable/bg_search_history_item"
+    >
+    <TextView
+        android:id="@+id/nthSearchHistoryKeyword"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="20dp"
+        android:layout_marginLeft="12dp"
+        android:text="search_history1"
+         />
+
+    <ImageView
+        android:id="@+id/itemClearButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_close_resize"
+        android:padding="10dp"
+        android:layout_gravity="center"
+        android:contentDescription="Clear text"/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>
