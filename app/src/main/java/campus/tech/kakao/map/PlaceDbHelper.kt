@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
+import android.util.Log
 
 class PlaceDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
@@ -33,6 +34,7 @@ class PlaceDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME,
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
+        Log.d("PlaceDbHelper", "Creating tables")
         db?.execSQL(SQL_CREATE_PLACE_TABLE)
         db?.execSQL(SQL_CREATE_RESEARCH_TABLE)
     }

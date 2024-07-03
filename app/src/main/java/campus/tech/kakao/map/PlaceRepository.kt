@@ -7,6 +7,10 @@ class PlaceRepository(context: MainActivity) {
     private val dbHelper = PlaceDbHelper(context)
     private var placeList = mutableListOf<Place>()
 
+    init {
+        dbHelper.writableDatabase
+    }
+
     fun insertPlace(place: Place) {
         val db = dbHelper.writableDatabase
 
@@ -45,7 +49,7 @@ class PlaceRepository(context: MainActivity) {
     fun reset() {
         val db = dbHelper.writableDatabase
         db.execSQL("DELETE FROM ${MyPlaceContract.Place.TABLE_NAME}")
-        db.execSQL("DELETE FROM ${MyPlaceContract.Research.TABLE_NAME}")
+        //db.execSQL("DELETE FROM ${MyPlaceContract.Research.TABLE_NAME}")
     }
 
     fun insertInitialData() {

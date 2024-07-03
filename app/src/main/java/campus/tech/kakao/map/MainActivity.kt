@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var placeRepository: PlaceRepository
     private var placeList = mutableListOf<Place>()
     private lateinit var resultAdapter: RecyclerViewAdapter
-    private lateinit var tapAdapter: TapViewAdapter
+    //private lateinit var tapAdapter: TapViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +34,6 @@ class MainActivity : AppCompatActivity() {
 
         input = findViewById(R.id.input)
         researchCloseButton = findViewById(R.id.close_button)
-        tabRecyclerView = findViewById(R.id.tab_recyclerview)
         noResultTextView = findViewById(R.id.no_result_textview)
         recyclerView = findViewById(R.id.recyclerView)
         tabRecyclerView = findViewById(R.id.tab_recyclerview)
@@ -83,18 +82,6 @@ class MainActivity : AppCompatActivity() {
             resultAdapter.placeList = filteredList.toMutableList()
             resultAdapter.notifyDataSetChanged()
         }
-    }
-
-    private fun createMyResearchTable(db: SQLiteDatabase) {
-        val SQL_CREATE_MYRESEARCH_TABLE =
-            "CREATE TABLE ${MyPlaceContract.Research.TABLE_NAME} (" +
-                    "${BaseColumns._ID} INTEGER PRIMARY KEY," +
-                    "${MyPlaceContract.Research.COLUMN_IMG} INTEGER," +
-                    "${MyPlaceContract.Research.COLUMN_NAME} TEXT," +
-                    "${MyPlaceContract.Research.COLUMN_CATEGORY} TEXT," +
-                    "${MyPlaceContract.Research.COLUMN_LOCATION} TEXT)"
-
-        db.execSQL(SQL_CREATE_MYRESEARCH_TABLE)
     }
 
 }
