@@ -84,6 +84,6 @@ class MainActivity : AppCompatActivity() {
 
     fun addResearchList(place: Place) {
         researchList.add(place)
-
+        tapAdapter.notifyDataSetChanged()
     }
 }
