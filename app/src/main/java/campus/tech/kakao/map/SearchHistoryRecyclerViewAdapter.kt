@@ -41,7 +41,8 @@ class SearchHistoryRecyclerViewAdapter(
         holder.clearButton.setOnClickListener {
             searchViewModel.deleteSearchResult(item.id)
         }
+        holder.itemView.setOnClickListener {
+            searchViewModel.searchPlaces(item.keyword)
+        }
     }
-
-
 }
