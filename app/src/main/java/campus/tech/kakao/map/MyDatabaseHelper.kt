@@ -56,6 +56,25 @@ class MyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, "History.db
         db.close()
         return results
     }
+    fun getSearchResults(searchText: String): List<String> {
+        val db = readableDatabase
+        val cursor = db.query(
+            "search_results",
+            arrayOf("text"),
+            "text LIKE ?",
+            arrayOf("%$searchText%"),
+            null,
+            null,
+            null
+        )
+        val results = mutableListOf<String>()
+        while (cursor.moveToNext()) {
+            results.add(cursor.getString(0))
+        }
+        cursor.close()
+        db.close()
+        return results
+    }
 
     class SearchAdapter(
         private val context: Context,
