@@ -83,7 +83,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun addResearchList(place: Place) {
-        researchList.add(place)
-        tapAdapter.notifyDataSetChanged()
+        if (!researchList.contains(place)){
+            researchList.add(place)
+            tapAdapter.notifyDataSetChanged()
+        }
     }
 }
