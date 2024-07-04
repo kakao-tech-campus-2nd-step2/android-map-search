@@ -18,7 +18,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1
 
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL(
-            "CREATE TABLE ${MapContract.TABLE_CAFE} (" +
+            "CREATE TABLE IF NOT EXISTS ${MapContract.TABLE_CAFE} (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "${MapContract.COLUMN_NAME} TEXT," +
                     "${MapContract.COLUMN_ADDRESS} TEXT," +
@@ -26,7 +26,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1
                     ")"
         )
         db?.execSQL(
-            "CREATE TABLE ${MapContract.TABLE_PHARMACY} (" +
+            "CREATE TABLE IF NOT EXISTS ${MapContract.TABLE_PHARMACY} (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "${MapContract.COLUMN_NAME} TEXT," +
                     "${MapContract.COLUMN_ADDRESS} TEXT," +
@@ -35,6 +35,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1
         )
         addDummyData(db)
     }
+
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         db?.execSQL("DROP TABLE IF EXISTS ${MapContract.TABLE_CAFE}")
@@ -106,21 +107,16 @@ class Database(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1
             null
         )
 
-        val dataList = mutableListOf<Map<String, String>>()
-        val columnIndexName = cursor.getColumnIndexOrThrow(MapContract.COLUMN_NAME)
-        val columnIndexAddress = cursor.getColumnIndexOrThrow(MapContract.COLUMN_ADDRESS)
-        val columnIndexCategory = cursor.getColumnIndexOrThrow(MapContract.COLUMN_CATEGORY)
-
+        val results = mutableListOf<Map<String, String>>()
         while (cursor.moveToNext()) {
-            val data = mapOf(
-                MapContract.COLUMN_NAME to cursor.getString(columnIndexName),
-                MapContract.COLUMN_ADDRESS to cursor.getString(columnIndexAddress),
-                MapContract.COLUMN_CATEGORY to cursor.getString(columnIndexCategory)
-            )
-            dataList.add(data)
+            val row = mutableMapOf<String, String>()
+            row[MapContract.COLUMN_NAME] = cursor.getString(cursor.getColumnIndexOrThrow(MapContract.COLUMN_NAME))
+            row[MapContract.COLUMN_ADDRESS] = cursor.getString(cursor.getColumnIndexOrThrow(MapContract.COLUMN_ADDRESS))
+            row[MapContract.COLUMN_CATEGORY] = cursor.getString(cursor.getColumnIndexOrThrow(MapContract.COLUMN_CATEGORY))
+            results.add(row)
         }
         cursor.close()
-        return dataList
+        return results
     }
 }
 
