@@ -20,6 +20,12 @@ data class Place(
         }
     }
 
-    
+    override fun hashCode(): Int {
+        var result = img
+        result = 31 * result + name.hashCode()
+        result = 31 * result + location.hashCode()
+        result = 31 * result + category.hashCode()
+        return result
+    }
 
 }
