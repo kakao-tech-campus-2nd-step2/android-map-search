@@ -8,11 +8,27 @@ import androidx.recyclerview.widget.RecyclerView
 
 class Adapter(private var profiles: List<Profile>) : RecyclerView.Adapter<Adapter.ProfileViewHolder>() {
 
+    interface OnItemClickListener {
+        fun onItemClick(name: String)
+    }
+
+    var listener: OnItemClickListener? = null
+    fun setOnItemClickListener(listener: OnItemClickListener) {
+        this.listener = listener
+    }
+
     inner class ProfileViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvName: TextView = itemView.findViewById(R.id.tvname)
         val tvAddress: TextView = itemView.findViewById(R.id.tvaddress)
         val tvType: TextView = itemView.findViewById(R.id.tvtype)
 
+        init {
+            itemView.setOnClickListener {
+                bindingAdapterPosition.takeIf { it != RecyclerView.NO_POSITION }?.let { position ->
+                    listener?.onItemClick(profiles[position].name)
+                }
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProfileViewHolder {
