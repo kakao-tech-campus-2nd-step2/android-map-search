@@ -84,4 +84,17 @@ class PlaceRepository(context: MainActivity) {
 
     fun returnPlaceList() = placeList
 
+    fun hasResearchEntries() : Boolean {
+        val db = dbHelper.readableDatabase
+        val cursor = db.rawQuery("SELECT COUNT(*) FROM ${MyPlaceContract.Research.TABLE_NAME}", null)
+        return if (cursor.moveToFirst()) {
+            val count = cursor.getInt(0)
+            cursor.close()
+            count > 0
+        } else {
+            cursor.close()
+            false
+        }
+    }
+
 }
