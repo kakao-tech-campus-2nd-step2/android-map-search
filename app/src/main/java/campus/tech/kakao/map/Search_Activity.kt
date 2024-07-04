@@ -23,7 +23,6 @@ class Search_Activity : AppCompatActivity() {
     private lateinit var searchRecyclerView : RecyclerView
     private lateinit var savedSearchRecyclerView : RecyclerView
     private lateinit var searchText : androidx.appcompat.widget.SearchView
-    private lateinit var clearSearchButton : Button
     private lateinit var savedSearchAdapter : MyDatabaseHelper.SearchAdapter
     private lateinit var searchResultAdapter : MyDatabaseHelper.SearchAdapter
 
@@ -55,9 +54,6 @@ class Search_Activity : AppCompatActivity() {
 
         })
 
-        clearSearchButton.setOnClickListener {
-            clearSearchText()
-        }
     }
 
 
