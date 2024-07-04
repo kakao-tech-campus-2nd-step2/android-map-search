@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.SearchView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -21,7 +22,7 @@ class Search_Activity : AppCompatActivity() {
     private lateinit var databaseHelper: MyDatabaseHelper
     private lateinit var searchRecyclerView : RecyclerView
     private lateinit var savedSearchRecyclerView : RecyclerView
-    private lateinit var searchText : EditText
+    private lateinit var searchText : SearchView
     private lateinit var clearSearchButton : Button
     private lateinit var savedSearchAdapter : MyDatabaseHelper.SearchAdapter
     private lateinit var searchResultAdapter : MyDatabaseHelper.SearchAdapter
@@ -36,34 +37,45 @@ class Search_Activity : AppCompatActivity() {
         searchRecyclerView = findViewById(R.id.RecyclerVer)
         savedSearchRecyclerView = findViewById(R.id.recyclerHor)
 
+
         searchResultAdapter = MyDatabaseHelper.SearchAdapter(this, emptyList()) { searchText ->
-            clearSearchText()
+            searchAndDisplayResults(searchText)
         }
         searchRecyclerView.adapter = searchResultAdapter
 
-        searchText.setOnClickListener {
-            searchAndDisplayResults(searchText.text.toString())
-        }
+        searchText.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                searchAndDisplayResults(query ?: "")
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                searchAndDisplayResults(newText ?: "")
+                return false
+            }
+
+        })
 
         clearSearchButton.setOnClickListener {
             clearSearchText()
         }
     }
 
-    private fun searchAndDisplayResults(searchText: String) {
+
+     private fun searchAndDisplayResults(searchText: String) {
         databaseHelper.insertSearchData(searchText)
         val searchResults = databaseHelper.getSearchResults(searchText)
         searchResultAdapter.updateData(searchResults)
         searchRecyclerView.visibility = if (searchResults.isEmpty()) View.GONE else View.VISIBLE
     }
 
+
     private fun clearSearchText() {
-        searchText.text.clear()
-        databaseHelper.deleteSearchData(searchText.text.toString())
+        searchText.setQuery("", false)
+        databaseHelper.deleteSearchData(searchText.query.toString())
         searchAndDisplayResults("")
     }
 }
-
     class MyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1) {
         override fun onCreate(db: SQLiteDatabase?) {
             db?.execSQL("CREATE TABLE search_results (id INTEGER PRIMARY KEY, text TEXT)")
@@ -87,7 +99,15 @@ class Search_Activity : AppCompatActivity() {
 
         fun getSearchResults(searchText: String): List<String> {
             val db = readableDatabase
-            val cursor = db.query("search_results", arrayOf("text"), "text LIKE ?", arrayOf("%$searchText%"), null, null, null)
+            val cursor = db.query(
+                "search_results",
+                arrayOf("text"),
+                "text LIKE ?",
+                arrayOf("%$searchText%"),
+                null,
+                null,
+                null
+            )
             val results = mutableListOf<String>()
             while (cursor.moveToNext()) {
                 results.add(cursor.getString(0))
@@ -96,14 +116,19 @@ class Search_Activity : AppCompatActivity() {
             db.close()
             return results
         }
+
         //검색 결과를 표현해주는 기능
         class SearchAdapter(
             private val context: Context,
             private var data: List<String>,
             private val onItemClick: (String) -> Unit
         ) : RecyclerView.Adapter<SearchItemViewHolder>() {
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchItemViewHolder {
-                val view = LayoutInflater.from(context).inflate(R.layout.activity_item_view, parent, false)
+            override fun onCreateViewHolder(
+                parent: ViewGroup,
+                viewType: Int
+            ): SearchItemViewHolder {
+                val view =
+                    LayoutInflater.from(context).inflate(R.layout.activity_item_view, parent, false)
                 return SearchItemViewHolder(view, onItemClick)
             }
 
@@ -119,17 +144,20 @@ class Search_Activity : AppCompatActivity() {
             }
         }
 
-        class SearchItemViewHolder(itemView: View, private val onItemClick: (String) -> Unit) : RecyclerView.ViewHolder(itemView) {
+        class SearchItemViewHolder(itemView: View, private val onItemClick: (String) -> Unit) :
+            RecyclerView.ViewHolder(itemView) {
             private val textView: TextView = itemView.findViewById(R.id.result)
             private val deleteButton: Button = itemView.findViewById(R.id.delete)
 
             fun bind(searchText: String) {
                 textView.text = searchText
-                deleteButton.setOnClickListener { object :View.OnClickListener {
-                    override fun onClick(v : View? ) {
-                        onItemClick(searchText)
+                deleteButton.setOnClickListener {
+                    object : View.OnClickListener {
+                        override fun onClick(v: View?) {
+                            onItemClick(searchText)
+                        }
                     }
-                }}
+                }
             }
         }
 
