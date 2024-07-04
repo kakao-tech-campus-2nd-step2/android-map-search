@@ -35,18 +35,23 @@ class Search_Activity : AppCompatActivity() {
         searchRecyclerView = findViewById(R.id.RecyclerVer)
         savedSearchRecyclerView = findViewById(R.id.recyclerHor)
 
+        savedSearchAdapter = MyDatabaseHelper.SearchAdapter(this, emptyList()) {
+            searchText -> searchAndDisplayResults(searchText)
+        }
 
         searchResultAdapter = MyDatabaseHelper.SearchAdapter(this, emptyList()) { searchText ->
             searchAndDisplayResults(searchText)
         }
         searchRecyclerView.adapter = searchResultAdapter
+        savedSearchRecyclerView.adapter = savedSearchAdapter
 
         searchText.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            //검색클릭
             override fun onQueryTextSubmit(query: String?): Boolean {
                 searchAndDisplayResults(query ?: "")
                 return false
             }
-
+            //키보드를 칠때마다 검색수행
             override fun onQueryTextChange(newText: String?): Boolean {
                 searchAndDisplayResults(newText ?: "")
                 return false
@@ -55,13 +60,15 @@ class Search_Activity : AppCompatActivity() {
         })
 
     }
-
-
      private fun searchAndDisplayResults(searchText: String) {
         databaseHelper.insertSearchData(searchText)
         val searchResults = databaseHelper.getSearchResults(searchText)
         searchResultAdapter.updateData(searchResults)
         searchRecyclerView.visibility = if (searchResults.isEmpty()) View.GONE else View.VISIBLE
+
+         val savedSearches = databaseHelper.getSearchResults(searchText)
+         savedSearchAdapter.updateData(savedSearches)
+         savedSearchRecyclerView.visibility = if (savedSearches.isEmpty()) View.GONE else View.VISIBLE
     }
 
 
@@ -74,6 +81,7 @@ class Search_Activity : AppCompatActivity() {
     class MyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1) {
         override fun onCreate(db: SQLiteDatabase?) {
             db?.execSQL("CREATE TABLE search_results (id INTEGER PRIMARY KEY, text TEXT)")
+            db?.execSQL("CREATE TABLE saved_searches (id INTEGER PRIMARY KEY, text TEXT)")
         }
 
         override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -91,7 +99,7 @@ class Search_Activity : AppCompatActivity() {
             db.execSQL("DELETE FROM search_results WHERE text = ?", arrayOf(searchText))
             db.close()
         }
-
+        //검색 결과를 가져오는 기능
         fun getSearchResults(searchText: String): List<String> {
             val db = readableDatabase
             val cursor = db.query(
@@ -147,16 +155,13 @@ class Search_Activity : AppCompatActivity() {
             fun bind(searchText: String) {
                 textView.text = searchText
                 deleteButton.setOnClickListener {
-                    object : View.OnClickListener {
-                        override fun onClick(v: View?) {
                             onItemClick(searchText)
                         }
                     }
                 }
             }
-        }
 
-    }
+
 
 
 
