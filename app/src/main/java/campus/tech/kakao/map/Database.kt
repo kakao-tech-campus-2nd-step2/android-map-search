@@ -41,7 +41,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1
 
         for (i in 1..100) {
             val values = ContentValues().apply {
-                put(MapContract.COLUMN_NAME, "카페$i")
+                put(MapContract.COLUMN_NAME, "cafe$i")
                 put(MapContract.COLUMN_ADDRESS, "광주 북구 용봉동 $i")
                 put(MapContract.COLUMN_CATEGORY, "카페")
             }

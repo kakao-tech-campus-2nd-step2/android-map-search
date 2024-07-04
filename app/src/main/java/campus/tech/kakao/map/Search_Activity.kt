@@ -20,11 +20,11 @@ import androidx.recyclerview.widget.RecyclerView
 
 class Search_Activity : AppCompatActivity() {
     private lateinit var databaseHelper: MyDatabaseHelper
-    private lateinit var searchRecyclerView : RecyclerView
-    private lateinit var savedSearchRecyclerView : RecyclerView
-    private lateinit var searchText : androidx.appcompat.widget.SearchView
-    private lateinit var savedSearchAdapter : MyDatabaseHelper.SearchAdapter
-    private lateinit var searchResultAdapter : MyDatabaseHelper.SearchAdapter
+    private lateinit var searchRecyclerView: RecyclerView
+    private lateinit var savedSearchRecyclerView: RecyclerView
+    private lateinit var searchText: androidx.appcompat.widget.SearchView
+    private lateinit var savedSearchAdapter: MyDatabaseHelper.SearchAdapter
+    private lateinit var searchResultAdapter: MyDatabaseHelper.SearchAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,8 +35,8 @@ class Search_Activity : AppCompatActivity() {
         searchRecyclerView = findViewById(R.id.RecyclerVer)
         savedSearchRecyclerView = findViewById(R.id.recyclerHor)
 
-        savedSearchAdapter = MyDatabaseHelper.SearchAdapter(this, emptyList()) {
-            searchText -> searchAndDisplayResults(searchText)
+        savedSearchAdapter = MyDatabaseHelper.SearchAdapter(this, emptyList()) { searchText ->
+            searchAndDisplayResults(searchText)
         }
 
         searchResultAdapter = MyDatabaseHelper.SearchAdapter(this, emptyList()) { searchText ->
@@ -46,149 +46,135 @@ class Search_Activity : AppCompatActivity() {
         savedSearchRecyclerView.adapter = savedSearchAdapter
 
         searchText.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
-            //검색클릭
             override fun onQueryTextSubmit(query: String?): Boolean {
                 searchAndDisplayResults(query ?: "")
                 return false
             }
-            //키보드를 칠때마다 검색수행
+
             override fun onQueryTextChange(newText: String?): Boolean {
                 searchAndDisplayResults(newText ?: "")
                 return false
             }
-
         })
-
     }
-     private fun searchAndDisplayResults(searchText: String) {
-        databaseHelper.insertSearchData(searchText)
+
+    private fun searchAndDisplayResults(searchText: String) {
         val searchResults = databaseHelper.getSearchResults(searchText)
-        searchResultAdapter.updateData(searchResults)
         searchRecyclerView.visibility = if (searchResults.isEmpty()) View.GONE else View.VISIBLE
+        searchResultAdapter.updateData(searchResults)
 
-         val savedSearches = databaseHelper.getSearchResults(searchText)
-         savedSearchAdapter.updateData(savedSearches)
-         savedSearchRecyclerView.visibility = if (savedSearches.isEmpty()) View.GONE else View.VISIBLE
-    }
-
-
-    private fun clearSearchText() {
-        searchText.setQuery("", false)
-        databaseHelper.deleteSearchData(searchText.query.toString())
-        searchAndDisplayResults("")
+        val savedSearches = databaseHelper.getSavedSearches()
+        savedSearchRecyclerView.visibility = if (savedSearches.isEmpty()) View.GONE else View.VISIBLE
+        savedSearchAdapter.updateData(savedSearches)
     }
 }
-    class MyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, "History.db", null, 1) {
-        override fun onCreate(db: SQLiteDatabase?) {
-            db?.execSQL("CREATE TABLE search_results (id INTEGER PRIMARY KEY, text TEXT)")
-            db?.execSQL("CREATE TABLE saved_searches (id INTEGER PRIMARY KEY, text TEXT)")
-            addDummySearchData(db)
+
+class MyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, "History.db", null, 1) {
+    override fun onCreate(db: SQLiteDatabase?) {
+        db?.execSQL("CREATE TABLE search_results (id INTEGER PRIMARY KEY, text TEXT)")
+        db?.execSQL("CREATE TABLE saved_searches (id INTEGER PRIMARY KEY, text TEXT)")
+        db?.execSQL("CREATE TABLE cafe (id INTEGER PRIMARY KEY, name TEXT, location TEXT)")
+        addDummySearchData(db)
+    }
+
+    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
+        db?.execSQL("DROP TABLE IF EXISTS search_results")
+        db?.execSQL("DROP TABLE IF EXISTS saved_searches")
+        db?.execSQL("DROP TABLE IF EXISTS cafe")
+        onCreate(db)
+    }
+
+    private fun addDummySearchData(db: SQLiteDatabase?) {
+        val dummySearchData = listOf(
+            "Android", "Kotlin", "Kakao", "약국", "카페", "아무거나", "일단 테스트"
+        )
+        for (searchText in dummySearchData) {
+            db?.execSQL("INSERT INTO search_results (text) VALUES (?)", arrayOf(searchText))
+        }
+    }
+
+    fun insertSearchData(searchText: String) {
+        val db = writableDatabase
+        db.execSQL("INSERT INTO search_results (text) VALUES (?)", arrayOf(searchText))
+        db.close()
+    }
+
+    fun deleteSearchData(searchText: String) {
+        val db = writableDatabase
+        db.execSQL("DELETE FROM search_results WHERE text = ?", arrayOf(searchText))
+        db.close()
+    }
+
+    fun getSearchResults(searchText: String): List<String> {
+        val db = readableDatabase
+        val cursor = db.query(
+            "search_results",
+            arrayOf("text"),
+            "text LIKE ?",
+            arrayOf("%$searchText%"),
+            null,
+            null,
+            null
+        )
+        val results = mutableListOf<String>()
+        while (cursor.moveToNext()) {
+            results.add(cursor.getString(0))
+        }
+        cursor.close()
+        db.close()
+        return results
+    }
+
+    fun getSavedSearches(): List<String> {
+        val db = readableDatabase
+        val cursor = db.query("saved_searches", arrayOf("text"), null, null, null, null, null)
+        val results = mutableListOf<String>()
+        while (cursor.moveToNext()) {
+            results.add(cursor.getString(0))
+        }
+        cursor.close()
+        db.close()
+        return results
+    }
+
+    class SearchAdapter(
+        private val context: Context,
+        private var data: List<String>,
+        private val onItemClick: (String) -> Unit
+    ) : RecyclerView.Adapter<SearchItemViewHolder>() {
+        override fun onCreateViewHolder(
+            parent: ViewGroup,
+            viewType: Int
+        ): SearchItemViewHolder {
+            val view = LayoutInflater.from(context).inflate(R.layout.activity_item_view, parent, false)
+            return SearchItemViewHolder(view, onItemClick)
         }
 
-        override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-            TODO("Not yet implemented")
-        }
-        private fun addDummySearchData(db: SQLiteDatabase?) {
-            val dummySearchData = listOf(
-                "Android",
-                "Kotlin",
-                "Kakao",
-                "약국",
-                "카페",
-                "아무거나",
-                "일단 테스트"
-            )
-            for (searchText in dummySearchData) {
-                db?.execSQL("INSERT INTO search_results (text) VALUES (?)", arrayOf(searchText))
-            }
+        override fun onBindViewHolder(holder: SearchItemViewHolder, position: Int) {
+            holder.bind(data[position])
         }
 
-        fun insertSearchData(searchText: String) {
-            val db = writableDatabase
-            db.execSQL("INSERT INTO search_results (text) VALUES (?)", arrayOf(searchText))
-            db.close()
+        override fun getItemCount() = data.size
+
+        fun updateData(newData: List<String>) {
+            data = newData
+            notifyDataSetChanged()
         }
+    }
 
-        fun deleteSearchData(searchText: String) {
-            val db = writableDatabase
-            db.execSQL("DELETE FROM search_results WHERE text = ?", arrayOf(searchText))
-            db.close()
-        }
-        //검색 결과를 가져오는 기능
-        fun getSearchResults(searchText: String): List<String> {
-            val db = readableDatabase
-            val cursor = db.query(
-                "search_results",
-                arrayOf("text"),
-                "text LIKE ?",
-                arrayOf("%$searchText%"),
-                null,
-                null,
-                null
-            )
-            val results = mutableListOf<String>()
-            while (cursor.moveToNext()) {
-                results.add(cursor.getString(0))
-            }
-            cursor.close()
-            val savedSearchCursor = db.query(
-                "saved_searches",
-                arrayOf("text"),
-                "text LIKE ?",
-                arrayOf("%$searchText%"),
-                null,
-                null,
-                null
-            )
-            while (savedSearchCursor.moveToNext()) {
-                results.add(savedSearchCursor.getString(0))
-            }
-            savedSearchCursor.close()
-            db.close()
-            return results
-        }
+    class SearchItemViewHolder(itemView: View, private val onItemClick: (String) -> Unit) :
+        RecyclerView.ViewHolder(itemView) {
+        private val textView: TextView = itemView.findViewById(R.id.result)
+        private val deleteButton: Button = itemView.findViewById(R.id.delete)
 
-        //검색 결과를 표현해주는 기능
-        class SearchAdapter(
-            private val context: Context,
-            private var data: List<String>,
-            private val onItemClick: (String) -> Unit
-        ) : RecyclerView.Adapter<SearchItemViewHolder>() {
-            override fun onCreateViewHolder(
-                parent: ViewGroup,
-                viewType: Int
-            ): SearchItemViewHolder {
-                val view =
-                    LayoutInflater.from(context).inflate(R.layout.activity_item_view, parent, false)
-                return SearchItemViewHolder(view, onItemClick)
-            }
-
-            override fun onBindViewHolder(holder: SearchItemViewHolder, position: Int) {
-                holder.bind(data[position])
-            }
-
-            override fun getItemCount() = data.size
-
-            fun updateData(newData: List<String>) {
-                data = newData
-                notifyDataSetChanged()
+        fun bind(searchText: String) {
+            textView.text = searchText
+            deleteButton.setOnClickListener {
+                onItemClick(searchText)
             }
         }
-
-        class SearchItemViewHolder(itemView: View, private val onItemClick: (String) -> Unit) :
-            RecyclerView.ViewHolder(itemView) {
-            private val textView: TextView = itemView.findViewById(R.id.result)
-            private val deleteButton: Button = itemView.findViewById(R.id.delete)
-
-            fun bind(searchText: String) {
-                textView.text = searchText
-                deleteButton.setOnClickListener {
-                            onItemClick(searchText)
-                        }
-                    }
-                }
-            }
-
+    }
+}
 
 
 
