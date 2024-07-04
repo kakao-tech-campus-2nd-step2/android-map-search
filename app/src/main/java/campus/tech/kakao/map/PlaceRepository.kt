@@ -136,5 +136,5 @@ class PlaceRepository(context: MainActivity) {
             Log.e("PlaceRepository", "Error deleting row: ${e.message}")
         }
     }
-    
+
 }

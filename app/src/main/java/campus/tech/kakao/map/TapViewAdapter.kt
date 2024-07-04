@@ -10,7 +10,8 @@ import com.google.android.material.tabs.TabLayout.TabView
 
 class TapViewAdapter(
     var researchList: MutableList<Place>,
-    var inflater: LayoutInflater
+    var inflater: LayoutInflater,
+    var placeRepository: PlaceRepository
 ) : RecyclerView.Adapter<TapViewAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -19,6 +20,17 @@ class TapViewAdapter(
         init {
             cancelButton = itemView.findViewById(R.id.tab_close_button)
             placeName = itemView.findViewById(R.id.tab_place_textview)
+
+            cancelButton.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val place = researchList[position]
+                    placeRepository.deleteResearchEntry(place)
+                    researchList.removeAt(position)
+                    notifyItemRemoved(position)
+                    (itemView.context as MainActivity).updateTabRecyclerViewVisibility()
+                }
+            }
         }
     }
 

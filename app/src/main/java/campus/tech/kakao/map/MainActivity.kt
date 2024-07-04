@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         researchList = placeRepository.getResearchEntries().toMutableList()
-        tapAdapter = TapViewAdapter(researchList, LayoutInflater.from(this))
+        tapAdapter = TapViewAdapter(researchList, LayoutInflater.from(this), placeRepository)
         tabRecyclerView.adapter = tapAdapter
         tabRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateTabRecyclerViewVisibility() {
+    fun updateTabRecyclerViewVisibility() {
         if (placeRepository.hasResearchEntries()) {
             tabRecyclerView.isVisible = true
         } else {
