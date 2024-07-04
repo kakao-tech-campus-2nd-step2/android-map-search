@@ -22,7 +22,7 @@ class Search_Activity : AppCompatActivity() {
     private lateinit var databaseHelper: MyDatabaseHelper
     private lateinit var searchRecyclerView : RecyclerView
     private lateinit var savedSearchRecyclerView : RecyclerView
-    private lateinit var searchText : SearchView
+    private lateinit var searchText : androidx.appcompat.widget.SearchView
     private lateinit var clearSearchButton : Button
     private lateinit var savedSearchAdapter : MyDatabaseHelper.SearchAdapter
     private lateinit var searchResultAdapter : MyDatabaseHelper.SearchAdapter
@@ -32,7 +32,7 @@ class Search_Activity : AppCompatActivity() {
         setContentView(R.layout.activity_search)
 
         databaseHelper = MyDatabaseHelper(this)
-        searchText = findViewById(R.id.text)
+        searchText = findViewById(R.id.search_text)
         clearSearchButton = findViewById(R.id.close)
         searchRecyclerView = findViewById(R.id.RecyclerVer)
         savedSearchRecyclerView = findViewById(R.id.recyclerHor)
@@ -43,7 +43,7 @@ class Search_Activity : AppCompatActivity() {
         }
         searchRecyclerView.adapter = searchResultAdapter
 
-        searchText.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        searchText.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 searchAndDisplayResults(query ?: "")
                 return false
