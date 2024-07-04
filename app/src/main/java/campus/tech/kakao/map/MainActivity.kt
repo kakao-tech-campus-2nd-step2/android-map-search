@@ -65,6 +65,36 @@ class MainActivity : AppCompatActivity() {
         btnClose.setOnClickListener{
             etSearch.text.clear()
         }
+        loadSavedItems()
+    }
+    override fun onPause() {
+        super.onPause()
+        saveSavedItems()
+    }
+
+    fun saveSavedItems() {
+        val sharedPreferences = getSharedPreferences("SavedItems", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        val savedNames = JSONArray()
+        for (i in 0 until llSave.childCount) {
+            val savedView = llSave.getChildAt(i) as? ConstraintLayout
+            val tvSaveName = savedView?.findViewById<TextView>(R.id.tvSaveName)
+            if (tvSaveName != null) {
+                savedNames.put(tvSaveName.text.toString())
+            }
+        }
+        editor.putString("savedNames", savedNames.toString())
+        editor.apply()
+    }
+
+    fun loadSavedItems(){
+        val sharedPreferences = getSharedPreferences("SavedItems", MODE_PRIVATE)
+        val savedNamesString = sharedPreferences.getString("savedNames", "[]")
+        val savedNames = JSONArray(savedNamesString)
+        for (i in 0 until savedNames.length()) {
+            val name = savedNames.getString(i)
+            addSavedItem(name)
+        }
     }
 
 
