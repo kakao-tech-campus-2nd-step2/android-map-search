@@ -33,7 +33,6 @@ class Search_Activity : AppCompatActivity() {
 
         databaseHelper = MyDatabaseHelper(this)
         searchText = findViewById(R.id.search_text)
-        clearSearchButton = findViewById(R.id.close)
         searchRecyclerView = findViewById(R.id.RecyclerVer)
         savedSearchRecyclerView = findViewById(R.id.recyclerHor)
 
