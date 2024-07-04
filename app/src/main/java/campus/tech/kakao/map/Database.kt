@@ -2,6 +2,7 @@ package campus.tech.kakao.map
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
@@ -14,6 +15,7 @@ object MapContract {
 }
 
 class Database(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1) {
+
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL(
             "CREATE TABLE ${MapContract.TABLE_CAFE} (" +
@@ -31,66 +33,95 @@ class Database(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1
                     "${MapContract.COLUMN_CATEGORY} TEXT" +
                     ")"
         )
+        addDummyData(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
+        db?.execSQL("DROP TABLE IF EXISTS ${MapContract.TABLE_CAFE}")
+        db?.execSQL("DROP TABLE IF EXISTS ${MapContract.TABLE_PHARMACY}")
+        onCreate(db)
     }
-    //STEP1 과제 더미 데이터 생성
-    fun insertData() {
-        val db = writableDatabase
 
-        for (i in 1..100) {
-            val values = ContentValues().apply {
-                put(MapContract.COLUMN_NAME, "cafe$i")
-                put(MapContract.COLUMN_ADDRESS, "광주 북구 용봉동 $i")
-                put(MapContract.COLUMN_CATEGORY, "카페")
-            }
-            db.insert(MapContract.TABLE_CAFE, null, values)
+    private fun addDummyData(db: SQLiteDatabase?) {
+        addDummyCafes(db)
+        addDummyPharmacies(db)
+    }
 
-            val values2 = ContentValues().apply {
-                put(MapContract.COLUMN_NAME, "약국$i")
-                put(MapContract.COLUMN_ADDRESS, "경상남도 마산시 합성동 $i")
-                put(MapContract.COLUMN_CATEGORY, "약국")
-            }
-            db.insert(MapContract.TABLE_PHARMACY, null, values2)
+    private fun addDummyCafes(db: SQLiteDatabase?) {
+        val cafes = mutableListOf<Array<String>>()
+        for (i in 1..20) {
+            cafes.add(arrayOf("Cafe $i", "Address $i", "Cafe"))
         }
 
-        db.close()
+        cafes.forEach { data ->
+            val values = ContentValues().apply {
+                put(MapContract.COLUMN_NAME, data[0])
+                put(MapContract.COLUMN_ADDRESS, data[1])
+                put(MapContract.COLUMN_CATEGORY, data[2])
+            }
+            db?.insert(MapContract.TABLE_CAFE, null, values)
+        }
     }
 
-    fun getAllData(): List<Map<String, String>> {
+    private fun addDummyPharmacies(db: SQLiteDatabase?) {
+        val pharmacies = mutableListOf<Array<String>>()
+        for (i in 1..20) {
+            pharmacies.add(arrayOf("Pharmacy $i", "Address ${i + 20}", "Pharmacy"))
+        }
+
+        pharmacies.forEach { data ->
+            val values = ContentValues().apply {
+                put(MapContract.COLUMN_NAME, data[0])
+                put(MapContract.COLUMN_ADDRESS, data[1])
+                put(MapContract.COLUMN_CATEGORY, data[2])
+            }
+            db?.insert(MapContract.TABLE_PHARMACY, null, values)
+        }
+    }
+
+    fun searchPlaces(searchText: String): List<Map<String, String>> {
         val db = readableDatabase
-        val cafeCursor = db.query(MapContract.TABLE_CAFE, null, null, null, null, null, null)
-        val pharmacyCursor = db.query(MapContract.TABLE_PHARMACY, null, null, null, null, null, null)
+        val cafes = queryPlaces(db, MapContract.TABLE_CAFE, searchText)
+        val pharmacies = queryPlaces(db, MapContract.TABLE_PHARMACY, searchText)
+        db.close()
 
         val dataList = mutableListOf<Map<String, String>>()
+        dataList.addAll(cafes)
+        dataList.addAll(pharmacies)
+        return dataList
+    }
 
-        with(cafeCursor) {
-            while (moveToNext()) {
-                val data = mapOf(
-                    MapContract.COLUMN_NAME to getString(getColumnIndexOrThrow(MapContract.COLUMN_NAME)),
-                    MapContract.COLUMN_ADDRESS to getString(getColumnIndexOrThrow(MapContract.COLUMN_ADDRESS)),
-                    MapContract.COLUMN_CATEGORY to getString(getColumnIndexOrThrow(MapContract.COLUMN_CATEGORY))
-                )
-                dataList.add(data)
-            }
-            close()
+    private fun queryPlaces(
+        db: SQLiteDatabase,
+        tableName: String,
+        searchText: String
+    ): List<Map<String, String>> {
+        val cursor: Cursor = db.query(
+            tableName,
+            null,
+            "${MapContract.COLUMN_NAME} LIKE ? OR ${MapContract.COLUMN_ADDRESS} LIKE ?",
+            arrayOf("%$searchText%", "%$searchText%"),
+            null,
+            null,
+            null
+        )
+
+        val dataList = mutableListOf<Map<String, String>>()
+        val columnIndexName = cursor.getColumnIndexOrThrow(MapContract.COLUMN_NAME)
+        val columnIndexAddress = cursor.getColumnIndexOrThrow(MapContract.COLUMN_ADDRESS)
+        val columnIndexCategory = cursor.getColumnIndexOrThrow(MapContract.COLUMN_CATEGORY)
+
+        while (cursor.moveToNext()) {
+            val data = mapOf(
+                MapContract.COLUMN_NAME to cursor.getString(columnIndexName),
+                MapContract.COLUMN_ADDRESS to cursor.getString(columnIndexAddress),
+                MapContract.COLUMN_CATEGORY to cursor.getString(columnIndexCategory)
+            )
+            dataList.add(data)
         }
-
-        with(pharmacyCursor) {
-            while (moveToNext()) {
-                val data = mapOf(
-                    MapContract.COLUMN_NAME to getString(getColumnIndexOrThrow(MapContract.COLUMN_NAME)),
-                    MapContract.COLUMN_ADDRESS to getString(getColumnIndexOrThrow(MapContract.COLUMN_ADDRESS)),
-                    MapContract.COLUMN_CATEGORY to getString(getColumnIndexOrThrow(MapContract.COLUMN_CATEGORY))
-                )
-                dataList.add(data)
-            }
-            close()
-        }
-
-        db.close()
+        cursor.close()
         return dataList
     }
 }
+
 
