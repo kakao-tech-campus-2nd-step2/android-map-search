@@ -139,7 +139,7 @@ class MyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, "History.db
         inner class SavedSearchViewHolder(itemView: View, private val onItemClick: (String) -> Unit) :
             RecyclerView.ViewHolder(itemView) {
 
-            private val textView: TextView = itemView.findViewById(R.id.name)
+            private val textView: TextView = itemView.findViewById(R.id.result)
 
             fun bind(searchText: String) {
                 textView.text = searchText

@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -77,8 +78,8 @@ class Search_Activity : AppCompatActivity() {
         }
 
         inner class PlaceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            private val nameTextView: TextView = itemView.findViewById(R.id.name)
-            private val deleteButton: Button = itemView.findViewById(R.id.delete)
+            private val nameTextView: TextView = itemView.findViewById(R.id.result)
+            private val deleteButton: ImageView = itemView.findViewById(R.id.delete)
 
             fun bind(place: Map<String, String>) {
                 val name = place["name"] ?: ""
