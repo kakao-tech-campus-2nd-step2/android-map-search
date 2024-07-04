@@ -15,7 +15,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class MainActivity : AppCompatActivity() {
+class Search_Activity : AppCompatActivity() {
 
     private lateinit var searchRecyclerView: RecyclerView
     private lateinit var savedSearchRecyclerView: RecyclerView

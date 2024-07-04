@@ -13,9 +13,6 @@
         android:theme="@style/Theme.Map"
         tools:targetApi="31">
         <activity
-            android:name=".place_item"
-            android:exported="false" />
-        <activity
             android:name=".Search_Activity"
             android:exported="true">
             <intent-filter>
