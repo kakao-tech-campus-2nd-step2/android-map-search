@@ -11,12 +11,12 @@
 3. SearchViewModel에서 데이터 처리 및 제공
 4. MainActivity에서 데이터 활용
 5. "검색 결과가 없습니다." 단어의 경우 visibility로 처리, 단어와 연관된 database가 없을때 보여짐
-6. ListView를 사용해서 데이터베이스에서 결과를 가져와 표시해줌
+6. RecyclerView를 사용해서 데이터베이스에서 결과를 가져와 표시해줌
 7. 더미 데이터 생성(database.kt에 구현)
 8. ItemView를 구상했고, RecyclerView를 활용하여 검색한 내용 구현
 9. 검색한 내용을 X표시를 하면 삭제가 되도록하는 기능을 구현했다.
+10. searchView를 통해서 검색 기능을 구현했습니다.
+11. 데이터 베이스는 place.db -> 장소 위치 DB, Helper.db 본인이 클릭한 장소 저장 DB로 나누어져 있습니다.
 # 소감 및 의문점
-1. 안드로이드 에뮬레이터가 컴퓨터 사양이 부족한지 켜지지 않습니다.
-2. intent-filter 문제인 것 같았는데 android:exported="true" 로 해봐도 똑같습니다..
-3. database.kt의 내용을 Mainactivity.kt에도 똑같은 코드를 쓴것 같아서 이걸 어떻게 수정을 해야할 지 모르겠습니다.
-4. database.kt에서 정의한 함수를 Mainactivity.kt에서 못받는 것 같습니다. 
+1. 안드로이드 스튜디오 한국어 설치 결국 실패해서 앱이 정상적으로 돌아가는지 테스트를 못했습니다ㅜ
+2. 이번에는 앱이 터지지 않고 정상적으로 작동해서 기뻤습니당
