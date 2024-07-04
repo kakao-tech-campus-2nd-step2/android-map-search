@@ -13,14 +13,10 @@
         android:theme="@style/Theme.Map"
         tools:targetApi="31">
         <activity
-            android:name=".itemView"
-            android:exported="true" />
-        <activity
-            android:name=".MainActivity2"
+            android:name=".Search_Activity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

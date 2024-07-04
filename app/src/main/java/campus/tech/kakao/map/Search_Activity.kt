@@ -1,0 +1,139 @@
+package campus.tech.kakao.map
+
+import android.content.Context
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
+import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.RecyclerView
+
+class Search_Activity : AppCompatActivity() {
+    private lateinit var databaseHelper: MyDatabaseHelper
+    private lateinit var searchRecyclerView : RecyclerView
+    private lateinit var savedSearchRecyclerView : RecyclerView
+    private lateinit var searchText : EditText
+    private lateinit var clearSearchButton : Button
+    private lateinit var savedSearchAdapter : MyDatabaseHelper.SearchAdapter
+    private lateinit var searchResultAdapter : MyDatabaseHelper.SearchAdapter
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_search)
+
+        databaseHelper = MyDatabaseHelper(this)
+        searchText = findViewById(R.id.text)
+        clearSearchButton = findViewById(R.id.close)
+        searchRecyclerView = findViewById(R.id.RecyclerVer)
+        savedSearchRecyclerView = findViewById(R.id.recyclerHor)
+
+        searchResultAdapter = MyDatabaseHelper.SearchAdapter(this, emptyList()) { searchText ->
+            clearSearchText()
+        }
+        searchRecyclerView.adapter = searchResultAdapter
+
+        searchText.setOnClickListener {
+            searchAndDisplayResults(searchText.text.toString())
+        }
+
+        clearSearchButton.setOnClickListener {
+            clearSearchText()
+        }
+    }
+
+    private fun searchAndDisplayResults(searchText: String) {
+        databaseHelper.insertSearchData(searchText)
+        val searchResults = databaseHelper.getSearchResults(searchText)
+        searchResultAdapter.updateData(searchResults)
+        searchRecyclerView.visibility = if (searchResults.isEmpty()) View.GONE else View.VISIBLE
+    }
+
+    private fun clearSearchText() {
+        searchText.text.clear()
+        databaseHelper.deleteSearchData(searchText.text.toString())
+        searchAndDisplayResults("")
+    }
+}
+
+    class MyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1) {
+        override fun onCreate(db: SQLiteDatabase?) {
+            db?.execSQL("CREATE TABLE search_results (id INTEGER PRIMARY KEY, text TEXT)")
+        }
+
+        override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
+            TODO("Not yet implemented")
+        }
+
+        fun insertSearchData(searchText: String) {
+            val db = writableDatabase
+            db.execSQL("INSERT INTO search_results (text) VALUES (?)", arrayOf(searchText))
+            db.close()
+        }
+
+        fun deleteSearchData(searchText: String) {
+            val db = writableDatabase
+            db.execSQL("DELETE FROM search_results WHERE text = ?", arrayOf(searchText))
+            db.close()
+        }
+
+        fun getSearchResults(searchText: String): List<String> {
+            val db = readableDatabase
+            val cursor = db.query("search_results", arrayOf("text"), "text LIKE ?", arrayOf("%$searchText%"), null, null, null)
+            val results = mutableListOf<String>()
+            while (cursor.moveToNext()) {
+                results.add(cursor.getString(0))
+            }
+            cursor.close()
+            db.close()
+            return results
+        }
+        //검색 결과를 표현해주는 기능
+        class SearchAdapter(
+            private val context: Context,
+            private var data: List<String>,
+            private val onItemClick: (String) -> Unit
+        ) : RecyclerView.Adapter<SearchItemViewHolder>() {
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchItemViewHolder {
+                val view = LayoutInflater.from(context).inflate(R.layout.activity_item_view, parent, false)
+                return SearchItemViewHolder(view, onItemClick)
+            }
+
+            override fun onBindViewHolder(holder: SearchItemViewHolder, position: Int) {
+                holder.bind(data[position])
+            }
+
+            override fun getItemCount() = data.size
+
+            fun updateData(newData: List<String>) {
+                data = newData
+                notifyDataSetChanged()
+            }
+        }
+
+        class SearchItemViewHolder(itemView: View, private val onItemClick: (String) -> Unit) : RecyclerView.ViewHolder(itemView) {
+            private val textView: TextView = itemView.findViewById(R.id.result)
+            private val deleteButton: Button = itemView.findViewById(R.id.delete)
+
+            fun bind(searchText: String) {
+                textView.text = searchText
+                deleteButton.setOnClickListener { object :View.OnClickListener {
+                    override fun onClick(v : View? ) {
+                        onItemClick(searchText)
+                    }
+                }}
+            }
+        }
+
+    }
+
+
+

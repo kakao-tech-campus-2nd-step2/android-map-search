@@ -35,7 +35,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
     }
-
+    //STEP1 과제 더미 데이터 생성
     fun insertData() {
         val db = writableDatabase
 
