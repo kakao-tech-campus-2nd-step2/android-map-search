@@ -1,6 +1,7 @@
 package campus.tech.kakao.map
 
 import android.content.ContentValues
+import android.provider.BaseColumns
 import android.util.Log
 
 class PlaceRepository(context: MainActivity) {
@@ -28,19 +29,34 @@ class PlaceRepository(context: MainActivity) {
         val db = dbHelper.writableDatabase
 
         try {
-            val values = ContentValues().apply {
-                put(MyPlaceContract.Research.COLUMN_NAME, place.name)
-                put(MyPlaceContract.Research.COLUMN_IMG, place.img)
-                put(MyPlaceContract.Research.COLUMN_LOCATION, place.location)
-                put(MyPlaceContract.Research.COLUMN_CATEGORY, place.category)
-            }
+            val cursor = db.query(
+                MyPlaceContract.Research.TABLE_NAME,
+                arrayOf(BaseColumns._ID),
+                "${MyPlaceContract.Research.COLUMN_NAME} = ? AND ${MyPlaceContract.Research.COLUMN_IMG} = ? AND ${MyPlaceContract.Research.COLUMN_LOCATION} = ? AND ${MyPlaceContract.Research.COLUMN_CATEGORY} = ?",
+                arrayOf(place.name, place.img.toString(), place.location, place.category),
+                null,
+                null,
+                null
+            )
 
-            val newRowId = db.insert(MyPlaceContract.Research.TABLE_NAME, null, values)
-            if (newRowId == -1L) {
-                Log.e("PlaceRepository", "Failed to insert row for ${place.name}")
+            if (cursor.moveToFirst()) {
+                Log.d("PlaceRepository", "Place already exists: ${place.name}")
             } else {
-                Log.d("PlaceRepository", "Successfully inserted row for ${place.name}")
+                val values = ContentValues().apply {
+                    put(MyPlaceContract.Research.COLUMN_NAME, place.name)
+                    put(MyPlaceContract.Research.COLUMN_IMG, place.img)
+                    put(MyPlaceContract.Research.COLUMN_LOCATION, place.location)
+                    put(MyPlaceContract.Research.COLUMN_CATEGORY, place.category)
+                }
+
+                val newRowId = db.insert(MyPlaceContract.Research.TABLE_NAME, null, values)
+                if (newRowId == -1L) {
+                    Log.e("PlaceRepository", "Failed to insert row for ${place.name}")
+                } else {
+                    Log.d("PlaceRepository", "Successfully inserted row for ${place.name}")
+                }
             }
+            cursor.close()
         } catch (e: Exception) {
             Log.e("PlaceRepository", "Error inserting row: ${e.message}")
         }
