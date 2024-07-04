@@ -123,4 +123,18 @@ class PlaceRepository(context: MainActivity) {
         return researchList
     }
 
+    fun deleteResearchEntry(place: Place) {
+        val db = dbHelper.writableDatabase
+        try {
+            db.delete(
+                MyPlaceContract.Research.TABLE_NAME,
+                "${MyPlaceContract.Research.COLUMN_NAME} = ? AND ${MyPlaceContract.Research.COLUMN_IMG} = ? AND ${MyPlaceContract.Research.COLUMN_LOCATION} = ? AND ${MyPlaceContract.Research.COLUMN_CATEGORY} = ?",
+                arrayOf(place.name, place.img.toString(), place.location, place.category)
+            )
+            Log.d("PlaceRepository", "Successfully deleted row for ${place.name}")
+        } catch (e: Exception) {
+            Log.e("PlaceRepository", "Error deleting row: ${e.message}")
+        }
+    }
+    
 }
