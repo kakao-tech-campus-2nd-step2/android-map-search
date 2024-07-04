@@ -78,14 +78,29 @@ class Search_Activity : AppCompatActivity() {
         searchAndDisplayResults("")
     }
 }
-    class MyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1) {
+    class MyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, "History.db", null, 1) {
         override fun onCreate(db: SQLiteDatabase?) {
             db?.execSQL("CREATE TABLE search_results (id INTEGER PRIMARY KEY, text TEXT)")
             db?.execSQL("CREATE TABLE saved_searches (id INTEGER PRIMARY KEY, text TEXT)")
+            addDummySearchData(db)
         }
 
         override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
             TODO("Not yet implemented")
+        }
+        private fun addDummySearchData(db: SQLiteDatabase?) {
+            val dummySearchData = listOf(
+                "Android",
+                "Kotlin",
+                "Kakao",
+                "약국",
+                "카페",
+                "아무거나",
+                "일단 테스트"
+            )
+            for (searchText in dummySearchData) {
+                db?.execSQL("INSERT INTO search_results (text) VALUES (?)", arrayOf(searchText))
+            }
         }
 
         fun insertSearchData(searchText: String) {
@@ -116,6 +131,19 @@ class Search_Activity : AppCompatActivity() {
                 results.add(cursor.getString(0))
             }
             cursor.close()
+            val savedSearchCursor = db.query(
+                "saved_searches",
+                arrayOf("text"),
+                "text LIKE ?",
+                arrayOf("%$searchText%"),
+                null,
+                null,
+                null
+            )
+            while (savedSearchCursor.moveToNext()) {
+                results.add(savedSearchCursor.getString(0))
+            }
+            savedSearchCursor.close()
             db.close()
             return results
         }
