@@ -28,7 +28,7 @@
             android:hint="@string/search_placeholder" />
 
         <ImageButton
-            android:id="@+id/imgClose"
+            android:id="@+id/btnErase"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -51,13 +51,14 @@
         android:id="@+id/rvSearchList"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:layout_marginTop="20dp"
+        android:layout_margin="20dp"
         android:orientation="horizontal"
         android:scrollbars="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/rvPlaceList"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/rvPlaceList"
-        app:layout_constraintTop_toBottomOf="@+id/vContour">
+        app:layout_constraintTop_toBottomOf="@+id/vContour"
+        tools:listitem="@layout/search_item">
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -66,7 +67,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rvSearchList">
+        app:layout_constraintTop_toBottomOf="@+id/rvSearchList"
+        tools:listitem="@layout/place_item">
 
 
     </androidx.recyclerview.widget.RecyclerView>
