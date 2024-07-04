@@ -97,4 +97,30 @@ class PlaceRepository(context: MainActivity) {
         }
     }
 
+    fun getResearchEntries(): List<Place> {
+        val db = dbHelper.readableDatabase
+        val cursor = db.query(
+            MyPlaceContract.Research.TABLE_NAME,
+            arrayOf(
+                MyPlaceContract.Research.COLUMN_IMG,
+                MyPlaceContract.Research.COLUMN_NAME,
+                MyPlaceContract.Research.COLUMN_LOCATION,
+                MyPlaceContract.Research.COLUMN_CATEGORY
+            ),
+            null, null, null, null, null
+        )
+
+        val researchList = mutableListOf<Place>()
+        while (cursor.moveToNext()) {
+            val img = cursor.getInt(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_IMG))
+            val name = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_NAME))
+            val location = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_LOCATION))
+            val category = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_CATEGORY))
+            val place = Place(img, name, location, category)
+            researchList.add(place)
+        }
+        cursor.close()
+        return researchList
+    }
+
 }

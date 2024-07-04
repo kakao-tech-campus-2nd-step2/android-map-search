@@ -49,9 +49,12 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = resultAdapter
         recyclerView.layoutManager = LinearLayoutManager(this)
 
+        researchList = placeRepository.getResearchEntries().toMutableList()
         tapAdapter = TapViewAdapter(researchList, LayoutInflater.from(this))
         tabRecyclerView.adapter = tapAdapter
         tabRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+
+        updateTabRecyclerViewVisibility()
 
         input.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -86,6 +89,15 @@ class MainActivity : AppCompatActivity() {
         if (!researchList.contains(place)){
             researchList.add(place)
             tapAdapter.notifyDataSetChanged()
+            updateTabRecyclerViewVisibility()
+        }
+    }
+
+    private fun updateTabRecyclerViewVisibility() {
+        if (placeRepository.hasResearchEntries()) {
+            tabRecyclerView.isVisible = true
+        } else {
+            tabRecyclerView.isGone = true
         }
     }
 }
