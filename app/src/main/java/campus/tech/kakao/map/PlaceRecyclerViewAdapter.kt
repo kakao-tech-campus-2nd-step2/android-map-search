@@ -1,5 +1,7 @@
 package campus.tech.kakao.map
 
+import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,10 +11,12 @@ import androidx.recyclerview.widget.RecyclerView
 
 class PlaceRecyclerViewAdapter(
     var placeList: List<PlaceDataModel>,
-    var inflater: LayoutInflater
+    private var inflater: LayoutInflater,
+    private var context: Context,
+    private val searchAdapter: SearchRecyclerViewAdapter // 검색 Adapter를 넘기면 결합도가 높아짐 (고쳐야 함)
 ): RecyclerView.Adapter<PlaceRecyclerViewAdapter.ViewHolder>() {
 
-    class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val nthPlaceName: TextView
         val nthPlaceAddress: TextView
         val nthPlaceCategory: TextView
@@ -20,12 +24,22 @@ class PlaceRecyclerViewAdapter(
             nthPlaceName = itemView.findViewById(R.id.tvPlaceName)
             nthPlaceAddress = itemView.findViewById(R.id.tvPlaceAddress)
             nthPlaceCategory = itemView.findViewById(R.id.tvPlaceCategory)
+            itemView.setOnClickListener {
+                val position: Int = bindingAdapterPosition
+                val place = placeList.get(position)
+                Log.d("clickTest", place.name)
+
+                val searchDatabaseAccess = SearchDatabaseAccess(context)
+                searchDatabaseAccess.deleteSearch(place.name)
+                searchDatabaseAccess.insertSearch(place)
+                searchAdapter.updateSearchHistory()
+            }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = inflater.inflate(R.layout.place_item, parent, false)
-        return PlaceRecyclerViewAdapter.ViewHolder(view)
+        return ViewHolder(view)
     }
 
     override fun getItemCount(): Int {
@@ -44,4 +58,6 @@ class PlaceRecyclerViewAdapter(
         placeList = newPlaceList
         diffResult.dispatchUpdatesTo(this)
     }
+
+
 }
