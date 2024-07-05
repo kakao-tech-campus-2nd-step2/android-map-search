@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     private var researchList = mutableListOf<Place>()
     private lateinit var resultAdapter: RecyclerViewAdapter
     private lateinit var tapAdapter: TapViewAdapter
+    private var textWatcher: TextWatcher? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,13 +53,17 @@ class MainActivity : AppCompatActivity() {
 
         updateTabRecyclerViewVisibility()
 
-        input.addTextChangedListener(object : TextWatcher {
+        """input.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 filterList(s.toString())
             }
-        })
+        })"""
+        textWatcher = input.addTextChangedListener(
+            afterTextChanged = { s -> filterList(s.toString())}
+        )
+
 
         researchCloseButton.setOnClickListener {
             input.setText("")
@@ -101,5 +106,10 @@ class MainActivity : AppCompatActivity() {
         } else {
             tabRecyclerView.isGone = true
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        textWatcher?.let { input.removeTextChangedListener(it) }
     }
 }
