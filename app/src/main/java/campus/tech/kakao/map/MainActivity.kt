@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun filterList(query: String) {
         val filteredList = placeList.filter {
-            it.category == query
+            it.category.contains(query, ignoreCase = true) || it.name.contains(query, ignoreCase = true)
         }
 
         if (filteredList.isEmpty()) {
