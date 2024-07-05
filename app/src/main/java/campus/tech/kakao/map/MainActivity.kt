@@ -66,8 +66,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun filterList(query: String) {
-        val filteredList = placeList.filter {
-            it.category.contains(query, ignoreCase = true) || it.name.contains(query, ignoreCase = true)
+        val filteredList = if (query.isEmpty()) {
+            emptyList<Place>()
+        } else {
+            placeList.filter {
+                it.category.contains(query, ignoreCase = true) || it.name.contains(query, ignoreCase = true)
+            }
         }
 
         if (filteredList.isEmpty()) {
