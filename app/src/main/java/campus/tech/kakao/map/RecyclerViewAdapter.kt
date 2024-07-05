@@ -63,8 +63,8 @@ class RecyclerViewAdapter(
         val oldPlaceList = placeList.toMutableList()
 
         // Remove incorrect-filter
-        for (i in oldPlaceList.indices.reversed()) {
-            if (!newPlaceList.contains(oldPlaceList[i])) {
+        for (i in placeList.size - 1 downTo 0) {
+            if (!newPlaceList.contains(placeList[i])) {
                 placeList.removeAt(i)
                 notifyItemRemoved(i)
             }
@@ -78,14 +78,6 @@ class RecyclerViewAdapter(
             } else if (newPlaceList[i] != placeList[i]) {
                 placeList[i] = newPlaceList[i]
                 notifyItemChanged(i)
-            }
-        }
-
-        if (placeList.size > newPlaceList.size) {
-            val removeItems = placeList.size - newPlaceList.size
-            for (i in 0..removeItems) {
-                placeList.removeAt(placeList.size - 1)
-                notifyItemRemoved(placeList.size)
             }
         }
     }

@@ -1,11 +1,8 @@
 package campus.tech.kakao.map
 
-import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
-import android.provider.BaseColumns
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.ImageView
@@ -81,13 +78,15 @@ class MainActivity : AppCompatActivity() {
             recyclerView.isVisible = true
             resultAdapter.placeList = filteredList.toMutableList()
             resultAdapter.notifyDataSetChanged()
+            //resultAdapter.notifyItemRangeChanged(0, filteredList.size)
+            //resultAdapter.updatePlaceList(filteredList.toMutableList())
         }
     }
 
     fun addResearchList(place: Place) {
         if (!researchList.contains(place)){
             researchList.add(place)
-            tapAdapter.notifyItemInserted(researchList.size-1)
+            tapAdapter.notifyItemInserted(researchList.size - 1)
             updateTabRecyclerViewVisibility()
         }
     }
