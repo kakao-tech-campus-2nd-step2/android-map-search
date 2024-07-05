@@ -51,7 +51,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1
     private fun addDummyCafes(db: SQLiteDatabase?) {
         val cafes = mutableListOf<Array<String>>()
         for (i in 1..20) {
-            cafes.add(arrayOf("Cafe $i", "Address $i", "Cafe"))
+            cafes.add(arrayOf("카페 $i", "광주 북구 용봉동 $i", "카페"))
         }
 
         cafes.forEach { data ->
@@ -67,7 +67,7 @@ class Database(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1
     private fun addDummyPharmacies(db: SQLiteDatabase?) {
         val pharmacies = mutableListOf<Array<String>>()
         for (i in 1..20) {
-            pharmacies.add(arrayOf("Pharmacy $i", "Address ${i + 20}", "Pharmacy"))
+            pharmacies.add(arrayOf("약국 $i", "경상남도 함안군 칠원읍 ${i + 20}", "약국"))
         }
 
         pharmacies.forEach { data ->
