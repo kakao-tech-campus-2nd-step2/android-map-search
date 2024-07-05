@@ -81,4 +81,15 @@ class RecyclerViewAdapter(
             }
         }
     }
+
+    fun movePlaceToEnd(place: Place) {
+        val index = placeList.indexOf(place)
+        if (index != -1) {
+            placeList.removeAt(index)
+            notifyItemRemoved(index)
+
+            placeList.add(place)
+            notifyItemInserted(placeList.size-1)
+        }
+    }
 }
