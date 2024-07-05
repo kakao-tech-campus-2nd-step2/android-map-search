@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity() {
     fun addResearchList(place: Place) {
         if (!researchList.contains(place)){
             researchList.add(place)
-            tapAdapter.notifyDataSetChanged()
+            tapAdapter.notifyItemInserted(researchList.size-1)
             updateTabRecyclerViewVisibility()
         }
     }

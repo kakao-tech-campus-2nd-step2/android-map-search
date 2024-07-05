@@ -45,9 +45,9 @@ class RecyclerViewAdapter(
     override fun getItemCount(): Int = placeList.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        var place: Place = placeList.get(position)
+        val place: Place = placeList.get(position)
 
-        var img = when (place.category) {
+        val img = when (place.category) {
             "카페" -> R.drawable.cafe
             "약국" -> R.drawable.hospital
             else -> R.drawable.location
@@ -57,5 +57,36 @@ class RecyclerViewAdapter(
         holder.name.text = place.name
         holder.location.text = place.location
         holder.category.text = place.category
+    }
+
+    fun updatePlaceList(newPlaceList: List<Place>) {
+        val oldPlaceList = placeList.toMutableList()
+
+        // Remove incorrect-filter
+        for (i in oldPlaceList.indices.reversed()) {
+            if (!newPlaceList.contains(oldPlaceList[i])) {
+                placeList.removeAt(i)
+                notifyItemRemoved(i)
+            }
+        }
+
+        // Add correct-filter
+        for (i in newPlaceList.indices) {
+            if (i >= placeList.size) {
+                placeList.add(newPlaceList[i])
+                notifyItemInserted(i)
+            } else if (newPlaceList[i] != placeList[i]) {
+                placeList[i] = newPlaceList[i]
+                notifyItemChanged(i)
+            }
+        }
+
+        if (placeList.size > newPlaceList.size) {
+            val removeItems = placeList.size - newPlaceList.size
+            for (i in 0..removeItems) {
+                placeList.removeAt(placeList.size - 1)
+                notifyItemRemoved(placeList.size)
+            }
+        }
     }
 }
