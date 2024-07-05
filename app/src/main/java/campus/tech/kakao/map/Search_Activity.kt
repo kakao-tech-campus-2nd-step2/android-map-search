@@ -21,7 +21,7 @@ class Search_Activity : AppCompatActivity() {
     private lateinit var searchRecyclerView: RecyclerView
     private lateinit var savedSearchRecyclerView: RecyclerView
     private lateinit var searchResultAdapter: PlaceAdapter
-    private lateinit var savedSearchAdapter: MyDatabaseHelper.SavedSearchAdapter
+    private lateinit var savedSearchAdapter: SavedSearchAdapter
     private lateinit var databaseHelper: MyDatabaseHelper
     private lateinit var placeDatabase: Database
 
@@ -36,7 +36,7 @@ class Search_Activity : AppCompatActivity() {
         placeDatabase = Database(this)
 
         searchResultAdapter = PlaceAdapter(emptyList())
-        savedSearchAdapter = MyDatabaseHelper.SavedSearchAdapter(this, emptyList()) { searchText ->
+        savedSearchAdapter = SavedSearchAdapter(this, emptyList()) { searchText ->
             searchAndDisplayResults(searchText)
         }
 

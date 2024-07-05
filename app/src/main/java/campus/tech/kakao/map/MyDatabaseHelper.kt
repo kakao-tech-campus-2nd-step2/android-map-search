@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import java.util.jar.Attributes.Name
 
 class MyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, "History.db", null, 1) {
     override fun onCreate(db: SQLiteDatabase?) {
@@ -76,78 +77,22 @@ class MyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, "History.db
         return results
     }
 
-    class SearchAdapter(
-        private val context: Context,
-        private var data: List<String>,
-        private val onItemClick: (String) -> Unit
-    ) : RecyclerView.Adapter<SearchItemViewHolder>() {
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchItemViewHolder {
-            val view = LayoutInflater.from(context).inflate(R.layout.activity_item_view, parent, false)
-            return SearchItemViewHolder(view, onItemClick)
-        }
-
-        override fun onBindViewHolder(holder: SearchItemViewHolder, position: Int) {
-            holder.bind(data[position])
-        }
-
-        override fun getItemCount(): Int = data.size
-
-        fun updateData(newData: List<String>) {
-            data = newData
-            notifyDataSetChanged()
-        }
-    }
-
     class SearchItemViewHolder(itemView: View, private val onItemClick: (String) -> Unit) :
         RecyclerView.ViewHolder(itemView) {
 
-        private val textView: TextView = itemView.findViewById(R.id.result)
-        private val deleteButton: Button = itemView.findViewById(R.id.delete)
+        private val nameTextView:TextView = itemView.findViewById(R.id.name)
+        private val addressTextView : TextView = itemView.findViewById(R.id.place)
+        private val categoryTextView : TextView = itemView.findViewById((R.id.category))
 
         fun bind(searchText: String) {
-            textView.text = searchText
-            deleteButton.setOnClickListener {
-                onItemClick(searchText)
+            nameTextView.text = MapContract.COLUMN_NAME
+            addressTextView.text = MapContract.COLUMN_ADDRESS
+            categoryTextView.text = MapContract.COLUMN_CATEGORY
             }
         }
     }
 
-    // saved_searches 테이블의 데이터를 RecyclerView에 바인딩하기 위한 Adapter 추가
-    class SavedSearchAdapter(
-        private val context: Context,
-        private var data: List<String>,
-        private val onItemClick: (String) -> Unit
-    ) : RecyclerView.Adapter<SavedSearchAdapter.SavedSearchViewHolder>() {
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SavedSearchViewHolder {
-            val view = LayoutInflater.from(context).inflate(R.layout.activity_item_view, parent, false)
-            return SavedSearchViewHolder(view, onItemClick)
-        }
 
-        override fun onBindViewHolder(holder: SavedSearchViewHolder, position: Int) {
-            holder.bind(data[position])
-        }
 
-        override fun getItemCount(): Int = data.size
-
-        fun updateData(newData: List<String>) {
-            data = newData
-            notifyDataSetChanged()
-        }
-
-        inner class SavedSearchViewHolder(itemView: View, private val onItemClick: (String) -> Unit) :
-            RecyclerView.ViewHolder(itemView) {
-
-            private val textView: TextView = itemView.findViewById(R.id.result)
-
-            fun bind(searchText: String) {
-                textView.text = searchText
-                itemView.setOnClickListener {
-                    onItemClick(searchText)
-                }
-            }
-        }
-    }
-}
 
