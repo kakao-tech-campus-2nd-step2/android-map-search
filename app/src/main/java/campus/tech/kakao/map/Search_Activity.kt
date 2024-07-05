@@ -15,9 +15,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import org.w3c.dom.Text
 
 class Search_Activity : AppCompatActivity() {
 
+    private lateinit var searchView: androidx.appcompat.widget.SearchView
     private lateinit var searchRecyclerView: RecyclerView
     private lateinit var savedSearchRecyclerView: RecyclerView
     private lateinit var searchResultAdapter: PlaceAdapter
@@ -29,6 +31,7 @@ class Search_Activity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
+        searchView = findViewById(R.id.search_text)
         searchRecyclerView = findViewById(R.id.RecyclerVer)
         savedSearchRecyclerView = findViewById(R.id.recyclerHor)
 
@@ -46,6 +49,18 @@ class Search_Activity : AppCompatActivity() {
         searchRecyclerView.adapter = searchResultAdapter
         savedSearchRecyclerView.adapter = savedSearchAdapter
 
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                val searchText = newText ?: ""
+                searchAndDisplayResults(searchText)
+                return true
+            }
+        })
+
         searchAndDisplayResults("")
     }
 
@@ -61,7 +76,7 @@ class Search_Activity : AppCompatActivity() {
         RecyclerView.Adapter<PlaceAdapter.PlaceViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaceViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.activity_item_view, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.activity_place_item, parent, false)
             return PlaceViewHolder(view)
         }
 
@@ -78,34 +93,22 @@ class Search_Activity : AppCompatActivity() {
         }
 
         inner class PlaceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            private val nameTextView: TextView = itemView.findViewById(R.id.result)
-            private val deleteButton: Button = itemView.findViewById(R.id.delete)
+            private val nameTextView: TextView = itemView.findViewById(R.id.name)
+            private val addressTextView: TextView = itemView.findViewById(R.id.place)
+            private val categoryTextView: TextView = itemView.findViewById(R.id.category)
 
             fun bind(place: Map<String, String>) {
-                val name = place["name"] ?: ""
-                nameTextView.text = name
-                deleteButton.setOnClickListener {
-                    val position = adapterPosition
-                    if (position != RecyclerView.NO_POSITION) {
-                        val updatedData = data.toMutableList()
-                        updatedData.removeAt(position)
-                        data = updatedData.toList()
-                        notifyDataSetChanged()
-                    }
-                }
+                val name = place[MapContract.COLUMN_NAME] ?: ""
+                val address = place[MapContract.COLUMN_ADDRESS] ?: ""
+                val category = place[MapContract.COLUMN_CATEGORY] ?: ""
 
-                itemView.setOnClickListener {
-                    val searchText = "$name"
-                    databaseHelper.insertSearchData(searchText)
-                    val savedSearches = databaseHelper.getSavedSearches()
-                    savedSearchAdapter.updateData(savedSearches)
-                }
+                nameTextView.text = name
+                addressTextView.text = address
+                categoryTextView.text = category
             }
         }
     }
 }
-
-
 
 
 

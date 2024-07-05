@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
@@ -33,11 +34,20 @@ class SavedSearchAdapter(
         RecyclerView.ViewHolder(itemView) {
 
         private val textView: TextView = itemView.findViewById(R.id.result)
-
+        private val deleteButton: Button = itemView.findViewById(R.id.delete)
         fun bind(searchText: String) {
             textView.text = searchText
             itemView.setOnClickListener {
                 onItemClick(searchText)
+                deleteButton.setOnClickListener {
+                    val position = adapterPosition
+                    if (position != RecyclerView.NO_POSITION) {
+                        val updatedData = data.toMutableList()
+                        updatedData.removeAt(position)
+                        data = updatedData.toList()
+                        notifyDataSetChanged()
+                    }
+                }
             }
         }
     }
