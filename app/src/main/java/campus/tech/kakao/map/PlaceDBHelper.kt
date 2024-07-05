@@ -29,17 +29,18 @@ class PlaceDBHelper(context: Context) : SQLiteOpenHelper(context, "Place.db", nu
         db?.execSQL(placeTableSQL)
     }
 
+    private val context: Context = context.applicationContext
     private fun insertInitialPlaceData(db: SQLiteDatabase?) {
         val initialPlaces = listOf(
-            Place(1, "카카오 카페", "카페", "금정구 1"),
-            Place(2, "카카오 식당", "식당", "금정구 2"),
-            Place(3, "카카오 포차", "주점", "금정구 3"),
-            Place(4, "테크 카페", "카페", "금정구 4"),
-            Place(5, "테크 식당", "식당", "금정구 5"),
-            Place(6, "테크 포차", "주점", "금정구 6"),
-            Place(7, "캠퍼스 카페", "카페", "금정구 7"),
-            Place(8, "캠퍼스 식당", "식당", "금정구 8"),
-            Place(9, "캠퍼스 포차", "주점", "금정구 9")
+            Place(1, context.getString(R.string.place_kakao_cafe), context.getString(R.string.category_cafe), context.getString(R.string.place_address_1)),
+            Place(2, context.getString(R.string.place_kakao_restaurant), context.getString(R.string.category_restaurant), context.getString(R.string.place_address_2)),
+            Place(3, context.getString(R.string.place_kakao_pub), context.getString(R.string.category_pub), context.getString(R.string.place_address_3)),
+            Place(4, context.getString(R.string.place_tech_cafe), context.getString(R.string.category_cafe), context.getString(R.string.place_address_4)),
+            Place(5, context.getString(R.string.place_tech_restaurant), context.getString(R.string.category_restaurant), context.getString(R.string.place_address_5)),
+            Place(6, context.getString(R.string.place_tech_pub), context.getString(R.string.category_pub), context.getString(R.string.place_address_6)),
+            Place(7, context.getString(R.string.place_campus_cafe), context.getString(R.string.category_cafe), context.getString(R.string.place_address_7)),
+            Place(8, context.getString(R.string.place_campus_restaurant), context.getString(R.string.category_restaurant), context.getString(R.string.place_address_8)),
+            Place(9, context.getString(R.string.place_campus_pub), context.getString(R.string.category_pub), context.getString(R.string.place_address_9))
         )
 
         initialPlaces.forEach { place ->
