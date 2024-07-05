@@ -31,7 +31,6 @@ class RecyclerViewAdapter(
                 if (position != RecyclerView.NO_POSITION) {
                     val place = placeList[position]
                     placeRepository.insertLog(place)
-                    //Log.d("mylog", place.name)
                     (itemView.context as MainActivity).addResearchList(place)
                 }
             }

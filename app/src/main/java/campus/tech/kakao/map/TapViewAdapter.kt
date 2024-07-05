@@ -42,7 +42,6 @@ class TapViewAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val research: Place = researchList[position]
         holder.placeName.text = research.name
-        // holder.cancelButton.setOnClickListner{}
     }
 
     override fun getItemCount(): Int = researchList.size

@@ -41,9 +41,8 @@ class MainActivity : AppCompatActivity() {
 
         placeRepository = PlaceRepository(this)
         placeRepository.reset()
-        placeRepository.insertInitialData() // 검색결과를 보여주기 위한 전체 Place table에 데이터삽입
+        placeRepository.insertInitialData()
         placeList = placeRepository.returnPlaceList()
-        Log.d("mylog", placeList.size.toString())
 
         resultAdapter = RecyclerViewAdapter(placeList, LayoutInflater.from(this), placeRepository)
         recyclerView.adapter = resultAdapter
