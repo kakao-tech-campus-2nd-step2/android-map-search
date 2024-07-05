@@ -19,13 +19,14 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="50dp"
-        android:textSize="10dp"/>
+        android:textSize="20dp"/>
 
     <TextView
         android:id="@+id/place"
         android:layout_width="wrap_content"
         android:layout_marginLeft="50dp"
         android:layout_marginTop="38dp"
+        android:textSize="10dp"
         android:layout_height="wrap_content" />
 
     <TextView
