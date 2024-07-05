@@ -16,13 +16,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!--SearchView
-        <androidx.appcompat.widget.SearchView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:queryHint="@string/enterKeywords"
-            app:iconifiedByDefault="false" />-->
-
         <EditText
             android:id="@+id/etKeywords"
             android:layout_width="match_parent"
@@ -42,6 +35,7 @@
     </FrameLayout>
 
     <TextView
+        android:id="@+id/tvNoResults"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/noKeywords"
@@ -52,13 +46,25 @@
         android:visibility="visible"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvSearchResult"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/rvKeywords"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/frameLayout"
-        android:visibility="gone"/>
+        android:visibility="visible"
+        android:orientation="horizontal"
+        android:scrollbars="horizontal"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSearchResult"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rvKeywords"
+        android:scrollbars="vertical"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
