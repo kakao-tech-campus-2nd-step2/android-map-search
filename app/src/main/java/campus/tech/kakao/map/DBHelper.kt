@@ -110,6 +110,8 @@ class SearchHistoryDBHelper(context: Context) : SQLiteOpenHelper(context, "Searc
         return db.delete("SearchHistoryTable", "`name` = ?", arrayOf(name))
     }
 
+
+
     fun getAllSearchHistory(): MutableList<Place> {
         val db = readableDatabase
         val cursor: Cursor = db.rawQuery("SELECT * FROM SearchHistoryTable ORDER BY timestamp DESC", null)
