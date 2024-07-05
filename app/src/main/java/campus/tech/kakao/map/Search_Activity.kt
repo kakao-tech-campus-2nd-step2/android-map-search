@@ -26,6 +26,7 @@ class Search_Activity : AppCompatActivity() {
     private lateinit var savedSearchAdapter: SavedSearchAdapter
     private lateinit var databaseHelper: MyDatabaseHelper
     private lateinit var placeDatabase: Database
+    private lateinit var noResultTextView : TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +35,7 @@ class Search_Activity : AppCompatActivity() {
         searchView = findViewById(R.id.search_text)
         searchRecyclerView = findViewById(R.id.RecyclerVer)
         savedSearchRecyclerView = findViewById(R.id.recyclerHor)
+        noResultTextView = findViewById(R.id.nosearch)
 
         databaseHelper = MyDatabaseHelper(this)
         placeDatabase = Database(this)
@@ -67,6 +69,14 @@ class Search_Activity : AppCompatActivity() {
     private fun searchAndDisplayResults(searchText: String) {
         val searchResults = placeDatabase.searchPlaces(searchText)
         searchResultAdapter.updateData(searchResults)
+
+        if (searchResults.isEmpty()) {
+            searchRecyclerView.visibility = RecyclerView.GONE
+            noResultTextView.visibility = TextView.VISIBLE
+        } else {
+            searchRecyclerView.visibility = RecyclerView.VISIBLE
+            noResultTextView.visibility = TextView.GONE
+        }
 
         val savedSearches = databaseHelper.getSavedSearches()
         savedSearchAdapter.updateData(savedSearches)
