@@ -42,6 +42,5 @@ class PlaceDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME,
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         db?.execSQL(SQL_DELETE_PLACE)
         db?.execSQL(SQL_DELETE_RESEARCH)
-        onCreate(db)
     }
 }
