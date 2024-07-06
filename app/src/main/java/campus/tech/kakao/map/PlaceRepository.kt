@@ -13,14 +13,18 @@ class PlaceRepository(context: Context) {
     fun insertPlace(place: Place) {
         val db = dbHelper.writableDatabase
 
-        val values = ContentValues().apply {
-            put(MyPlaceContract.Place.COLUMN_IMG, place.img)
-            put(MyPlaceContract.Place.COLUMN_NAME, place.name)
-            put(MyPlaceContract.Place.COLUMN_CATEGORY, place.category.category)
-            put(MyPlaceContract.Place.COLUMN_LOCATION, place.location)
-        }
+        try {
+            val values = ContentValues().apply {
+                put(MyPlaceContract.Place.COLUMN_IMG, place.img)
+                put(MyPlaceContract.Place.COLUMN_NAME, place.name)
+                put(MyPlaceContract.Place.COLUMN_CATEGORY, place.category.category)
+                put(MyPlaceContract.Place.COLUMN_LOCATION, place.location)
+            }
 
-        db.insert(MyPlaceContract.Place.TABLE_NAME, null, values)
+            db.insert(MyPlaceContract.Place.TABLE_NAME, null, values)
+        } finally {
+            db.close()
+        }
     }
 
     fun insertLog(place: Place) {
@@ -60,13 +64,19 @@ class PlaceRepository(context: Context) {
             }
         } catch (e: Exception) {
             Log.e("PlaceRepository", "Error inserting row: ${e.message}")
+        } finally {
+            db.close()
         }
     }
 
     fun reset() {
         val db = dbHelper.writableDatabase
-        db.execSQL("DELETE FROM ${MyPlaceContract.Place.TABLE_NAME}")
-        //db.execSQL("DELETE FROM ${MyPlaceContract.Research.TABLE_NAME}")
+        try {
+            db.execSQL("DELETE FROM ${MyPlaceContract.Place.TABLE_NAME}")
+            //db.execSQL("DELETE FROM ${MyPlaceContract.Research.TABLE_NAME}")
+        } finally {
+            db.close()
+        }
     }
 
     fun insertInitialData() {
@@ -87,43 +97,57 @@ class PlaceRepository(context: Context) {
 
     fun hasResearchEntries() : Boolean {
         val db = dbHelper.readableDatabase
-        val cursor = db.rawQuery("SELECT COUNT(*) FROM ${MyPlaceContract.Research.TABLE_NAME}", null)
-        return if (cursor.moveToFirst()) {
-            val count = cursor.getIntOrNull(0)
-            cursor.close()
-            count!! > 0
-        } else {
-            cursor.close()
-            false
+        try {
+            val cursor = db.rawQuery("SELECT COUNT(*) FROM ${MyPlaceContract.Research.TABLE_NAME}", null)
+            try {
+                return if (cursor.moveToFirst()) {
+                    val count = cursor.getIntOrNull(0)
+                    count!! > 0
+                } else {
+                    false
+                }
+            } finally {
+                cursor.close()
+            }
+        } finally {
+            db.close()
         }
     }
 
     fun getResearchEntries(): List<Place> {
         val db = dbHelper.readableDatabase
-        val cursor = db.query(
-            MyPlaceContract.Research.TABLE_NAME,
-            arrayOf(
-                MyPlaceContract.Research.COLUMN_IMG,
-                MyPlaceContract.Research.COLUMN_NAME,
-                MyPlaceContract.Research.COLUMN_LOCATION,
-                MyPlaceContract.Research.COLUMN_CATEGORY
-            ),
-            null, null, null, null, null
-        )
+        try {
+            val cursor = db.query(
+                MyPlaceContract.Research.TABLE_NAME,
+                arrayOf(
+                    MyPlaceContract.Research.COLUMN_IMG,
+                    MyPlaceContract.Research.COLUMN_NAME,
+                    MyPlaceContract.Research.COLUMN_LOCATION,
+                    MyPlaceContract.Research.COLUMN_CATEGORY
+                ),
+                null, null, null, null, null
+            )
 
-        val researchList = mutableListOf<Place>()
-        while (cursor.moveToNext()) {
-            val img = cursor.getInt(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_IMG))
-            val name = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_NAME))
-            val location = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_LOCATION))
-            val categoryDisplayName = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_CATEGORY))
-            val category = PlaceCategory.fromCategory(categoryDisplayName)
-            val place = Place(img, name, location, category)
-            researchList.add(place)
+            val researchList = mutableListOf<Place>()
+            try {
+                while (cursor.moveToNext()) {
+                    val img = cursor.getInt(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_IMG))
+                    val name = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_NAME))
+                    val location = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_LOCATION))
+                    val categoryDisplayName = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_CATEGORY))
+                    val category = PlaceCategory.fromCategory(categoryDisplayName)
+                    val place = Place(img, name, location, category)
+                    researchList.add(place)
+                }
+            } finally {
+                cursor.close()
+            }
+            return researchList
+        } finally {
+            db.close()
         }
-        cursor.close()
-        return researchList
     }
+
 
     fun deleteResearchEntry(place: Place) {
         val db = dbHelper.writableDatabase
@@ -136,6 +160,8 @@ class PlaceRepository(context: Context) {
             Log.d("PlaceRepository", "Successfully deleted row for ${place.name}")
         } catch (e: Exception) {
             Log.e("PlaceRepository", "Error deleting row: ${e.message}")
+        } finally {
+            db.close()
         }
     }
 
