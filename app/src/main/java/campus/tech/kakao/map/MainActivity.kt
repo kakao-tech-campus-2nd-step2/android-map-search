@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         placeRepository.insertInitialData()
         placeList = placeRepository.returnPlaceList()
 
-        resultAdapter = RecyclerViewAdapter(placeList, LayoutInflater.from(this), placeRepository)
+        resultAdapter = RecyclerViewAdapter(placeList, placeRepository)
         recyclerView.adapter = resultAdapter
         recyclerView.layoutManager = LinearLayoutManager(this)
 
