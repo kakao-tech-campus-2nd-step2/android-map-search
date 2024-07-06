@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class RecyclerViewAdapter(
     var placeList: MutableList<Place>,
-    var placeRepository: PlaceRepository
+    private val onItemClicked: (Place) -> Unit
 ) : RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -27,8 +27,7 @@ class RecyclerViewAdapter(
                 val position = bindingAdapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     val place = placeList[position]
-                    placeRepository.insertLog(place)
-                    (itemView.context as MainActivity).addResearchList(place)
+                    onItemClicked(place)
                 }
             }
         }

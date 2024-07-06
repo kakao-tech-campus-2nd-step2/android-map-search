@@ -3,7 +3,6 @@ package campus.tech.kakao.map
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -42,28 +41,24 @@ class MainActivity : AppCompatActivity() {
         placeRepository.insertInitialData()
         placeList = placeRepository.returnPlaceList()
 
-        resultAdapter = RecyclerViewAdapter(placeList, placeRepository)
+        //resultAdapter = RecyclerViewAdapter(placeList, placeRepository)
+        resultAdapter = RecyclerViewAdapter(placeList) {
+            placeRepository.insertLog(it)
+            addResearchList(it)
+        }
         recyclerView.adapter = resultAdapter
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         researchList = placeRepository.getResearchEntries().toMutableList()
-        tapAdapter = TapViewAdapter(researchList, LayoutInflater.from(this), placeRepository)
+        tapAdapter = TapViewAdapter(researchList, placeRepository)
         tabRecyclerView.adapter = tapAdapter
         tabRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         updateTabRecyclerViewVisibility()
 
-        """input.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                filterList(s.toString())
-            }
-        })"""
         textWatcher = input.addTextChangedListener(
             afterTextChanged = { s -> filterList(s.toString())}
         )
-
 
         researchCloseButton.setOnClickListener {
             input.setText("")

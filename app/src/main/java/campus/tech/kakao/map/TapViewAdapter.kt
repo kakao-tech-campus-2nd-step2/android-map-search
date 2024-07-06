@@ -10,7 +10,6 @@ import com.google.android.material.tabs.TabLayout.TabView
 
 class TapViewAdapter(
     var researchList: MutableList<Place>,
-    var inflater: LayoutInflater,
     var placeRepository: PlaceRepository
 ) : RecyclerView.Adapter<TapViewAdapter.ViewHolder>() {
 
@@ -35,6 +34,7 @@ class TapViewAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.tab_card, parent, false)
         return ViewHolder(view)
     }
