@@ -6,11 +6,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.tabs.TabLayout.TabView
 
 class TapViewAdapter(
     var researchList: MutableList<Place>,
-    var placeRepository: PlaceRepository
+    private val onItemRemoved: (Place) -> Unit
 ) : RecyclerView.Adapter<TapViewAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -23,11 +22,8 @@ class TapViewAdapter(
             cancelButton.setOnClickListener {
                 val position = bindingAdapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    val place = researchList[position]
-                    placeRepository.deleteResearchEntry(place)
-                    researchList.removeAt(position)
-                    notifyItemRemoved(position)
-                    (itemView.context as MainActivity).updateTabRecyclerViewVisibility()
+                    val item = researchList[position]
+                    onItemRemoved(item)
                 }
             }
         }

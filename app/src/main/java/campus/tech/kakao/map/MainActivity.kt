@@ -50,7 +50,10 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         researchList = placeRepository.getResearchEntries().toMutableList()
-        tapAdapter = TapViewAdapter(researchList, placeRepository)
+        tapAdapter = TapViewAdapter(researchList) {
+            placeRepository.deleteResearchEntry(it)
+            removeResearchList(it)
+        }
         tabRecyclerView.adapter = tapAdapter
         tabRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
@@ -64,6 +67,7 @@ class MainActivity : AppCompatActivity() {
             input.setText("")
         }
     }
+
 
     private fun filterList(query: String) {
         val filteredList = if (query.isEmpty()) {
@@ -87,10 +91,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun addResearchList(place: Place) {
+    private fun addResearchList(place: Place) {
         if (!researchList.contains(place)){
             researchList.add(place)
             tapAdapter.notifyItemInserted(researchList.size - 1)
+            updateTabRecyclerViewVisibility()
+        }
+    }
+
+    private fun removeResearchList(it: Place) {
+        val position = researchList.indexOf(it)
+        if (position != -1) {
+            researchList.removeAt(position)
+            tapAdapter.notifyItemRemoved(position)
             updateTabRecyclerViewVisibility()
         }
     }
