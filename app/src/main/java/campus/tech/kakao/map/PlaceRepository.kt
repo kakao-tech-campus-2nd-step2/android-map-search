@@ -1,16 +1,14 @@
 package campus.tech.kakao.map
 
 import android.content.ContentValues
+import android.content.Context
 import android.provider.BaseColumns
 import android.util.Log
+import androidx.core.database.getIntOrNull
 
-class PlaceRepository(context: MainActivity) {
+class PlaceRepository(context: Context) {
     private val dbHelper = PlaceDbHelper(context)
     private var placeList = mutableListOf<Place>()
-
-    init {
-        dbHelper.writableDatabase
-    }
 
     fun insertPlace(place: Place) {
         val db = dbHelper.writableDatabase
@@ -88,9 +86,9 @@ class PlaceRepository(context: MainActivity) {
         val db = dbHelper.readableDatabase
         val cursor = db.rawQuery("SELECT COUNT(*) FROM ${MyPlaceContract.Research.TABLE_NAME}", null)
         return if (cursor.moveToFirst()) {
-            val count = cursor.getInt(0)
+            val count = cursor.getIntOrNull(0)
             cursor.close()
-            count > 0
+            count!! > 0
         } else {
             cursor.close()
             false
