@@ -47,15 +47,11 @@ class RecyclerViewAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val place: Place = placeList.get(position)
 
-        val img = when (place.category) {
-            "카페" -> R.drawable.cafe
-            "약국" -> R.drawable.hospital
-            else -> R.drawable.location
-        }
+        val img = place.category.imgId
 
         holder.img.setImageResource(img)
         holder.name.text = place.name
         holder.location.text = place.location
-        holder.category.text = place.category
+        holder.category.text = place.category.category
     }
 }

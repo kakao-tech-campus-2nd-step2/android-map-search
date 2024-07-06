@@ -16,7 +16,7 @@ class PlaceRepository(context: Context) {
         val values = ContentValues().apply {
             put(MyPlaceContract.Place.COLUMN_IMG, place.img)
             put(MyPlaceContract.Place.COLUMN_NAME, place.name)
-            put(MyPlaceContract.Place.COLUMN_CATEGORY, place.category)
+            put(MyPlaceContract.Place.COLUMN_CATEGORY, place.category.category)
             put(MyPlaceContract.Place.COLUMN_LOCATION, place.location)
         }
 
@@ -31,7 +31,7 @@ class PlaceRepository(context: Context) {
                 MyPlaceContract.Research.TABLE_NAME,
                 arrayOf(BaseColumns._ID),
                 "${MyPlaceContract.Research.COLUMN_NAME} = ? AND ${MyPlaceContract.Research.COLUMN_IMG} = ? AND ${MyPlaceContract.Research.COLUMN_LOCATION} = ? AND ${MyPlaceContract.Research.COLUMN_CATEGORY} = ?",
-                arrayOf(place.name, place.img.toString(), place.location, place.category),
+                arrayOf(place.name, place.img.toString(), place.location, place.category.category),
                 null,
                 null,
                 null
@@ -44,7 +44,7 @@ class PlaceRepository(context: Context) {
                     put(MyPlaceContract.Research.COLUMN_NAME, place.name)
                     put(MyPlaceContract.Research.COLUMN_IMG, place.img)
                     put(MyPlaceContract.Research.COLUMN_LOCATION, place.location)
-                    put(MyPlaceContract.Research.COLUMN_CATEGORY, place.category)
+                    put(MyPlaceContract.Research.COLUMN_CATEGORY, place.category.category)
                 }
 
                 val newRowId = db.insert(MyPlaceContract.Research.TABLE_NAME, null, values)
@@ -68,13 +68,13 @@ class PlaceRepository(context: Context) {
 
     fun insertInitialData() {
         for (i in 1..10) {
-            val place = Place(R.drawable.cafe, "카페$i", "강원도 춘천시 퇴계동{$i}번길", "카페")
+            val place = Place(R.drawable.cafe, "카페$i", "강원도 춘천시 퇴계동{$i}번길", PlaceCategory.CAFE)
             placeList.add(place)
             insertPlace(place)
         }
 
         for (i in 1..15){
-            val place = Place(R.drawable.hospital, "약국$i", "강원도 강릉시 남부로{$i}번길", "약국")
+            val place = Place(R.drawable.hospital, "약국$i", "강원도 강릉시 남부로{$i}번길", PlaceCategory.PHARMACY)
             placeList.add(place)
             insertPlace(place)
         }
@@ -113,7 +113,8 @@ class PlaceRepository(context: Context) {
             val img = cursor.getInt(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_IMG))
             val name = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_NAME))
             val location = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_LOCATION))
-            val category = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_CATEGORY))
+            val categoryDisplayName = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_CATEGORY))
+            val category = PlaceCategory.fromCategory(categoryDisplayName)
             val place = Place(img, name, location, category)
             researchList.add(place)
         }
@@ -127,7 +128,7 @@ class PlaceRepository(context: Context) {
             db.delete(
                 MyPlaceContract.Research.TABLE_NAME,
                 "${MyPlaceContract.Research.COLUMN_NAME} = ? AND ${MyPlaceContract.Research.COLUMN_IMG} = ? AND ${MyPlaceContract.Research.COLUMN_LOCATION} = ? AND ${MyPlaceContract.Research.COLUMN_CATEGORY} = ?",
-                arrayOf(place.name, place.img.toString(), place.location, place.category)
+                arrayOf(place.name, place.img.toString(), place.location, place.category.category)
             )
             Log.d("PlaceRepository", "Successfully deleted row for ${place.name}")
         } catch (e: Exception) {

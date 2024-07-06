@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
             emptyList<Place>()
         } else {
             placeList.filter {
-                it.category.contains(query, ignoreCase = true) || it.name.contains(query, ignoreCase = true)
+                it.category.category.contains(query, ignoreCase = true) || it.name.contains(query, ignoreCase = true)
             }
         }
 
