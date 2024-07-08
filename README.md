@@ -22,4 +22,4 @@
 - [x] DTO 생성
 - [x] RetroFit을 이용한 API 호출
 - [x] 검색 결과 15개 이상 표시
-- [ ] MVVM 패턴 적용
+- [x] MVVM 패턴 적용
