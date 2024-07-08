@@ -1,10 +1,8 @@
 package campus.tech.kakao.map
 
 import android.content.Context
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
+import kotlinx.coroutines.launch
 
 class SearchViewModel(private val context: Context) : ViewModel() {
     private val repository: Repository = Repository(context)
@@ -20,8 +18,10 @@ class SearchViewModel(private val context: Context) : ViewModel() {
     }
 
     fun search(query: String) {
-        val results = repository.search(query)
-        _searchResults.value = results
+        viewModelScope.launch {
+            val results = repository.search(query)
+            _searchResults.value = results
+        }
     }
 
     fun saveKeyword(keyword: Keyword) {
