@@ -1,11 +1,13 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.map.DBHelper
 
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import androidx.lifecycle.MutableLiveData
-import campus.tech.kakao.map.PlaceContract.DB_VERSION
+import campus.tech.kakao.map.DTO.Place
+import campus.tech.kakao.map.DTO.PlaceContract
+import campus.tech.kakao.map.DTO.PlaceContract.DB_VERSION
 
 class PlaceDbHelper(context: Context):SQLiteOpenHelper(
 	context, PlaceContract.DB_NAME, null, DB_VERSION) {
@@ -81,9 +83,11 @@ class PlaceDbHelper(context: Context):SQLiteOpenHelper(
 		val searchResult = "%${name}%"
 		val cursor = readableDatabase.query(
 			PlaceContract.TABLE_NAME,
-			arrayOf(PlaceContract.COLUMN_NAME_NAME,
+			arrayOf(
+				PlaceContract.COLUMN_NAME_NAME,
 				PlaceContract.COLUMN_NAME_ADDRESS,
-				PlaceContract.COLUMN_NAME_TYPE),
+				PlaceContract.COLUMN_NAME_TYPE
+			),
 			"${PlaceContract.COLUMN_NAME_NAME} like ?",
 			arrayOf(searchResult),
 			null,

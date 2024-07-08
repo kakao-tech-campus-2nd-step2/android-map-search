@@ -1,4 +1,4 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.map.Adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +7,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import campus.tech.kakao.map.DTO.Place
+import campus.tech.kakao.map.R
 
 class PlaceAdapter(
 	val onItemClicked: (Place) -> Unit
@@ -25,7 +27,7 @@ class PlaceAdapter(
 	}
 ) {
 	private var placeClicked = { position:Int ->
-		val place:Place = getItem(position)
+		val place: Place = getItem(position)
 		onItemClicked(place)
 	}
 	inner class ViewHolder(
@@ -46,7 +48,7 @@ class PlaceAdapter(
 	}
 
 	override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-		val place:Place = getItem(position)
+		val place: Place = getItem(position)
 		holder.name.text = place.name
 		holder.address.text = place.address
 		holder.type.text = place.type

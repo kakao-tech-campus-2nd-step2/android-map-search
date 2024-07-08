@@ -1,11 +1,13 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.map.DBHelper
 
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import androidx.lifecycle.MutableLiveData
-import campus.tech.kakao.map.SearchWordContract.DB_VERSION
+import campus.tech.kakao.map.DTO.SearchWord
+import campus.tech.kakao.map.DTO.SearchWordContract
+import campus.tech.kakao.map.DTO.SearchWordContract.DB_VERSION
 
 class SearchWordDbHelper(context: Context): SQLiteOpenHelper(
 	context, SearchWordContract.DB_NAME, null, DB_VERSION) {
@@ -95,7 +97,11 @@ class SearchWordDbHelper(context: Context): SQLiteOpenHelper(
 		val resultList = mutableListOf<SearchWord>()
 		val cursor = db.query(
 			SearchWordContract.TABLE_NAME,
-			arrayOf(SearchWordContract.COLUMN_NAME_NAME, SearchWordContract.COLUMN_NAME_ADDRESS, SearchWordContract.COLUMN_NAME_TYPE),
+			arrayOf(
+				SearchWordContract.COLUMN_NAME_NAME,
+				SearchWordContract.COLUMN_NAME_ADDRESS,
+				SearchWordContract.COLUMN_NAME_TYPE
+			),
 			null,
 			null,
 			null,

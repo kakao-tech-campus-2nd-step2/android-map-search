@@ -1,4 +1,4 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.map.DTO
 
 object SearchWordContract {
 	const val DB_NAME = "search_word.db"

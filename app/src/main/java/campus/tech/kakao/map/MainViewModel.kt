@@ -3,6 +3,10 @@ package campus.tech.kakao.map
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import campus.tech.kakao.map.DBHelper.PlaceDbHelper
+import campus.tech.kakao.map.DBHelper.SearchWordDbHelper
+import campus.tech.kakao.map.DTO.Place
+import campus.tech.kakao.map.DTO.SearchWord
 
 class MainViewModel(application: Application): AndroidViewModel(application) {
 	private val placeDbHelper = PlaceDbHelper(application)
@@ -30,7 +34,7 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
 		wordDbHelper.addWord(wordfromPlace(place))
 	}
 
-	private fun wordfromPlace(place: Place):SearchWord{
+	private fun wordfromPlace(place: Place): SearchWord {
 		return SearchWord(place.name, place.address, place.type)
 	}
 	fun deleteWord(word: SearchWord){

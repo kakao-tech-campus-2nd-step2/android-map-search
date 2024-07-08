@@ -10,6 +10,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import campus.tech.kakao.map.Adapter.PlaceAdapter
+import campus.tech.kakao.map.Adapter.WordAdapter
 
 class MainActivity : AppCompatActivity() {
 

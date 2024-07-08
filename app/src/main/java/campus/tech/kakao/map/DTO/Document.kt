@@ -1,4 +1,4 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.map.DTO
 
 data class Document(
 	val id: String,
