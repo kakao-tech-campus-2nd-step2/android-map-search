@@ -1,6 +1,7 @@
 package campus.tech.kakao.map
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -13,6 +14,9 @@ import campus.tech.kakao.map.databinding.ActivityMainBinding
 import campus.tech.kakao.map.viewModel.MapRepository
 import campus.tech.kakao.map.viewModel.PlacesViewModel
 import campus.tech.kakao.map.viewModel.PlacesViewModelFactory
+import com.kakao.sdk.common.KakaoSdk
+import com.kakao.sdk.common.util.Utility
+import com.kakao.vectormap.KakaoMapSdk
 
 class MainActivity : AppCompatActivity() {
     private lateinit var repository: MapRepository
@@ -27,6 +31,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val key = getString(R.string.kakao_api_key)
+        val restKey = BuildConfig.KAKAO_REST_API_KEY
+        KakaoSdk.init(this, key)
+        KakaoMapSdk.init(this, restKey)
 
         repository = MapRepository(this)
         val viewModelFactory = PlacesViewModelFactory(repository)
@@ -46,6 +55,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         updateSearchHistoryVisibility()
+        Log.d("KeyHash", "${Utility.getKeyHash(this)}")
     }
 
     private fun setUpSearchHistoryAdapter() {
