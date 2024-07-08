@@ -3,10 +3,16 @@ package campus.tech.kakao.map
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import retrofit2.Retrofit
 
 class MapModel(mContext: Context) {
     private val helper: MapDbHelper = MapDbHelper(mContext)
+    private val retrofit: Retrofit = RetrofitServiceClient.getRetrofit("https://dapi.kakao.com/")
 
+    fun getServerSearchedLocation(): List<Location> {
+        val res = mutableListOf<Location>()
+        return res
+    }
     fun insertLocation(location: Location) {
         val writableDb = helper.writableDatabase
         val content = ContentValues()
