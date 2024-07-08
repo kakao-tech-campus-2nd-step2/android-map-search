@@ -1,6 +1,5 @@
 package campus.tech.kakao.map
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -14,8 +13,6 @@ import campus.tech.kakao.map.databinding.ActivityMainBinding
 import campus.tech.kakao.map.viewModel.MapRepository
 import campus.tech.kakao.map.viewModel.PlacesViewModel
 import campus.tech.kakao.map.viewModel.PlacesViewModelFactory
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
 
 class MainActivity : AppCompatActivity() {
     private lateinit var repository: MapRepository
@@ -23,9 +20,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: PlacesViewModel
     private lateinit var placesAdapter: PlacesAdapter
 
-    private lateinit var prefs: SharedPreferences
-    private lateinit var prefEditor: SharedPreferences.Editor
-    private var stringPrefs: String? = null
     private var searchHistoryList = ArrayList<RecentSearchWord>()
     private lateinit var searchHistoryAdapter: SearchHistoryAdapter
 
@@ -34,14 +28,13 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setPrefs()
-        setUpSearchHistoryAdapter()
-        setUpPlacesAdapter()
-
         repository = MapRepository(this)
         val viewModelFactory = PlacesViewModelFactory(repository)
         viewModel = ViewModelProvider(this, viewModelFactory).get(PlacesViewModel::class.java)
 
+        searchHistoryList = repository.getSearchHistory()
+        setUpSearchHistoryAdapter()
+        setUpPlacesAdapter()
         setUpViewModelObservers()
 
         binding.searchInput.addTextChangedListener { text ->
@@ -110,32 +103,12 @@ class MainActivity : AppCompatActivity() {
             searchHistoryList.add(RecentSearchWord(itemName))
             searchHistoryAdapter.notifyItemInserted(searchHistoryList.size)
         }
-        savePrefs()
+        repository.saveSearchHistory()
     }
 
     private fun delSearch(position: Int) {
         searchHistoryList.removeAt(position)
         searchHistoryAdapter.notifyItemRemoved(position)
-        savePrefs()
-    }
-
-    private fun setPrefs() {
-        prefs = getSharedPreferences("app_data", MODE_PRIVATE)
-        prefEditor = prefs.edit()
-        stringPrefs = prefs.getString("search_history", null)
-
-        if (stringPrefs != null && stringPrefs != "[]") {
-            searchHistoryList = GsonBuilder().create().fromJson(
-                stringPrefs, object : TypeToken<ArrayList<RecentSearchWord>>() {}.type
-            )
-        }
-    }
-
-    private fun savePrefs() {
-        stringPrefs = GsonBuilder().create().toJson(
-            searchHistoryList, object : TypeToken<ArrayList<RecentSearchWord>>() {}.type
-        )
-        prefEditor.putString("search_history", stringPrefs)
-        prefEditor.apply()
+        repository.saveSearchHistory()
     }
 }

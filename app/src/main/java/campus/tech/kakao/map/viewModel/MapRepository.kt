@@ -1,11 +1,20 @@
 package campus.tech.kakao.map.viewModel
 
 import android.content.Context
+import android.content.SharedPreferences
+import androidx.appcompat.app.AppCompatActivity
 import campus.tech.kakao.map.model.Place
-import campus.tech.kakao.map.viewModel.PlacesDBHelper
+import campus.tech.kakao.map.model.RecentSearchWord
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 
-class MapRepository(context: Context) {
+class MapRepository(private val context: Context) {
     private val localDB: PlacesDBHelper = PlacesDBHelper(context)
+
+    private lateinit var prefs: SharedPreferences
+    private lateinit var prefEditor: SharedPreferences.Editor
+    private var stringPrefs: String? = null
+    private var searchHistoryList = ArrayList<RecentSearchWord>()
 
     init {
         val dbFile = context.getDatabasePath("${PlacesDBHelper.TABLE_NAME}")
@@ -37,6 +46,36 @@ class MapRepository(context: Context) {
     fun deletePlace(name: String, address: String, category: String) {
         val place = Place(name, address, category)
         localDB.deletePlace(place)
+    }
+
+    fun getSearchHistory(): ArrayList<RecentSearchWord> {
+        setPrefs()
+        return searchHistoryList
+    }
+
+    fun saveSearchHistory() {
+        stringPrefs = GsonBuilder().create().toJson(
+            searchHistoryList, object : TypeToken<ArrayList<RecentSearchWord>>() {}.type
+        )
+        prefEditor.putString(SEARCH_HISTORY, stringPrefs)
+        prefEditor.apply()
+    }
+
+    private fun setPrefs() {
+        prefs = context.getSharedPreferences(PREF_NAME, AppCompatActivity.MODE_PRIVATE)
+        prefEditor = prefs.edit()
+        stringPrefs = prefs.getString(SEARCH_HISTORY, null)
+
+        if (stringPrefs != null && stringPrefs != "[]") {
+            searchHistoryList = GsonBuilder().create().fromJson(
+                stringPrefs, object : TypeToken<ArrayList<RecentSearchWord>>() {}.type
+            )
+        }
+    }
+
+    companion object {
+        private const val PREF_NAME = "app_data"
+        private const val SEARCH_HISTORY = "search_history"
     }
 
 }
