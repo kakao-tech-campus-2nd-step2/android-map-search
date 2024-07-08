@@ -48,7 +48,7 @@ class PlaceSearchActivity : AppCompatActivity() {
         val placeDaoImpl = PlaceDaoImpl(sqliteDB.writableDatabase)
         val favoriteDao = FavoriteDaoImpl(sqliteDB.writableDatabase)
         val retrofitService = Retrofit.Builder()
-            .baseUrl("https://dapi.kakao.com/v2/local/search/keyword.json/")
+            .baseUrl("https://dapi.kakao.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(RetrofitService::class.java)
@@ -114,7 +114,7 @@ class PlaceSearchActivity : AppCompatActivity() {
     private fun setEditTextListener() {
         etSearchPlace.addTextChangedListener {
             CoroutineScope(Dispatchers.IO).launch{
-                viewModel.searchPlaceWithKakao(etSearchPlace.text.toString())
+                viewModel.searchPlaceRemote(etSearchPlace.text.toString())
             }
         }
     }
