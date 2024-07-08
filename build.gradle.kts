@@ -5,6 +5,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0" apply false
 }
 
+
 allprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 }
