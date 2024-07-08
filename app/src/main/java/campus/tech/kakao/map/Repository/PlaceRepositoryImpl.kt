@@ -1,5 +1,6 @@
 package campus.tech.kakao.map.Repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import campus.tech.kakao.map.Datasource.Local.Dao.FavoriteDao
@@ -17,19 +18,19 @@ class PlaceRepositoryImpl(
     private val retrofitService: RetrofitService
 ) : PlaceRepository {
     private val _currentResult: MutableLiveData<List<Place>> = MutableLiveData()
-    override val currentResult : LiveData<List<Place>> = _currentResult
+    override val currentResult: LiveData<List<Place>> = _currentResult
     private val _favoritePlace: MutableLiveData<MutableList<Place>> = MutableLiveData()
-    override val favoritePlace : LiveData<MutableList<Place>> = _favoritePlace
+    override val favoritePlace: LiveData<MutableList<Place>> = _favoritePlace
 
-    init{
+    init {
         getCurrentFavorite()
     }
 
-    override fun getCurrentFavorite(){
+    override fun getCurrentFavorite() {
         _favoritePlace.value = favoriteDao.getCurrentFavorite()
     }
 
-    override fun getSimilarPlacesByName(name: String){
+    override fun getSimilarPlacesByName(name: String) {
         _currentResult.value = placeDao.getSimilarPlacesByName(name)
     }
 
@@ -53,17 +54,38 @@ class PlaceRepositoryImpl(
         getCurrentFavorite()
     }
 
-    private suspend fun requestDocumentByName(name: String): List<Document>? = withContext(Dispatchers.IO) {
-        val req = retrofitService.requestProducts(query = name).execute()
-        when (req.code()) {
-            200 -> {
-                return@withContext req.body()?.documents
+    private suspend fun requestDocumentByName(name: String): List<Document> =
+        withContext(Dispatchers.IO) {
+            val pageCount = getPageCount(name)
+            var documents: MutableList<Document> = mutableListOf<Document>()
+            for (page in 1..pageCount) {
+                val req = retrofitService.requestProducts(query = name, page = page).execute()
+                Log.d("document", req.body()?.documents.toString())
+
+                when (req.code()) {
+                    200 -> {
+                        req.body()?.documents?.forEach {
+                            documents.add(it)
+                        }
+                    }
+                }
+
             }
-            else -> return@withContext listOf<Document>()
+            return@withContext documents
+        }
+
+    private fun getPageCount(name: String): Int {
+        val req = retrofitService.requestProducts(query = name).execute()
+
+        when (req.code()) {
+            200 -> return minOf(
+                MAX_PAGE, req.body()?.meta?.pageable_count ?: 1
+            )
+            else -> return 1
         }
     }
 
-    override suspend fun searchPlaceRemote(name: String){
+    override suspend fun searchPlaceRemote(name: String) {
         val documents = requestDocumentByName(name)
         val res = mutableListOf<Place>()
 
@@ -82,5 +104,7 @@ class PlaceRepositoryImpl(
         _currentResult.postValue(res)
     }
 
-
+    companion object {
+        const val MAX_PAGE = 2
+    }
 }

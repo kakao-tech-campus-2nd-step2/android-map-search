@@ -15,6 +15,7 @@ interface RetrofitService {
         @Query("y") y : Double = 37.514322572335935,
         @Query("radius") radius : Int = 20000,
         @Query("query",encoded = true) query: String = "",
+        @Query("page") page: Int = 1
     ): Call<SearchResponse>
 
     companion object {
