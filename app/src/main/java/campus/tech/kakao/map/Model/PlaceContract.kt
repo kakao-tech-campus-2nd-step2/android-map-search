@@ -11,10 +11,12 @@ object PlaceContract {
         const val COLUMN_NAME = "name"
         const val COLUMN_ADDRESS = "address"
         const val COLUMN_CATEGORY = "category"
+        private const val NAME_LENGTH = 30
+        private const val ADDRESS_LENGTH = 30
 
         const val SQL_CREATE_TABLE = "CREATE TABLE IF NOT EXISTS $TABLE_NAME (" +
-                "$COLUMN_NAME varchar(30) not null," +
-                "$COLUMN_ADDRESS varchar(30)," +
+                "$COLUMN_NAME varchar($NAME_LENGTH) not null," +
+                "$COLUMN_ADDRESS varchar($ADDRESS_LENGTH)," +
                 "$COLUMN_CATEGORY int);";
 
         const val SQL_DROP_TABLE = "DROP TABLE if exists $TABLE_NAME"
@@ -25,10 +27,12 @@ object PlaceContract {
         const val COLUMN_NAME = "name"
         const val COLUMN_ADDRESS = "address"
         const val COLUMN_CATEGORY = "category"
+        private const val NAME_LENGTH = 30
+        private const val ADDRESS_LENGTH = 30
 
         const val SQL_CREATE_TABLE = "CREATE TABLE IF NOT EXISTS $TABLE_NAME (" +
-                "$COLUMN_NAME varchar(30) not null," +
-                "$COLUMN_ADDRESS varchar(30)," +
+                "$COLUMN_NAME varchar($NAME_LENGTH) not null," +
+                "$COLUMN_ADDRESS varchar($ADDRESS_LENGTH)," +
                 "$COLUMN_CATEGORY int);";
 
         val SQL_DROP_TABLE = "DROP TABLE if exists $TABLE_NAME"
