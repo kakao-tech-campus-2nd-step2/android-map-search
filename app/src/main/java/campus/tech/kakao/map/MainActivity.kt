@@ -10,7 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import campus.tech.kakao.map.Adapter.PlaceAdapter
+import campus.tech.kakao.map.Adapter.DocumentAdapter
 import campus.tech.kakao.map.Adapter.WordAdapter
 
 class MainActivity : AppCompatActivity() {
@@ -21,9 +21,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var noResult: TextView
     private lateinit var searchResult: RecyclerView
     private lateinit var searchWordResult: RecyclerView
-    private lateinit var placeAdapter: PlaceAdapter
+    private lateinit var documentAdapter: DocumentAdapter
     private lateinit var wordAdapter: WordAdapter
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -39,22 +38,22 @@ class MainActivity : AppCompatActivity() {
             }else{
                 noResult.visibility = View.GONE
                 searchResult.visibility = View.VISIBLE
-                model.search(query)
+                model.searchLocalAPI(query)
             }
         }
         model = ViewModelProvider(this)[MainViewModel::class.java]
-        model.placeList.observe(this, Observer {
+        model.documentList.observe(this, Observer {
             if (it.isNullOrEmpty()){
                 noResult.visibility = View.VISIBLE
                 searchResult.visibility = View.GONE
             }else{
                 noResult.visibility = View.GONE
                 searchResult.visibility = View.VISIBLE
-                placeAdapter = PlaceAdapter(){ Place ->
-                    model.addWord(Place)
+                documentAdapter = DocumentAdapter(){ Document ->
+                    model.addWord(Document)
                 }
-                placeAdapter.submitList(it)
-                searchResult.adapter = placeAdapter
+                documentAdapter.submitList(it)
+                searchResult.adapter = documentAdapter
             }
         })
         model.loadWord()
@@ -73,7 +72,6 @@ class MainActivity : AppCompatActivity() {
                 searchWordResult.adapter = wordAdapter
             }
         })
-
     }
 
     fun setupUI(){
