@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import campus.tech.kakao.map.domain.model.Place
+import campus.tech.kakao.map.domain.repository.PlaceRepository
 
 class PlaceViewModel(private val context: Context) : ViewModel() {
     private val repository: PlaceRepository = PlaceRepository(context)
