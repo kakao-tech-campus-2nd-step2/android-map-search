@@ -102,7 +102,6 @@ class PlaceRepository(context: Context) {
                     if (response.isSuccessful) {
                         val documentList = response.body()?.documents
                         documentList?.forEach {
-                            Log.d("KakaoAPI", "Place Name: ${it.place_name}, Address: ${it.address_name}")
                             val place = Place(R.drawable.cafe, it.place_name, it.address_name, PlaceCategory.CAFE)
                             placeList.add(place)
                             insertPlace(place)
@@ -126,8 +125,7 @@ class PlaceRepository(context: Context) {
                 ) {
                     if (response.isSuccessful) {
                         val documentList = response.body()?.documents
-                        documentList?.forEach {
-                            Log.d("KakaoAPI", "Place Name: ${it.place_name}, Address: ${it.address_name}")
+                        documentList?.forEach {git ad
                             val place = Place(R.drawable.hospital, it.place_name, it.address_name, PlaceCategory.PHARMACY)
                             placeList.add(place)
                             insertPlace(place)
