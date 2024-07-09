@@ -3,14 +3,12 @@ package campus.tech.kakao.map
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isEmpty
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -28,14 +26,13 @@ class PlaceActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.search_layout)
 
         etSearch = findViewById<EditText>(R.id.etSearch)
         btnErase = findViewById<ImageButton>(R.id.btnErase)
         tvNoData = findViewById<TextView>(R.id.tvNoData)
         rvPlaceList = findViewById<RecyclerView>(R.id.rvPlaceList)
         rvSearchList = findViewById<RecyclerView>(R.id.rvSearchList)
-
 
         val placeList: List<PlaceDataModel> = emptyList()
         val searchList: List<PlaceDataModel> = emptyList()
