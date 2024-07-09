@@ -5,6 +5,12 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import okhttp3.*
+import org.json.JSONObject
+import java.io.IOException
 
 object MapContract {
     const val TABLE_CAFE = "cafe"
@@ -15,6 +21,9 @@ object MapContract {
 }
 
 class Database(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1) {
+
+    private val kakaoApiKey = "e6a7c826ae7a55df129b8be2c636e213"
+    private val okHttpClient = OkHttpClient()
 
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL(
@@ -36,7 +45,6 @@ class Database(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1
         addDummyData(db)
     }
 
-
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         db?.execSQL("DROP TABLE IF EXISTS ${MapContract.TABLE_CAFE}")
         db?.execSQL("DROP TABLE IF EXISTS ${MapContract.TABLE_PHARMACY}")
@@ -44,40 +52,57 @@ class Database(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1
     }
 
     private fun addDummyData(db: SQLiteDatabase?) {
-        addDummyCafes(db)
-        addDummyPharmacies(db)
+        GlobalScope.launch(Dispatchers.IO) {
+            addDummyCafes(db)
+            addDummyPharmacies(db)
+        }
     }
 
     private fun addDummyCafes(db: SQLiteDatabase?) {
-        val cafes = mutableListOf<Array<String>>()
-        for (i in 1..20) {
-            cafes.add(arrayOf("카페 $i", "광주 북구 용봉동 $i", "카페"))
-        }
-
-        cafes.forEach { data ->
-            val values = ContentValues().apply {
-                put(MapContract.COLUMN_NAME, data[0])
-                put(MapContract.COLUMN_ADDRESS, data[1])
-                put(MapContract.COLUMN_CATEGORY, data[2])
+        fetchPlaces("카페", "광주 북구 용봉동") { places ->
+            places.forEach { place ->
+                val values = ContentValues().apply {
+                    put(MapContract.COLUMN_NAME, place.optString("place_name"))
+                    put(MapContract.COLUMN_ADDRESS, place.optString("address_name"))
+                    put(MapContract.COLUMN_CATEGORY, "카페")
+                }
+                db?.insert(MapContract.TABLE_CAFE, null, values)
             }
-            db?.insert(MapContract.TABLE_CAFE, null, values)
         }
     }
 
     private fun addDummyPharmacies(db: SQLiteDatabase?) {
-        val pharmacies = mutableListOf<Array<String>>()
-        for (i in 1..20) {
-            pharmacies.add(arrayOf("약국 $i", "경상남도 함안군 칠원읍 ${i + 20}", "약국"))
-        }
-
-        pharmacies.forEach { data ->
-            val values = ContentValues().apply {
-                put(MapContract.COLUMN_NAME, data[0])
-                put(MapContract.COLUMN_ADDRESS, data[1])
-                put(MapContract.COLUMN_CATEGORY, data[2])
+        fetchPlaces("약국", "경상남도 함안군 칠원읍") { places ->
+            places.forEach { place ->
+                val values = ContentValues().apply {
+                    put(MapContract.COLUMN_NAME, place.optString("place_name"))
+                    put(MapContract.COLUMN_ADDRESS, place.optString("address_name"))
+                    put(MapContract.COLUMN_CATEGORY, "약국")
+                }
+                db?.insert(MapContract.TABLE_PHARMACY, null, values)
             }
-            db?.insert(MapContract.TABLE_PHARMACY, null, values)
         }
+    }
+
+    private fun fetchPlaces(category: String, region: String, callback: (List<JSONObject>) -> Unit) {
+        val url = "https://dapi.kakao.com/v2/local/search/keyword.json?query=${category}&region=${region}&page=1"
+        val request = Request.Builder()
+            .url(url)
+            .header("Authorization", "KakaoAK $kakaoApiKey")
+            .build()
+
+        okHttpClient.newCall(request).enqueue(object : Callback {
+            override fun onResponse(call: Call, response: Response) {
+                val jsonResponse = response.body?.string()
+                val jsonObject = JSONObject(jsonResponse)
+                val places = jsonObject.optJSONArray("documents")?.toList() ?: emptyList()
+                callback(places)
+            }
+
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+            }
+        })
     }
 
     fun searchPlaces(searchText: String): List<Map<String, String>> {
@@ -119,3 +144,4 @@ class Database(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1
         return results
     }
 }
+

@@ -1,32 +1,31 @@
 package campus.tech.kakao.map
 
-import android.content.Context
-import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteOpenHelper
+import android.content.ContentValues
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import org.w3c.dom.Text
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class Search_Activity : AppCompatActivity() {
 
-    private lateinit var searchView: androidx.appcompat.widget.SearchView
+    private lateinit var searchView: SearchView
     private lateinit var searchRecyclerView: RecyclerView
     private lateinit var savedSearchRecyclerView: RecyclerView
     private lateinit var searchResultAdapter: PlaceAdapter
     private lateinit var savedSearchAdapter: SavedSearchAdapter
     private lateinit var databaseHelper: MyDatabaseHelper
-    private lateinit var placeDatabase: Database
     private lateinit var noResultTextView : TextView
+    private lateinit var kakaoApiService: KakaoApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +37,12 @@ class Search_Activity : AppCompatActivity() {
         noResultTextView = findViewById(R.id.nosearch)
 
         databaseHelper = MyDatabaseHelper(this)
-        placeDatabase = Database(this)
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://dapi.kakao.com")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        kakaoApiService = retrofit.create(KakaoApiService::class.java)
 
         searchResultAdapter = PlaceAdapter(emptyList())
         savedSearchAdapter = SavedSearchAdapter(this, emptyList()) { searchText ->
@@ -67,19 +71,67 @@ class Search_Activity : AppCompatActivity() {
     }
 
     private fun searchAndDisplayResults(searchText: String) {
-        val searchResults = placeDatabase.searchPlaces(searchText)
-        searchResultAdapter.updateData(searchResults)
+        GlobalScope.launch(Dispatchers.Main) {
+            try {
+                val response = kakaoApiService.searchAddress(searchText)
+                val places = response.documents.map { document ->
+                    mapOf(
+                        MapContract.COLUMN_NAME to document.placeName,
+                        MapContract.COLUMN_ADDRESS to document.addressName,
+                        MapContract.COLUMN_CATEGORY to document.categoryName
+                    )
+                }
 
-        if (searchResults.isEmpty()) {
-            searchRecyclerView.visibility = RecyclerView.GONE
-            noResultTextView.visibility = TextView.VISIBLE
-        } else {
-            searchRecyclerView.visibility = RecyclerView.VISIBLE
-            noResultTextView.visibility = TextView.GONE
+                savePlacesToDatabase(places)
+
+                if (places.isEmpty()) {
+                    searchRecyclerView.visibility = RecyclerView.GONE
+                    noResultTextView.visibility = View.VISIBLE
+                } else {
+                    searchRecyclerView.visibility = RecyclerView.VISIBLE
+                    noResultTextView.visibility = View.GONE
+                    searchResultAdapter.updateData(places)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
+    }
 
-        val savedSearches = databaseHelper.getSavedSearches()
-        savedSearchAdapter.updateData(savedSearches)
+    private fun savePlacesToDatabase(places: List<Map<String, String>>) {
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val db = databaseHelper.writableDatabase
+                db.beginTransaction()
+                try {
+                    db.delete(MapContract.TABLE_CAFE, null, null)
+                    db.delete(MapContract.TABLE_PHARMACY, null, null)
+
+                    places.forEach { place ->
+                        if (place[MapContract.COLUMN_CATEGORY] == "카페") {
+                            db.insert(MapContract.TABLE_CAFE, null, getContentValues(place))
+                        } else if (place[MapContract.COLUMN_CATEGORY] == "약국") {
+                            db.insert(MapContract.TABLE_PHARMACY, null, getContentValues(place))
+                        }
+                    }
+
+                    db.setTransactionSuccessful()
+                } finally {
+                    db.endTransaction()
+                    db.close()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun getContentValues(place: Map<String, String>): ContentValues {
+        return ContentValues().apply {
+            put(MapContract.COLUMN_NAME, place[MapContract.COLUMN_NAME])
+            put(MapContract.COLUMN_ADDRESS, place[MapContract.COLUMN_ADDRESS])
+            put(MapContract.COLUMN_CATEGORY, place[MapContract.COLUMN_CATEGORY])
+        }
     }
 
     inner class PlaceAdapter(private var data: List<Map<String, String>>) :
@@ -119,6 +171,3 @@ class Search_Activity : AppCompatActivity() {
         }
     }
 }
-
-
-

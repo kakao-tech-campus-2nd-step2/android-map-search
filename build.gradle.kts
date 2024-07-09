@@ -8,3 +8,4 @@ plugins {
 allprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 }
+
