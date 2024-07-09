@@ -1,1 +1,7 @@
-# android-map-search
+# 3주차 - android-map-search
+## step1 구현할 기능 목록
+
+- [ ]  앱 키를 외부에 노출하지 않도록 만드는 기능
+- [ ]  카카오 API를 통해 데이터를 요청하는 기능
+- [ ]  받은 데이터를 가공하는 기능
+- [ ]  데이터를 RecyclerView 형태로 띄워주는 기능
