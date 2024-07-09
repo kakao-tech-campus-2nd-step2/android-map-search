@@ -2,6 +2,9 @@
 
 - 카카오 테크 캠퍼스 과제(위치 검색 - 네트워크 통신) 수행을 위한 저장소입니다.
 
+## 동작 영상
+![week3_step1](https://github.com/kakao-tech-campus-2nd-step2/android-map-search/assets/102301656/b46ccdb7-7f91-452d-a7e1-f5a0c73edeb9)
+
 ## flow chart
 
 <img src=https://github.com/ichanguk/android-map-search/blob/step1/image/map_search_flow_chart.png width="600" height="250">
