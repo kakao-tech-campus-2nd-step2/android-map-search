@@ -16,7 +16,7 @@ class MapItemViewModel(context: Context) : ViewModel() {
     val selectItemList : LiveData<List<KakaoMapItem>> get() = _selectItemList
 
     init {
-        updateMapItemDB()
+        //updateMapItemDB()
         _selectItemList.postValue(mapItemDB.selectItemDao.makeAllSelectItemList())
     }
 
@@ -27,7 +27,6 @@ class MapItemViewModel(context: Context) : ViewModel() {
 
     suspend fun searchKakaoMapItem(category: String) {
         _kakaoMapItemList.postValue(mapItemDB.searchKakaoMapItem(category))
-        Log.d("uin", "here2 " + _kakaoMapItemList.value?.size)
     }
 
     fun insertSelectItem(mapItem: KakaoMapItem) {

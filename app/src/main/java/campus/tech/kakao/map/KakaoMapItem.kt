@@ -51,13 +51,20 @@ class KakaoMapItemDbHelper(context: Context) : SQLiteOpenHelper(context, "mapIte
         val response = withContext(Dispatchers.Default) {
             retrofitService.requsetKakaoMap(query = category).execute()
         }
-        //Log.d("uin", "here " + response.isSuccessful)
         if(response.isSuccessful) {
             val body = response.body()
-            body?.documents?.forEach {
-                mapItemList.add(
-                    KakaoMapItem(it.id, it.place_name, it.address_name, it.category_group_name)
-                )
+            //val maxPage = body?.meta?.pageable_count ?: 1
+            val maxPage = 2
+            for(i in 1..maxPage) {
+                val responseEachPage = withContext(Dispatchers.Default) {
+                    retrofitService.requsetKakaoMap(query = category, page = i).execute()
+                }
+                responseEachPage.body()?.documents?.forEach {
+                    mapItemList.add(
+                        KakaoMapItem(it.id, it.place_name, it.address_name, it.category_group_name)
+                    )
+                }
+
             }
         }
         return mapItemList

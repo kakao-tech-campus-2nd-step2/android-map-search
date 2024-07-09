@@ -24,3 +24,4 @@
 - DTO 만들기
 - RetrofitService Interface와 객체 생성
 - 카카오맵 데이터 가져와서 연결하기
+- 15개 이상 표시되도록
