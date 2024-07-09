@@ -42,9 +42,9 @@ class SearchAdapter(
         // 데이터 view에 바인딩
         fun bind(item: MapItem) {
             binding.apply {
-                itemName.text = item.name
-                itemAddress.text = item.address
-                itemCategory.text = item.category
+                itemName.text = item.place_name
+                itemAddress.text = item.road_address_name
+                itemCategory.text = item.category_group_name
                 root.setOnClickListener { onItemClicked(item) }
             }
         }

@@ -42,7 +42,7 @@ class SelectedAdapter(
 
         fun bind(item: MapItem) {
             binding.apply {
-                selectedItemName.text = item.name //상단에 이름만 표시
+                selectedItemName.text = item.place_name //상단에 이름만 표시
                 deleteButton.setOnClickListener { onItemRemoved(item) }
             }
         }
