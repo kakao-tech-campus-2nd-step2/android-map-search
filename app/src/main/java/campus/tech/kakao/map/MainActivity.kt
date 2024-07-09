@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
 
     fun setupRecyclerViews() {
         searchAdapter = SearchAdapter { result ->
-            viewModel.addSearch(result.name)
+            viewModel.addSearch(result.place_name)
         }
 
         savedSearchAdapter = SavedSearchAdapter { place ->
