@@ -13,41 +13,41 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:hint="@string/searchWindowHint"
-        app:layout_constraintBottom_toTopOf="@id/savedSearchWordsList"
+        app:layout_constraintBottom_toTopOf="@id/savedSearchKeywordsList"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/delSearchWord"
+        android:id="@+id/delSearchKeyword"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:gravity="center"
         android:text="X"
-        app:layout_constraintBottom_toTopOf="@id/savedSearchWordsList"
+        app:layout_constraintBottom_toTopOf="@id/savedSearchKeywordsList"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/savedSearchWordsList"
+        android:id="@+id/savedSearchKeywordsList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:scrollbarFadeDuration="0"
         android:scrollbars="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@id/searchResult"
+        app:layout_constraintBottom_toTopOf="@id/searchResults"
         app:layout_constraintTop_toBottomOf="@id/searchWindow" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/searchResult"
+        android:id="@+id/searchResults"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/savedSearchWordsList"
+        app:layout_constraintTop_toBottomOf="@id/savedSearchKeywordsList"
         app:layout_constraintHeight_default="spread"
         >
 
         <TextView
-            android:id="@+id/searchResultEmpty"
+            android:id="@+id/emptySearchResults"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@string/searchResultEmpty"
