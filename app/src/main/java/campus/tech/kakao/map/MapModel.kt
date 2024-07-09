@@ -20,22 +20,8 @@ class MapModel(mContext: Context) {
     val searchHistory: LiveData<List<String>> = _searchHistory
 
     fun searchByKeywordFromServer(keyword: String, isExactMatch: Boolean) {
-        val authorization = "KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}"
-        retrofit.requestLocationByKeyword(authorization, keyword).enqueue(object : Callback<ServerResult> {
-            override fun onResponse(call: Call<ServerResult>, response: Response<ServerResult>) {
-                if (response.isSuccessful) {
-                    clearDb()
-                    val body = response.body()
-                    body?.let {
-                        updateDb(body)
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<ServerResult>, response: Throwable) {
-                Log.d("Model", "Fail")
-            }
-        })
+        clearDb()
+        request(keyword)
     }
     fun insertLocation(location: Location) {
         val writableDb = helper.writableDatabase
@@ -162,22 +148,47 @@ class MapModel(mContext: Context) {
         return res
     }
 
-    private fun updateDb(serverResult: ServerResult) {
-        Log.d("Model", serverResult.meta.toString())
-        Log.d("Model", serverResult.docList.size.toString())
-        Log.d("Model", "~~~~~")
-        val res = mutableListOf<Location>()
-        serverResult.docList.forEach { document ->
-            val location = getLocation(document)
-            insertLocation(location)
-            res.add(location)
-            Log.d("Model", document.toString())
-        }
-        Log.d("Model", "==============")
-        _searchResult.value = res
+    private fun request(keyword: String, page: Int = 1) {
+        val authorization = "KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}"
+        retrofit.requestLocationByKeyword(authorization, keyword, page = page).enqueue(object : Callback<ServerResult> {
+            override fun onResponse(call: Call<ServerResult>, response: Response<ServerResult>) {
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    body?.let {
+                        updateDb(body, page)
+                    }
+                }
+                _searchResult.value = getAllLocation()
+            }
+
+            override fun onFailure(call: Call<ServerResult>, response: Throwable) {
+                Log.d("Model", "Fail")
+            }
+        })
     }
 
     private fun clearDb() {
         helper.clearDb(helper.writableDatabase)
+    }
+
+    private fun updateDb(serverResult: ServerResult, page: Int) {
+        Log.d("Model", serverResult.meta.toString())
+        Log.d("Model", serverResult.docList.toString())
+        Log.d("Model", "$page")
+        val res = mutableListOf<Location>()
+        serverResult.docList.forEach { document ->
+            val location = getLocation(document)
+            insertLocation(location)
+        }
+        Log.d("Model", "==============")
+        if (!serverResult.meta.isEnd) {
+            requestNextPage(serverResult, page)
+        }
+    }
+
+    private fun requestNextPage(serverResult: ServerResult, page: Int) {
+        val keyword = serverResult.meta.sameName.keyword
+        val nextPage = page + 1
+        request(keyword, nextPage)
     }
 }
