@@ -125,7 +125,7 @@ class PlaceRepository(context: Context) {
                 ) {
                     if (response.isSuccessful) {
                         val documentList = response.body()?.documents
-                        documentList?.forEach {git ad
+                        documentList?.forEach {
                             val place = Place(R.drawable.hospital, it.place_name, it.address_name, PlaceCategory.PHARMACY)
                             placeList.add(place)
                             insertPlace(place)
