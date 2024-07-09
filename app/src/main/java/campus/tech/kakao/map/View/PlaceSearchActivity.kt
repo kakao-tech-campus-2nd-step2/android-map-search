@@ -1,6 +1,7 @@
 package campus.tech.kakao.map.View
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.ImageView
@@ -21,11 +22,13 @@ import campus.tech.kakao.map.R
 import campus.tech.kakao.map.Model.PlaceContract
 import campus.tech.kakao.map.Base.ViewModelFactory
 import campus.tech.kakao.map.Mapper.DocToPlaceMapper
+import campus.tech.kakao.map.MyApplication
 import campus.tech.kakao.map.Repository.PlaceRepositoryImpl
 import campus.tech.kakao.map.View.Adapter.FavoriteAdapter
 import campus.tech.kakao.map.View.Adapter.SearchResultAdapter
 import campus.tech.kakao.map.View.Observer.EmptyPlaceObserver
 import campus.tech.kakao.map.ViewModel.SearchViewModel
+import com.android.identity.android.legacy.Utility
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,18 +48,7 @@ class PlaceSearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_place_search)
 
-        sqliteDB = SqliteDB(this, PlaceContract.DATABASE_NAME, null, 1)
-        val placeDaoImpl = PlaceDaoImpl(sqliteDB.writableDatabase)
-        val favoriteDao = FavoriteDaoImpl(sqliteDB.writableDatabase)
-        val retrofitService = Retrofit.Builder()
-            .baseUrl(RetrofitService.BASE)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(RetrofitService::class.java)
-        val repository = PlaceRepositoryImpl(
-            placeDaoImpl, favoriteDao, retrofitService,
-            DocToPlaceMapper()
-        )
+        val repository = (application as MyApplication).appContainer.repository
 
         viewModel =
             ViewModelProvider(this, ViewModelFactory(repository))[SearchViewModel::class.java]
