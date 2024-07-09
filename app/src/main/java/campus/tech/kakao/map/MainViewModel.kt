@@ -2,17 +2,11 @@ package campus.tech.kakao.map
 
 import android.app.Application
 import android.content.Context
-import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.viewModelFactory
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.time.temporal.TemporalQuery
-import android.util.Log
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 

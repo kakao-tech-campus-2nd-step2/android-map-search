@@ -3,7 +3,6 @@ package campus.tech.kakao.map
 import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import android.view.LayoutInflater
-import android.view.View
 import campus.tech.kakao.map.databinding.ItemResultBinding
 import android.util.Log
 
