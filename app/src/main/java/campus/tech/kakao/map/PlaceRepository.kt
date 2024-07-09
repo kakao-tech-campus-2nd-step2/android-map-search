@@ -5,6 +5,11 @@ import android.content.Context
 import android.provider.BaseColumns
 import android.util.Log
 import androidx.core.database.getIntOrNull
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class PlaceRepository(context: Context) {
     private val dbHelper = PlaceDbHelper(context)
@@ -80,11 +85,38 @@ class PlaceRepository(context: Context) {
     }
 
     fun insertInitialData() {
-        for (i in 1..10) {
-            val place = Place(R.drawable.cafe, "카페$i", "강원도 춘천시 퇴계동{$i}번길", PlaceCategory.CAFE)
-            placeList.add(place)
-            insertPlace(place)
-        }
+        //kakao에서 데이터 가져와서 place 객체 생성하기
+        val apiKey = "KakaoAK " + BuildConfig.KAKAO_REST_API_KEY
+        val retrofitService = Retrofit.Builder()
+            .baseUrl("https://dapi.kakao.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(KakaoApiService::class.java)
+
+        retrofitService.getPlace(apiKey, "CE7")
+            .enqueue(object : Callback<KakaoResponse> {
+                override fun onResponse(
+                    call: Call<KakaoResponse>,
+                    response: Response<KakaoResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val documentList = response.body()?.documents
+                        documentList?.forEach {
+                            Log.d("KakaoAPI", "Place Name: ${it.place_name}, Address: ${it.address_name}")
+                            val place = Place(R.drawable.cafe, it.place_name, it.address_name, PlaceCategory.CAFE)
+                            placeList.add(place)
+                            insertPlace(place)
+                        }
+                    } else {
+                        val errorBody = response.errorBody()?.string()
+                        Log.d("KakaoAPI", "Error: $errorBody")
+                    }
+                }
+
+                override fun onFailure(call: Call<KakaoResponse>, t: Throwable) {
+                    Log.d("KakaoAPI", "Failure: ${t.message}")
+                }
+            })
 
         for (i in 1..15){
             val place = Place(R.drawable.hospital, "약국$i", "강원도 강릉시 남부로{$i}번길", PlaceCategory.PHARMACY)
