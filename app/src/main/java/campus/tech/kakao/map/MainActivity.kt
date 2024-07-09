@@ -36,11 +36,8 @@ class MainActivity : AppCompatActivity() {
 
         setupRecyclerViews()
 
-        //viewModel.insertInitialData()
-
         viewModel.searchResults.observe(this, Observer { results ->
             Log.d("MainActivity", "Search results updated: $results")
-            //binding.searchRecyclerView.adapter = SearchAdapter(results)
             searchAdapter.updateResults(results)
             binding.searchRecyclerView.visibility = if (results.isEmpty()) View.GONE else View.VISIBLE
             binding.noResult.visibility = if (results.isEmpty())View.VISIBLE else View.GONE
@@ -74,7 +71,6 @@ class MainActivity : AppCompatActivity() {
                 val query = s.toString()
                 Log.d("MainActivity", "Search query: $query")
                 if(query.isNotEmpty()) {
-                    //viewModel.searchDatabase(query)
                     viewModel.searchPlaces(query)
                 } else {
                     searchAdapter.updateResults(emptyList())

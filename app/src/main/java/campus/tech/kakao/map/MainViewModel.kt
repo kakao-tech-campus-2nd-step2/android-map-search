@@ -16,14 +16,9 @@ import android.util.Log
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    //private val dbHelper = DbHelper(application)
-    //private val repository = PlaceRepository(dbHelper)
     private val apiService = KakaoAPIRetrofitClient.retrofitService
     private val repository = PlaceRepository(apiService)
     private val sharedPreferences = application.getSharedPreferences("search_prefs", Context.MODE_PRIVATE)
-
-    //private val _searchResults = MutableLiveData<List<SearchResult>>()
-    //val searchResults: LiveData<List<SearchResult>> get() = _searchResults
 
     private val _searchResults = MutableLiveData<List<Document>>()
     val searchResults: LiveData<List<Document>> get() = _searchResults
@@ -34,21 +29,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     init {
         loadSavedSearches()
     }
-
-    /*
-    fun insertInitialData() {
-        viewModelScope.launch {
-            repository.insertInitialData()
-        }
-    }
-
-    fun searchDatabase(query: String) {
-        viewModelScope.launch {
-            val results = repository.searchDatabase(query)
-            _searchResults.postValue(results)
-        }
-    }*/
-
+    
     fun searchPlaces(query: String) {
         viewModelScope.launch {
             val results = repository.searchPlaces(query)
