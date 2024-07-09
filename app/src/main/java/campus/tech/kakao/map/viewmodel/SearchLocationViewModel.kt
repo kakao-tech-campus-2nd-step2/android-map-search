@@ -13,14 +13,15 @@ class SearchLocationViewModel : ViewModel() {
         _history.value = repository.getHistory()
     }
 
-    private val _location = MutableLiveData<List<Location>>()
-    val location: LiveData<List<Location>> = _location
-
     private val _history = MutableLiveData<List<String>>()
     val history: LiveData<List<String>> = _history
 
     fun searchLocation(category: String) {
-        _location.value = repository.searchLocation(category)
+        repository.searchLocation(category)
+    }
+
+    fun getSearchResultLiveData(): LiveData<List<Location>> {
+        return repository.searchResultLiveData
     }
 
     fun addHistory(locationName: String) {
