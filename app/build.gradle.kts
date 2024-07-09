@@ -1,3 +1,7 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
+fun getApiKey(key: String): String = gradleLocalProperties(rootDir, providers).getProperty(key)
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -15,6 +19,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "KAKAO_API_KEY", getApiKey("KAKAO_API_KEY"))
+        buildConfigField("String", "KAKAO_REST_API_KEY", getApiKey("KAKAO_REST_API_KEY"))
     }
 
     buildTypes {
@@ -36,6 +43,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -49,7 +57,7 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
-//    implementation("com.kakao.maps.open:android:2.9.5")
+    implementation("com.kakao.maps.open:android:2.9.5")
     implementation("androidx.activity:activity:1.8.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3")
     testImplementation("junit:junit:4.13.2")
