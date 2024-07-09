@@ -18,9 +18,9 @@ class Adapter(private var profiles: List<Profile>) : RecyclerView.Adapter<Adapte
     }
 
     inner class ProfileViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvName: TextView = itemView.findViewById(R.id.tvname)
-        val tvAddress: TextView = itemView.findViewById(R.id.tvaddress)
-        val tvType: TextView = itemView.findViewById(R.id.tvtype)
+        val tvName: TextView = itemView.findViewById(R.id.tvName)
+        val tvAddress: TextView = itemView.findViewById(R.id.tvAddress)
+        val tvType: TextView = itemView.findViewById(R.id.tvType)
 
         init {
             itemView.setOnClickListener {
