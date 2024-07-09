@@ -3,6 +3,7 @@ package campus.tech.kakao.map
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
@@ -16,8 +17,14 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.json.JSONArray
+import retrofit2.*
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
+    companion object {
+        const val API_KEY = "KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}"
+    }
+
     lateinit var adapter: Adapter
     lateinit var tvNoResult: TextView
     lateinit var llSave: LinearLayoutCompat
@@ -45,7 +52,18 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 val search = s.toString()
-                searchProfiles(search)
+                if (search.isEmpty()) {
+                    showNoResults()
+                }
+                when {
+                    search.equals("대형마트", ignoreCase = true) -> searchCategory("MT1")
+                    search.equals("편의점", ignoreCase = true) -> searchCategory("CS2")
+                    search.equals("어린이집", ignoreCase = true) -> searchCategory("PS3")
+                    search.equals("유치원", ignoreCase = true) -> searchCategory("PS3")
+                    search.equals("학교", ignoreCase = true) -> searchCategory("SC4")
+                    search.equals("학원", ignoreCase = true) -> searchCategory("AC5")
+                    // 더 추가 필요!
+                }
             }
         })
 
@@ -63,6 +81,47 @@ class MainActivity : AppCompatActivity() {
         }
         loadSavedItems()
     }
+
+    fun searchCategory(categoryGroupCode: String) {
+        val retrofitService = Retrofit.Builder()
+            .baseUrl("https://dapi.kakao.com")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofitService.create(RetrofitService::class.java)
+//        val x = "127"
+//        val y = "37"
+//        val radius = 2000
+
+        api.getSearchCategory(API_KEY, categoryGroupCode).enqueue(object : Callback<KakaoResponse> {
+            override fun onResponse(call: Call<KakaoResponse>, response: Response<KakaoResponse>) {
+                searchProfiles(response.body())
+            }
+
+            override fun onFailure(call: Call<KakaoResponse>, t: Throwable) {
+                Log.e("MainActivity", "요청실패")
+                println("error : $t")
+            }
+        })
+    }
+
+    fun searchProfiles(searchResult: KakaoResponse?) {
+        searchResult?.documents?.let { documents ->
+            if (documents.isEmpty()) {
+                showNoResults()
+            } else {
+                val profiles = documents.map { document ->
+                    Profile(document.place_name, document.road_address_name, document.category_group_name)
+                }
+                adapter.updateProfiles(profiles)
+                tvNoResult.visibility = View.GONE
+            }
+        } ?: showNoResults()
+    }
+    fun showNoResults() {
+        tvNoResult.visibility = View.VISIBLE
+        adapter.updateProfiles(emptyList())
+    }
+
     override fun onPause() {
         super.onPause()
         saveSavedItems()
@@ -90,22 +149,6 @@ class MainActivity : AppCompatActivity() {
         for (i in 0 until savedNames.length()) {
             val name = savedNames.getString(i)
             addSavedItem(name)
-        }
-    }
-
-
-    fun searchProfiles(query: String) {
-        if (query.isEmpty()) {
-            tvNoResult.visibility = TextView.VISIBLE
-            adapter.updateProfiles(emptyList())
-        } else {
-            val profileList = dbHelper.searchProfiles(query)
-            if (profileList.isEmpty()) {
-                tvNoResult.visibility = TextView.VISIBLE
-            } else {
-                tvNoResult.visibility = TextView.GONE
-            }
-            adapter.updateProfiles(profileList)
         }
     }
     fun addSavedItem(name: String) {
