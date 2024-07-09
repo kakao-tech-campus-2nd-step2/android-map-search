@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import campus.tech.kakao.map.data.SavedSearchWordDBHelper
-import campus.tech.kakao.map.data.SavedSearchWordRepository
+import campus.tech.kakao.map.data.repository.SavedSearchWordRepository
 import campus.tech.kakao.map.model.SavedSearchWord
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

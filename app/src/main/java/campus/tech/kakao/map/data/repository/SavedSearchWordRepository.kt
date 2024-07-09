@@ -1,5 +1,6 @@
-package campus.tech.kakao.map.data
+package campus.tech.kakao.map.data.repository
 
+import campus.tech.kakao.map.data.SavedSearchWordDBHelper
 import campus.tech.kakao.map.model.SavedSearchWord
 
 class SavedSearchWordRepository(private val dbHelper: SavedSearchWordDBHelper) {
