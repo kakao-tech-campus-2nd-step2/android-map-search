@@ -4,15 +4,14 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitServiceClient {
-    private lateinit var retrofit: Retrofit
+    private lateinit var retrofitService: RetrofitService
 
-    fun getRetrofit(baseUrl: String): Retrofit {
-        if (!::retrofit.isInitialized) {
-            retrofit = Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-        }
-        return retrofit
+    fun getRetrofit(baseUrl: String): RetrofitService {
+        retrofitService = Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(RetrofitService::class.java)
+        return retrofitService
     }
 }

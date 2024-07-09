@@ -3,15 +3,43 @@ package campus.tech.kakao.map
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import retrofit2.Retrofit
 
 class MapModel(mContext: Context) {
     private val helper: MapDbHelper = MapDbHelper(mContext)
-    private val retrofit: Retrofit = RetrofitServiceClient.getRetrofit("https://dapi.kakao.com/")
+    private val retrofit: RetrofitService = RetrofitServiceClient.getRetrofit("https://dapi.kakao.com/")
+    private val _searchResult = MutableLiveData(getAllLocation())
+    val searchResult: LiveData<List<Location>> = _searchResult
 
-    fun getServerSearchedLocation(): List<Location> {
-        val res = mutableListOf<Location>()
-        return res
+    fun searchByKeyword(keyword: String, isExactMatch: Boolean) {
+        val authorization = "KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}"
+        retrofit.requestLocationByKeyword(authorization, keyword).enqueue(object : Callback<ServerResult> {
+            override fun onResponse(call: Call<ServerResult>, response: Response<ServerResult>) {
+                if (response.isSuccessful) {
+                    helper.clearDb(helper.writableDatabase)
+                    val body = response.body()
+                    val res = mutableListOf<Location>()
+                    body?.docList?.forEachIndexed { index, document ->
+                        val location = getLocation(document)
+                        insertLocation(location)
+                        res.add(location)
+                        Log.d("Model", document.toString())
+                    }
+                    Log.d("Model", "==============")
+                    _searchResult.value = res
+                }
+            }
+
+            override fun onFailure(call: Call<ServerResult>, response: Throwable) {
+                Log.d("Model", "Fail")
+            }
+        })
     }
     fun insertLocation(location: Location) {
         val writableDb = helper.writableDatabase
@@ -70,6 +98,14 @@ class MapModel(mContext: Context) {
             cursor.getString(cursor.getColumnIndexOrThrow(MapContract.MapEntry.COLUMN_NAME_CATEGORY))
         val address =
             cursor.getString(cursor.getColumnIndexOrThrow(MapContract.MapEntry.COLUMN_NAME_ADDRESS))
+
+        return Location(name, category, address)
+    }
+
+    private fun getLocation(document: Document): Location {
+        val name = document.placeName
+        val category = document.categoryGroupName
+        val address = document.roadAddressName
 
         return Location(name, category, address)
     }

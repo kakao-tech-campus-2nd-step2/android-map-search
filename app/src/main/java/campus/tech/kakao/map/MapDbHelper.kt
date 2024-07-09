@@ -11,7 +11,7 @@ class MapDbHelper(mContext: Context) :
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL(SQL_CREATE_ENTRIES)
         db?.execSQL(SQL_CREATE_ENTRIES_HISTORY)
-        initializeDb(db)
+//        initializeDb(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -34,6 +34,11 @@ class MapDbHelper(mContext: Context) :
             examplePharValue.put(MapContract.MapEntry.COLUMN_NAME_ADDRESS, "서울 성동구 성수동 $idx")
             db?.insert(MapContract.MapEntry.TABLE_NAME, null, examplePharValue)
         }
+    }
+
+    fun clearDb(db: SQLiteDatabase?) {
+        db?.execSQL(SQL_DELETE_ENTRIES)
+        db?.execSQL(SQL_CREATE_ENTRIES)
     }
 
     companion object {

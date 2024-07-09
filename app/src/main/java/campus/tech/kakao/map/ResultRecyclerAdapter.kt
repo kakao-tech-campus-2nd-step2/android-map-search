@@ -1,5 +1,6 @@
 package campus.tech.kakao.map
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,5 +45,6 @@ class ResultRecyclerAdapter(
 
     fun refreshList() {
         notifyDataSetChanged()
+        Log.d("recycler", "notify Data set change")
     }
 }

@@ -1,12 +1,15 @@
 package campus.tech.kakao.map
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
+import androidx.core.widget.doBeforeTextChanged
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,9 +36,13 @@ class MainActivity : AppCompatActivity(), DatabaseListener {
         message = findViewById(R.id.message)
         clear = findViewById(R.id.clear)
 
-        searchBox.doAfterTextChanged {
-            it?.let {
-                search(it.toString(), false)
+        searchBox.doAfterTextChanged { text ->
+            text?.let {
+                if (text.toString() == "") {
+                    hideResult()
+                } else {
+                    search(text.toString(), false)
+                }
             }
         }
 
@@ -57,24 +64,23 @@ class MainActivity : AppCompatActivity(), DatabaseListener {
     }
 
     override fun updateSearchResult() {
-        val searchResult = viewModel.searchResult.value!!
-        searchResultAdapter.refreshList()
-
-        if (searchResult.isNotEmpty() && searchBox.text.isNotEmpty()) {
-            searchResultView.isVisible = true
-            message.isVisible = false
-        } else {
-            searchResultView.isVisible = false
-            message.isVisible = true
-        }
+//        searchResultAdapter.refreshList()
     }
 
     override fun updateSearchHistory() {
-        searchHistoryAdapter.refreshList()
+//        searchHistoryAdapter.refreshList()
     }
 
+    private fun hideResult() {
+        searchResultView.isVisible = false
+        message.isVisible = true
+    }
+    private fun showResult() {
+        searchResultView.isVisible = true
+        message.isVisible = false
+    }
     private fun search(locName: String, isExactMatch: Boolean) {
-        viewModel.searchLocation(locName, isExactMatch)
+        viewModel.searchByKeyword(locName, isExactMatch)
     }
 
     private fun initSearchResultView() {
@@ -96,9 +102,16 @@ class MainActivity : AppCompatActivity(), DatabaseListener {
     private fun observeData() {
         viewModel.searchHistory.observe(this, Observer {
             searchHistoryAdapter.history = it
+            searchHistoryAdapter.refreshList()
         })
         viewModel.searchResult.observe(this, Observer {
             searchResultAdapter.searchResult = it
+            if (it.isNotEmpty() && (searchBox.text.toString() != "")) {
+                showResult()
+            } else {
+                hideResult()
+            }
+            searchResultAdapter.refreshList()
         })
     }
 }
