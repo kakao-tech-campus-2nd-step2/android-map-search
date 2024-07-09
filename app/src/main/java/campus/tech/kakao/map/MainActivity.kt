@@ -12,11 +12,15 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import campus.tech.kakao.map.data.SavedSearchWordDBHelper
+import campus.tech.kakao.map.data.repository.PlaceRepositoryImpl
+import campus.tech.kakao.map.data.repository.SavedSearchWordRepositoryImpl
 import campus.tech.kakao.map.databinding.ActivityMainBinding
 import campus.tech.kakao.map.model.Place
 import campus.tech.kakao.map.model.SavedSearchWord
 import campus.tech.kakao.map.viewmodel.PlaceViewModel
 import campus.tech.kakao.map.viewmodel.SavedSearchWordViewModel
+import campus.tech.kakao.map.viewmodel.ViewModelFactory
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -35,10 +39,20 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * 사용할 ViewModel을 설정하는 함수
+     *
+     * - `placeRepository` : 장소 데이터를 제공 Repository
+     * - `dbHelper` : 저장된 검색어 데이터베이스를 관리하는 Helper
+     * - `savedSearchWordRepository` : 저장된 검색어 데이터를 제공 Repository
+     * - `viewModelFactory` : ViewModel 인스턴스를 생성하고 제공하는 Factory
      */
     private fun setupViewModels() {
-        placeViewModel = ViewModelProvider(this)[PlaceViewModel::class.java]
-        savedSearchWordViewModel = ViewModelProvider(this)[SavedSearchWordViewModel::class.java]
+        val placeRepository = PlaceRepositoryImpl()
+        val dbHelper = SavedSearchWordDBHelper(applicationContext)
+        val savedSearchWordRepository = SavedSearchWordRepositoryImpl(dbHelper)
+        val viewModelFactory = ViewModelFactory(placeRepository, savedSearchWordRepository)
+
+        placeViewModel = ViewModelProvider(this, viewModelFactory)[PlaceViewModel::class.java]
+        savedSearchWordViewModel = ViewModelProvider(this, viewModelFactory)[SavedSearchWordViewModel::class.java]
     }
 
     /**

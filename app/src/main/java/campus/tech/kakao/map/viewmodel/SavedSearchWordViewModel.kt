@@ -1,24 +1,19 @@
 package campus.tech.kakao.map.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import campus.tech.kakao.map.data.SavedSearchWordDBHelper
 import campus.tech.kakao.map.data.repository.SavedSearchWordRepository
 import campus.tech.kakao.map.model.SavedSearchWord
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class SavedSearchWordViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: SavedSearchWordRepository
+class SavedSearchWordViewModel(private val repository: SavedSearchWordRepository) : ViewModel() {
     private val _savedSearchWords = MutableLiveData<List<SavedSearchWord>>()
     val savedSearchWords: LiveData<List<SavedSearchWord>> get() = _savedSearchWords
 
     init {
-        val dbHelper = SavedSearchWordDBHelper(application)
-        repository = SavedSearchWordRepository(dbHelper)
         getAllSearchWords()
     }
 

@@ -9,9 +9,7 @@ import campus.tech.kakao.map.model.Place
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class PlaceViewModel : ViewModel() {
-    private val placeRepository = PlaceRepository()
-
+class PlaceViewModel(private val placeRepository: PlaceRepository) : ViewModel() {
     private val _searchResults = MutableLiveData<List<Place>>()
     val searchResults: LiveData<List<Place>> get() = _searchResults
 
