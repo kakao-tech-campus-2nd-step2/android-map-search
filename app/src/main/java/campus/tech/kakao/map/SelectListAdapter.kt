@@ -19,13 +19,13 @@ class SelectListAdapter(
             cancelBtn = itemView.findViewById<ImageView>(R.id.cancelBtn)
 
             cancelBtn.setOnClickListener {
-                cancelBtnListener.onClick(it, bindingAdapterPosition)
+                cancelBtnListener.onClick(it, selectItemList[bindingAdapterPosition])
             }
         }
     }
 
     interface CancelBtnClickListener {
-        fun onClick(v: View, position: Int)
+        fun onClick(v: View, selectItem: MapItem)
     }
 
     fun setCancelBtnClickListener(cancelBtnClickListener: CancelBtnClickListener) {

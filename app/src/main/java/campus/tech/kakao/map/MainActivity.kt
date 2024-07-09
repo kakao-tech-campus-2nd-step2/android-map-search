@@ -27,10 +27,8 @@ class MainActivity : AppCompatActivity() {
         val mainText = findViewById<TextView>(R.id.main_text)
         val cancelBtn = findViewById<ImageView>(R.id.cancelBtn)
 
-        val mapListAdapter =
-            MapListAdapter(listOf<MapItem>(), LayoutInflater.from(this))
-        val selectListAdapter =
-            SelectListAdapter(listOf<MapItem>(), LayoutInflater.from(this))
+        val mapListAdapter = MapListAdapter(listOf(), LayoutInflater.from(this))
+        val selectListAdapter = SelectListAdapter(listOf(), LayoutInflater.from(this))
 
         mapList.adapter = mapListAdapter
         mapList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -39,21 +37,14 @@ class MainActivity : AppCompatActivity() {
         selectList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         mapListAdapter.setItemClickListener(object : MapListAdapter.ItemClickListener {
-            override fun onClick(v: View, position: Int) {
-                val mapItem = mapListAdapter.mapItemList.get(position)
-                mapItemViewModel.insertSelectItem(
-                    mapItem.name,
-                    mapItem.address,
-                    mapItem.category,
-                    mapItem.id
-                )
+            override fun onClick(v: View, mapItem: MapItem) {
+                mapItemViewModel.insertSelectItem(mapItem)
             }
         })
 
         selectListAdapter.setCancelBtnClickListener(object :
             SelectListAdapter.CancelBtnClickListener {
-            override fun onClick(v: View, position: Int) {
-                val selectItem = selectListAdapter.selectItemList.get(position)
+            override fun onClick(v: View, selectItem: MapItem) {
                 mapItemViewModel.deleteSelectItem(selectItem.id)
             }
         })

@@ -19,13 +19,13 @@ class MapListAdapter(
             address = itemView.findViewById<TextView>(R.id.address)
             category = itemView.findViewById<TextView>(R.id.category)
             itemView.setOnClickListener {
-                recyclerListener.onClick(it, bindingAdapterPosition)
+                recyclerListener.onClick(it, mapItemList[bindingAdapterPosition])
             }
         }
     }
 
     interface ItemClickListener {
-        fun onClick(v: View, position: Int)
+        fun onClick(v: View, mapItem: MapItem)
     }
 
     fun setItemClickListener(itemClickListener: ItemClickListener) {

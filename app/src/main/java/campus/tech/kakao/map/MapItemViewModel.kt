@@ -33,12 +33,13 @@ class MapItemViewModel(context: Context) : ViewModel() {
         _mapItemList.postValue(mapItemDB.searchMapItem(category))
     }
 
-    fun insertSelectItem(name: String, address: String, category: String, id: Int) {
+    fun insertSelectItem(mapItem: MapItem) {
+        val id = mapItem.id
         val isExist = mapItemDB.checkItemInDB(id)
         if(isExist) {
             mapItemDB.deleteSelectItem(id)
         }
-        mapItemDB.insertSelectItem(name, address, category, id)
+        mapItemDB.insertSelectItem(mapItem.name, mapItem.address, mapItem.category, id)
         _selectItemList.postValue(mapItemDB.makeAllSelectItemList())
     }
 
