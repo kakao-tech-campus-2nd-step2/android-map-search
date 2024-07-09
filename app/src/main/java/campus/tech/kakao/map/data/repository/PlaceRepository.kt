@@ -5,8 +5,10 @@ import campus.tech.kakao.map.data.network.KaKaoLocalApiClient
 import campus.tech.kakao.map.data.network.PlaceResponse
 import campus.tech.kakao.map.data.network.service.KakaoLocalService
 import campus.tech.kakao.map.model.Place
-import retrofit2.Call
-import retrofit2.Callback
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Response
 
 class PlaceRepository {
@@ -29,11 +31,13 @@ class PlaceRepository {
         callback: (List<Place>) -> Unit,
     ) {
         categoryCodeMap[categoryInput]?.let { categoryGroupCode ->
-            fetchPlacesByCategory(categoryGroupCode, callback)
+            CoroutineScope(Dispatchers.IO).launch {
+                fetchPlacesByCategory(categoryGroupCode, callback)
+            }
         } ?: callback(emptyList())
     }
 
-    private fun fetchPlacesByCategory(
+    private suspend fun fetchPlacesByCategory(
         categoryGroupCode: String,
         callback: (List<Place>) -> Unit,
     ) {
@@ -41,41 +45,30 @@ class PlaceRepository {
         val pageSize = 15
         val totalPageCount = 7
 
-        repeat(totalPageCount) { page ->
-            kakaoLocalService.getPlacesByCategory(categoryGroupCode, page + 1, pageSize)
-                .enqueue(
-                    object : Callback<PlaceResponse> {
-                        override fun onResponse(
-                            call: Call<PlaceResponse>,
-                            response: Response<PlaceResponse>,
-                        ) {
-                            if (response.isSuccessful) {
-                                handleSuccessfulResponse(response, placeList)
+        for (page in 1..totalPageCount) {
+            try {
+                val response =
+                    kakaoLocalService.getPlacesByCategory(categoryGroupCode, page, pageSize)
 
-                                if (isLastPage(page, totalPageCount)) {
-                                    callback(placeList)
-                                }
-                            } else {
-                                handleErrorResponse(response, callback)
-                            }
-                        }
-
-                        override fun onFailure(
-                            call: Call<PlaceResponse>,
-                            t: Throwable,
-                        ) {
-                            handleFailure(t, callback)
-                        }
-                    },
-                )
+                if (response.isSuccessful) {
+                    handleSuccessfulResponse(response, placeList)
+                } else {
+                    withContext(Dispatchers.Main) {
+                        handleErrorResponse(response, callback)
+                        return@withContext
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("PlaceRepository", "API call failed", e)
+                withContext(Dispatchers.Main) {
+                    callback(emptyList())
+                    return@withContext
+                }
+            }
         }
-    }
-
-    private fun isLastPage(
-        currentPage: Int,
-        totalPageCount: Int,
-    ): Boolean {
-        return currentPage == totalPageCount - 1
+        withContext(Dispatchers.Main) {
+            callback(placeList)
+        }
     }
 
     private fun handleSuccessfulResponse(
@@ -95,18 +88,10 @@ class PlaceRepository {
     }
 
     private fun handleErrorResponse(
-        response: Response<PlaceResponse>,
+        response: Response<PlaceResponse>?,
         callback: (List<Place>) -> Unit,
     ) {
-        Log.e("PlaceRepository", "Failed to fetch places: ${response.errorBody()?.string()}")
-        callback(emptyList())
-    }
-
-    private fun handleFailure(
-        t: Throwable,
-        callback: (List<Place>) -> Unit,
-    ) {
-        Log.e("PlaceRepository", "Failed to fetch places", t)
+        Log.e("PlaceRepository", "Failed to fetch places: ${response?.errorBody()?.string()}")
         callback(emptyList())
     }
 }
