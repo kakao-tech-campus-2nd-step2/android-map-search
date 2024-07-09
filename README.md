@@ -2,7 +2,6 @@
 ## KakaoTechCampus 2기 3주차 과제 : 위치검색 - 네트워크 통신 
 
 ### 기능 구현
-- 이전 과제 코드 바탕 세팅 
 - 카카오 API 앱 등록
 - 의존성 파일 확인 
 - RetrofitInstance 구현
