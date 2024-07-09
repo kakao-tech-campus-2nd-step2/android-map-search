@@ -8,4 +8,7 @@
 [] RetrofitInstance 구현
 [] MapItem 매핑 구현
 [] KakaoAPIService 구현 
+[] Access suspend 함수 api로부터 받아오도록 구현 
+[] AndroidManifest.xml meta-data 수정 
+
 
