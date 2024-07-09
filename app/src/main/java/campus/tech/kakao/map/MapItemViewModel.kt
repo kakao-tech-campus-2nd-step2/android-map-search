@@ -7,44 +7,41 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class MapItemViewModel(context: Context) : ViewModel() {
-    val mapItemDB = MapItemDbHelper(context)
+    private val mapItemDB = KakaoMapItemDbHelper(context)
 
-    //private var mapItemList: MutableList<MapItem>
-    //private var selectItemList: MutableList<MapItem>
+    private val _kakaoMapItemList: MutableLiveData<List<KakaoMapItem>> = MutableLiveData()
+    val kakaoMapItemList : LiveData<List<KakaoMapItem>> get() = _kakaoMapItemList
 
-    private val _mapItemList: MutableLiveData<List<MapItem>> = MutableLiveData(listOf<MapItem>())
-    val mapItemList : LiveData<List<MapItem>> get() = _mapItemList
-
-    private val _selectItemList: MutableLiveData<List<MapItem>> = MutableLiveData(listOf<MapItem>())
-    val selectItemList : LiveData<List<MapItem>> get() = _selectItemList
+    private val _selectItemList: MutableLiveData<List<KakaoMapItem>> = MutableLiveData()
+    val selectItemList : LiveData<List<KakaoMapItem>> get() = _selectItemList
 
     init {
-        //updateMapItemDB()
-        mapItemDB.searchMapItem("")
-        _selectItemList.postValue(mapItemDB.makeAllSelectItemList())
+        updateMapItemDB()
+        _selectItemList.postValue(mapItemDB.selectItemDao.makeAllSelectItemList())
     }
 
-    fun updateMapItemDB() {
+    private fun updateMapItemDB() {
         mapItemDB.onUpgrade(mapItemDB.writableDatabase, 1, 2)
-        _selectItemList.postValue(mapItemDB.makeAllSelectItemList())
+        _selectItemList.postValue(mapItemDB.selectItemDao.makeAllSelectItemList())
     }
 
-    fun searchMapItem(category: String) {
-        _mapItemList.postValue(mapItemDB.searchMapItem(category))
+    suspend fun searchKakaoMapItem(category: String) {
+        _kakaoMapItemList.postValue(mapItemDB.searchKakaoMapItem(category))
+        Log.d("uin", "here2 " + _kakaoMapItemList.value?.size)
     }
 
-    fun insertSelectItem(mapItem: MapItem) {
+    fun insertSelectItem(mapItem: KakaoMapItem) {
         val id = mapItem.id
-        val isExist = mapItemDB.checkItemInDB(id)
+        val isExist = mapItemDB.selectItemDao.checkItemInDB(id)
         if(isExist) {
-            mapItemDB.deleteSelectItem(id)
+            mapItemDB.selectItemDao.deleteSelectItem(id)
         }
-        mapItemDB.insertSelectItem(mapItem.name, mapItem.address, mapItem.category, id)
-        _selectItemList.postValue(mapItemDB.makeAllSelectItemList())
+        mapItemDB.selectItemDao.insertSelectItem(mapItem.name, mapItem.address, mapItem.category, id)
+        _selectItemList.postValue(mapItemDB.selectItemDao.makeAllSelectItemList())
     }
 
-    fun deleteSelectItem(id: Int) {
-        mapItemDB.deleteSelectItem(id)
-        _selectItemList.postValue(mapItemDB.makeAllSelectItemList())
+    fun deleteSelectItem(id: String) {
+        mapItemDB.selectItemDao.deleteSelectItem(id)
+        _selectItemList.postValue(mapItemDB.selectItemDao.makeAllSelectItemList())
     }
 }

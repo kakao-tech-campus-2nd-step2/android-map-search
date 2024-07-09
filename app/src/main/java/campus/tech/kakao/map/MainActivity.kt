@@ -13,6 +13,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,19 +40,19 @@ class MainActivity : AppCompatActivity() {
         selectList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         mapListAdapter.setItemClickListener(object : MapListAdapter.ItemClickListener {
-            override fun onClick(v: View, mapItem: MapItem) {
+            override fun onClick(v: View, mapItem: KakaoMapItem) {
                 mapItemViewModel.insertSelectItem(mapItem)
             }
         })
 
         selectListAdapter.setCancelBtnClickListener(object :
             SelectListAdapter.CancelBtnClickListener {
-            override fun onClick(v: View, selectItem: MapItem) {
+            override fun onClick(v: View, selectItem: KakaoMapItem) {
                 mapItemViewModel.deleteSelectItem(selectItem.id)
             }
         })
 
-        mapItemViewModel.mapItemList.observe(this) {
+        mapItemViewModel.kakaoMapItemList.observe(this) {
             mapListAdapter.updateMapItemList(it)
         }
 
@@ -61,8 +64,10 @@ class MainActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                mapItemViewModel.searchMapItem(s.toString())
-                if (mapItemViewModel.mapItemList.value == null) {
+                CoroutineScope(Dispatchers.Default).launch {
+                    mapItemViewModel.searchKakaoMapItem(s.toString())
+                }
+                if (mapItemViewModel.kakaoMapItemList.value == null) {
                     mainText.visibility = View.VISIBLE
                 } else {
                     mainText.visibility = View.INVISIBLE
