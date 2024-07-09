@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(PlacesViewModel::class.java)
 
         searchHistoryList = repository.searchHistoryList
+
         setUpSearchHistoryAdapter()
         setUpPlacesAdapter()
         setUpViewModelObservers()
