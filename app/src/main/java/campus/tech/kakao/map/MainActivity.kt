@@ -55,14 +55,8 @@ class MainActivity : AppCompatActivity() {
                 if (search.isEmpty()) {
                     showNoResults()
                 }
-                when {
-                    search.equals("대형마트", ignoreCase = true) -> searchCategory("MT1")
-                    search.equals("편의점", ignoreCase = true) -> searchCategory("CS2")
-                    search.equals("어린이집", ignoreCase = true) -> searchCategory("PS3")
-                    search.equals("유치원", ignoreCase = true) -> searchCategory("PS3")
-                    search.equals("학교", ignoreCase = true) -> searchCategory("SC4")
-                    search.equals("학원", ignoreCase = true) -> searchCategory("AC5")
-                    // 더 추가 필요!
+                CategoryGroupCode.categoryMap[search]?.let {
+                    categoryCode -> searchCategory(categoryCode)
                 }
             }
         })
@@ -99,7 +93,6 @@ class MainActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<KakaoResponse>, t: Throwable) {
                 Log.e("MainActivity", "요청실패")
-                println("error : $t")
             }
         })
     }
