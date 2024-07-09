@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class MapListAdapter(
-    var mapItemList: MutableList<MapItem>, val layoutInflater: LayoutInflater
+    var mapItemList: List<MapItem>, val layoutInflater: LayoutInflater
 ) : RecyclerView.Adapter<MapListAdapter.ViewHolder>() {
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val name: TextView
@@ -49,7 +49,7 @@ class MapListAdapter(
         return mapItemList.size
     }
 
-    fun updateMapItemList(mapItemList: MutableList<MapItem>) {
+    fun updateMapItemList(mapItemList: List<MapItem>) {
         this.mapItemList = mapItemList
         notifyDataSetChanged()
     }

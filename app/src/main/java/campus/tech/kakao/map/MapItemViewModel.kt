@@ -2,34 +2,48 @@ package campus.tech.kakao.map
 
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class MapItemViewModel(context: Context) : ViewModel() {
-    private var mapItemList: MutableList<MapItem>
     val mapItemDB = MapItemDbHelper(context)
 
+    //private var mapItemList: MutableList<MapItem>
+    //private var selectItemList: MutableList<MapItem>
+
+    private val _mapItemList: MutableLiveData<List<MapItem>> = MutableLiveData(listOf<MapItem>())
+    val mapItemList : LiveData<List<MapItem>> get() = _mapItemList
+
+    private val _selectItemList: MutableLiveData<List<MapItem>> = MutableLiveData(listOf<MapItem>())
+    val selectItemList : LiveData<List<MapItem>> get() = _selectItemList
+
     init {
-        mapItemList = mapItemDB.searchMapItem("")
+        //updateMapItemDB()
+        mapItemDB.searchMapItem("")
+        _selectItemList.postValue(mapItemDB.makeAllSelectItemList())
     }
 
-    fun updateMapItemList() {
+    fun updateMapItemDB() {
         mapItemDB.onUpgrade(mapItemDB.writableDatabase, 1, 2)
+        _selectItemList.postValue(mapItemDB.makeAllSelectItemList())
     }
 
-    fun getMapItemList(): MutableList<MapItem> {
-        //mapItemList = mapItemDB.searchMapItem(category)
-        Log.d("uin", "" + mapItemList.size)
-        return mapItemList
+    fun searchMapItem(category: String) {
+        _mapItemList.postValue(mapItemDB.searchMapItem(category))
     }
 
-    fun searchMapItem(category: String): MutableList<MapItem> {
-        mapItemList = mapItemDB.searchMapItem(category)
-        return mapItemList
+    fun insertSelectItem(name: String, address: String, category: String, id: Int) {
+        val isExist = mapItemDB.checkItemInDB(id)
+        if(isExist) {
+            mapItemDB.deleteSelectItem(id)
+        }
+        mapItemDB.insertSelectItem(name, address, category, id)
+        _selectItemList.postValue(mapItemDB.makeAllSelectItemList())
     }
 
-    fun printAllMapItemList() {
-        mapItemDB.printAllMapItemList()
+    fun deleteSelectItem(id: Int) {
+        mapItemDB.deleteSelectItem(id)
+        _selectItemList.postValue(mapItemDB.makeAllSelectItemList())
     }
-
-
 }
