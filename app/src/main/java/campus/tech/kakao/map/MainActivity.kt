@@ -1,13 +1,16 @@
 package campus.tech.kakao.map
 
-import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
     private lateinit var searchView: SearchView
@@ -26,26 +29,28 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         noResultTextView = findViewById(R.id.noResultTextView)
         historyRecyclerView = findViewById(R.id.historyRecyclerView)
-        databaseHelper = SQLiteDb(this)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = PlacesAdapter(listOf()) { name ->
-            databaseHelper.insertIntoSelectedData(name)
-            updateHistory()
-        }
-        recyclerView.adapter = adapter
 
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        historyRecyclerView.layoutManager = LinearLayoutManager(this)
+
+        databaseHelper = SQLiteDb(this)
         historyRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        val historyList = databaseHelper.getAllSelectedData()
-        historyAdapter = HistoryAdapter(historyList.toMutableList()) { id ->
-            val deletedRows = databaseHelper.deleteFromSelectedData(id)
-            if (deletedRows > 0) {
-                historyAdapter.removeItemById(id)
-            } else { }
+
+        historyAdapter = HistoryAdapter(mutableListOf()) { id ->
+            databaseHelper.deleteFromSelectedData(id)
+            historyAdapter.removeItemById(id)
+            updateHistoryData()
         }
         historyRecyclerView.adapter = historyAdapter
 
+        adapter = PlacesAdapter(listOf()) { name ->
+            val id = databaseHelper.insertIntoSelectedData(name)
+            updateHistoryData()
+        }
+        recyclerView.adapter = adapter
+
         setupSearchView()
-        checkRun()
+        updateHistoryData()
     }
 
     private fun setupSearchView() {
@@ -66,43 +71,26 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun checkRun() {
-        val checkRun = getSharedPreferences("", Context.MODE_PRIVATE)
-            .getBoolean("First", true)
-        if (checkRun) {
-            insertData()
-            getSharedPreferences("", Context.MODE_PRIVATE).edit().putBoolean("First", false).apply()
-            databaseHelper.logAllData()
-        }
-    }
-
-    private fun insertData() {
-        val dbHelper = SQLiteDb(this)
-        for (i in 1..10) {
-            dbHelper.insertData("카페 $i", "서울 성동구 성수동 $i", "카페")
-            dbHelper.insertData("약국 $i", "서울 강남구 대치동 $i", "약국")
-        }
-    }
-
     private fun searchPlaces(query: String) {
-        val places = getPlacesFromDatabase(query)
-        if (places.isEmpty()) {
-            showNoResultMessage()
-            recyclerView.visibility = View.GONE
-        } else {
-            hideNoResultMessage()
-            recyclerView.visibility = View.VISIBLE
-            adapter.updateData(places)
-        }
-    }
+        val apiKey = "KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}"
 
-    private fun getPlacesFromDatabase(query: String): List<Place> {
-        return databaseHelper.getAllData().filter {
-            it.name.contains(query, ignoreCase = true) ||
-                    it.address.contains(query, ignoreCase = true) ||
-                    it.category.contains(query, ignoreCase = true)
-        }
-    }
+        RetrofitClient.instance.searchPlaces(apiKey, query).enqueue(object : Callback<ResultSearchKeyword> {
+            override fun onResponse(call: Call<ResultSearchKeyword>, response: Response<ResultSearchKeyword>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val places = response.body()?.documents ?: emptyList()
+                    if (places.isEmpty()) {
+                        showNoResultMessage()
+                    } else {
+                        hideNoResultMessage()
+                        adapter.updateData(places)
+                    }
+                } else {
+                    showNoResultMessage()
+                }
+            }
+
+            override fun onFailure(call: Call<ResultSearchKeyword>, t: Throwable) {
+                showNoResultMessage() } }) }
 
     private fun showNoResultMessage() {
         noResultTextView.visibility = View.VISIBLE
@@ -114,8 +102,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView.visibility = View.VISIBLE
     }
 
-    private fun updateHistory() {
-        val history = databaseHelper.getAllSelectedData()
-        historyAdapter.updateData(history)
+    private fun updateHistoryData() {
+        historyAdapter.updateData(databaseHelper.getAllSelectedData())
     }
 }

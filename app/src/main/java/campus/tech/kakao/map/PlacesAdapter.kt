@@ -15,10 +15,12 @@ class PlacesAdapter(private var places: List<Place>, private val onItemClick: (S
 
     override fun onBindViewHolder(holder: PlaceViewHolder, position: Int) {
         val place = places[position]
-        holder.nameTextView.text = place.name
-        holder.addressTextView.text = place.address
-        holder.categoryTextView.text = place.category
-        holder.itemView.setOnClickListener {onItemClick(place.name)}
+        val categoryGroupCode = CategoryGroupCode()
+
+        holder.nameTextView.text = place.placeName
+        holder.addressTextView.text = place.roadAddressName
+        holder.categoryTextView.text = categoryGroupCode.CodeToCategory[place.categoryName] ?: ""
+        holder.itemView.setOnClickListener { onItemClick(place.placeName) }
     }
 
     override fun getItemCount(): Int {
