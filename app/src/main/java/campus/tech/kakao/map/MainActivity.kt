@@ -1,6 +1,5 @@
 package campus.tech.kakao.map
 
-import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -20,7 +19,6 @@ import org.json.JSONArray
 
 class MainActivity : AppCompatActivity() {
     lateinit var adapter: Adapter
-    lateinit var dbHelper: DBHelper
     lateinit var tvNoResult: TextView
     lateinit var llSave: LinearLayoutCompat
     lateinit var hScrollView: HorizontalScrollView
@@ -28,8 +26,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        dbHelper = DBHelper(this)
 
         val etSearch = findViewById<EditText>(R.id.etSearch)
         tvNoResult = findViewById(R.id.tvNoResult)
