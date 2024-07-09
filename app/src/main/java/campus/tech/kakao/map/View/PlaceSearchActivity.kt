@@ -28,7 +28,6 @@ import campus.tech.kakao.map.View.Adapter.FavoriteAdapter
 import campus.tech.kakao.map.View.Adapter.SearchResultAdapter
 import campus.tech.kakao.map.View.Observer.EmptyPlaceObserver
 import campus.tech.kakao.map.ViewModel.SearchViewModel
-import com.android.identity.android.legacy.Utility
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
