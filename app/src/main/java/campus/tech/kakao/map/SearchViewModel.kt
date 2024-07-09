@@ -19,11 +19,8 @@ class SearchViewModel private constructor(private val searchRepository: SearchRe
     fun getAllSearchData(): List<String> {
         return searchRepository.getAllSearchData()
     }
-<<<<<<< HEAD
 
     fun bind(s: String) {
 
     }
-=======
->>>>>>> new-origin/main
 }
