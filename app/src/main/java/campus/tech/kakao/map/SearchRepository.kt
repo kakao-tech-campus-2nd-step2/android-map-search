@@ -5,51 +5,28 @@ import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-    fun saveSearchWord(searchWord: SearchWord) {
-        val db = dbHelper.writableDatabase
-        val values = ContentValues().apply {
-            put(SearchWordEntry.SEARCH_WORD, searchWord.searchword)
-        }
-        db.insert(SearchWordEntry.TABLE_NAME, null, values)
-        db.close()
+class SearchRepository {
+    companion object {
+        const val BASE_URL = "https://dapi.kakao.com"
+        const val API_KEY = "KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}"
     }
 
-    fun getSavedSearchWords(): List<SearchWord> {
-        val db = dbHelper.readableDatabase
+    suspend fun Search(searchKeyword: SearchKeyword): List<Place> {
+        return withContext(Dispatchers.IO) {
+            val retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(KakaoSearchKeywordAPI::class.java)
+                .getSearchKeyWord(API_KEY, searchKeyword.searchKeyword)
 
-        val projection = arrayOf(
-            SearchWordEntry.SEARCH_WORD
-        )
+            val response = retrofit.execute()
 
-        val cursor = db.query(
-            SearchWordEntry.TABLE_NAME,
-            projection,
-            null,
-            null,
-            null,
-            null,
-            null
-        )
-
-        val savedSearchWords = mutableListOf<SearchWord>()
-        with(cursor) {
-            while (moveToNext()) {
-                val searchWord = getString(getColumnIndexOrThrow(SearchWordEntry.SEARCH_WORD))
-
-                val savedSearchWord = SearchWord(searchWord)
-                savedSearchWords.add(savedSearchWord)
+            if (response.isSuccessful) {
+                 response.body()?.places ?: emptyList()
+            }else{
+                emptyList()
             }
         }
-        cursor.close()
-        db.close()
-        return savedSearchWords
-    }
-
-    fun delSavedSearchWord(searchWord: SearchWord) {
-        val db = dbHelper.writableDatabase
-        val selection = "${SearchWordEntry.SEARCH_WORD} = ?"
-        val selectionArgs = arrayOf(searchWord.searchword)
-        db.delete(SearchWordEntry.TABLE_NAME, selection, selectionArgs)
-        db.close()
     }
 }
