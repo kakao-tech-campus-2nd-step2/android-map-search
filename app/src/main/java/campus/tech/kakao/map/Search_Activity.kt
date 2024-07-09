@@ -40,7 +40,7 @@ class Search_Activity : AppCompatActivity() {
         initAdapters()
         setupRecyclerViews()
         setupSearchView()
-        searchAndDisplayResults("")
+        //searchAndDisplayResults("")
     }
 
     private fun initViews() {
@@ -59,7 +59,7 @@ class Search_Activity : AppCompatActivity() {
             .addInterceptor(logging)
             .addInterceptor { chain ->
                 val request = chain.request().newBuilder()
-                    .addHeader("Authorization", "e6a7c826ae7a55df129b8be2c636e213")
+                    .addHeader("Authorization", "KakaoAK 13c6b4e1c003d0f42b3b07888391c355")
                     .build()
                 chain.proceed(request)
             }
@@ -84,7 +84,8 @@ class Search_Activity : AppCompatActivity() {
 
     private fun setupRecyclerViews() {
         searchRecyclerView.layoutManager = LinearLayoutManager(this)
-        savedSearchRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        savedSearchRecyclerView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         searchRecyclerView.adapter = searchResultAdapter
         savedSearchRecyclerView.adapter = savedSearchAdapter
@@ -93,29 +94,41 @@ class Search_Activity : AppCompatActivity() {
     private fun setupSearchView() {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                if (query != null) {
+                if (!query.isNullOrBlank()) {
                     searchAndDisplayResults(query)
                 }
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                val searchText = newText ?: ""
-                searchAndDisplayResults(searchText)
+                if (newText.isNullOrBlank()) {
+                    searchAndDisplayResults("")
+                } else {
+                    searchAndDisplayResults(newText)
+                }
                 return true
             }
         })
     }
 
+
     private fun searchAndDisplayResults(searchText: String) {
+        if (searchText.isBlank()) {
+            searchRecyclerView.visibility = RecyclerView.GONE
+            noResultTextView.visibility = RecyclerView.VISIBLE
+            return
+        }
+
         lifecycleScope.launch(Dispatchers.Main) {
             try {
                 val response = kakaoApiService.searchAddress(searchText)
-                val places = response.documents.map { document ->
+                val documents = response.documents ?: emptyList()
+
+                val places = documents.map { document ->
                     mapOf(
-                        MapContract.COLUMN_NAME to document.placeName,
-                        MapContract.COLUMN_ADDRESS to document.addressName,
-                        MapContract.COLUMN_CATEGORY to document.categoryName
+                        MapContract.COLUMN_NAME to (document.placeName ?: "카페"),
+                        MapContract.COLUMN_ADDRESS to (document.addressName ?: "No Address"),
+                        MapContract.COLUMN_CATEGORY to "카페"
                     )
                 }
 
@@ -132,6 +145,8 @@ class Search_Activity : AppCompatActivity() {
             }
         }
     }
+
+
 
     private fun getContentValues(place: Map<String, String>): ContentValues {
         return ContentValues().apply {
@@ -168,9 +183,9 @@ class Search_Activity : AppCompatActivity() {
             private val categoryTextView: TextView = itemView.findViewById(R.id.category)
 
             fun bind(place: Map<String, String>) {
-                nameTextView.text = place[MapContract.COLUMN_NAME] ?: ""
-                addressTextView.text = place[MapContract.COLUMN_ADDRESS] ?: ""
-                categoryTextView.text = place[MapContract.COLUMN_CATEGORY] ?: ""
+                nameTextView.text = place[MapContract.COLUMN_NAME] ?: "No Name"
+                addressTextView.text = place[MapContract.COLUMN_ADDRESS] ?: "No Address"
+                categoryTextView.text = place[MapContract.COLUMN_CATEGORY] ?: "No Category"
             }
         }
     }
