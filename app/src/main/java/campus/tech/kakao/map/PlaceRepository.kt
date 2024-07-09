@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.database.Cursor
 import androidx.core.content.edit
+import campus.tech.kakao.map.domain.model.Place
 
 class PlaceRepository(context: Context) {
     private val dbHelper = PlaceDBHelper.getInstance(context)
@@ -19,9 +20,9 @@ class PlaceRepository(context: Context) {
         val db = dbHelper.writableDatabase
         val values =
             ContentValues().apply {
-                put(PlaceDBContract.PlaceEntry.COLUMN_NAME, place.name)
-                put(PlaceDBContract.PlaceEntry.COLUMN_ADDRESS, place.address)
-                put(PlaceDBContract.PlaceEntry.COLUMN_TYPE, place.type)
+                put(PlaceDBContract.PlaceEntry.COLUMN_NAME, place.placeName)
+                put(PlaceDBContract.PlaceEntry.COLUMN_ADDRESS, place.addressName)
+                put(PlaceDBContract.PlaceEntry.COLUMN_TYPE, place.categoryName)
             }
         db.insert(PlaceDBContract.PlaceEntry.TABLE_NAME, null, values)
         db.close()
@@ -72,9 +73,9 @@ class PlaceRepository(context: Context) {
         for (place in dummyPlaces) {
             val value =
                 ContentValues().apply {
-                    put(PlaceDBContract.PlaceEntry.COLUMN_NAME, place.name)
-                    put(PlaceDBContract.PlaceEntry.COLUMN_ADDRESS, place.address)
-                    put(PlaceDBContract.PlaceEntry.COLUMN_TYPE, place.type)
+                    put(PlaceDBContract.PlaceEntry.COLUMN_NAME, place.placeName)
+                    put(PlaceDBContract.PlaceEntry.COLUMN_ADDRESS, place.addressName)
+                    put(PlaceDBContract.PlaceEntry.COLUMN_TYPE, place.categoryName)
                 }
             db.insert(PlaceDBContract.PlaceEntry.TABLE_NAME, null, value)
         }

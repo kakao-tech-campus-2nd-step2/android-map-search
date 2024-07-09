@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import campus.tech.kakao.map.domain.model.Place
 
 class PlaceActivity : AppCompatActivity() {
     private lateinit var placeViewModel: PlaceViewModel
@@ -57,7 +58,7 @@ class PlaceActivity : AppCompatActivity() {
         historyRecyclerView = findViewById(R.id.historyRecyclerView)
         placeAdapter =
             PlaceAdapter { place ->
-                placeViewModel.saveSearchQuery(place.name)
+                placeViewModel.saveSearchQuery(place.placeName)
             }
     }
 

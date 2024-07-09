@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import campus.tech.kakao.map.domain.model.Place
 
 class PlaceAdapter(
     private val onItemClick: (Place) -> Unit,
@@ -34,9 +35,9 @@ class PlaceAdapter(
         position: Int,
     ) {
         val place = places[position]
-        holder.nameTextView.text = place.name
-        holder.addressTextView.text = place.address
-        holder.typeTextView.text = place.type
+        holder.nameTextView.text = place.placeName
+        holder.addressTextView.text = place.addressName
+        holder.typeTextView.text = place.categoryName
         holder.itemView.setOnClickListener {
             onItemClick(place)
         }
