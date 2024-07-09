@@ -9,30 +9,26 @@ import androidx.lifecycle.MutableLiveData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
 
 class MapModel(mContext: Context) {
     private val helper: MapDbHelper = MapDbHelper(mContext)
     private val retrofit: RetrofitService = RetrofitServiceClient.getRetrofit("https://dapi.kakao.com/")
+
     private val _searchResult = MutableLiveData(getAllLocation())
     val searchResult: LiveData<List<Location>> = _searchResult
+    private val _searchHistory = MutableLiveData(getAllHistory())
+    val searchHistory: LiveData<List<String>> = _searchHistory
 
-    fun searchByKeyword(keyword: String, isExactMatch: Boolean) {
+    fun searchByKeywordFromServer(keyword: String, isExactMatch: Boolean) {
         val authorization = "KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}"
         retrofit.requestLocationByKeyword(authorization, keyword).enqueue(object : Callback<ServerResult> {
             override fun onResponse(call: Call<ServerResult>, response: Response<ServerResult>) {
                 if (response.isSuccessful) {
-                    helper.clearDb(helper.writableDatabase)
+                    clearDb()
                     val body = response.body()
-                    val res = mutableListOf<Location>()
-                    body?.docList?.forEachIndexed { index, document ->
-                        val location = getLocation(document)
-                        insertLocation(location)
-                        res.add(location)
-                        Log.d("Model", document.toString())
+                    body?.let {
+                        updateDb(body)
                     }
-                    Log.d("Model", "==============")
-                    _searchResult.value = res
                 }
             }
 
@@ -164,5 +160,24 @@ class MapModel(mContext: Context) {
         }
         cursor.close()
         return res
+    }
+
+    private fun updateDb(serverResult: ServerResult) {
+        Log.d("Model", serverResult.meta.toString())
+        Log.d("Model", serverResult.docList.size.toString())
+        Log.d("Model", "~~~~~")
+        val res = mutableListOf<Location>()
+        serverResult.docList.forEach { document ->
+            val location = getLocation(document)
+            insertLocation(location)
+            res.add(location)
+            Log.d("Model", document.toString())
+        }
+        Log.d("Model", "==============")
+        _searchResult.value = res
+    }
+
+    private fun clearDb() {
+        helper.clearDb(helper.writableDatabase)
     }
 }

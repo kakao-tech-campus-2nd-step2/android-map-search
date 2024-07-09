@@ -22,7 +22,6 @@ class ResultRecyclerAdapter(
             itemView.setOnClickListener {
                 if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
                     databaseListener.insertHistory(name.text.toString())
-                    databaseListener.updateSearchHistory()
                 }
             }
         }
@@ -45,6 +44,5 @@ class ResultRecyclerAdapter(
 
     fun refreshList() {
         notifyDataSetChanged()
-        Log.d("recycler", "notify Data set change")
     }
 }

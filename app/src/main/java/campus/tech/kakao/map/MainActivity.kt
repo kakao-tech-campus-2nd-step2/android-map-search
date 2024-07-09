@@ -1,15 +1,12 @@
 package campus.tech.kakao.map
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
-import androidx.core.widget.doBeforeTextChanged
-import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -63,14 +60,6 @@ class MainActivity : AppCompatActivity(), DatabaseListener {
         viewModel.insertHistory(historyName)
     }
 
-    override fun updateSearchResult() {
-//        searchResultAdapter.refreshList()
-    }
-
-    override fun updateSearchHistory() {
-//        searchHistoryAdapter.refreshList()
-    }
-
     private fun hideResult() {
         searchResultView.isVisible = false
         message.isVisible = true
@@ -80,7 +69,7 @@ class MainActivity : AppCompatActivity(), DatabaseListener {
         message.isVisible = false
     }
     private fun search(locName: String, isExactMatch: Boolean) {
-        viewModel.searchByKeyword(locName, isExactMatch)
+        viewModel.searchByKeywordFromServer(locName, isExactMatch)
     }
 
     private fun initSearchResultView() {
