@@ -17,7 +17,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-
+//통신
 class Search_Activity : AppCompatActivity() {
 
     private lateinit var searchView: SearchView
@@ -51,7 +51,7 @@ class Search_Activity : AppCompatActivity() {
         }
 
         // 검색 결과 어댑터, 저장된 검색 어댑터 초기화
-        searchResultAdapter = PlaceAdapter(emptyList())
+        //searchResultAdapter = PlaceAdapter(emptyList())
         savedSearchAdapter = SavedSearchAdapter(this, emptyList()) { searchText ->
             searchAndDisplayResults(searchText)
         }
@@ -61,7 +61,7 @@ class Search_Activity : AppCompatActivity() {
         savedSearchRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         // RecyclerView에 어댑터를 설정
-        searchRecyclerView.adapter = searchResultAdapter
+       // searchRecyclerView.adapter = searchResultAdapter
         savedSearchRecyclerView.adapter = savedSearchAdapter
 
         // SearchView에 텍스트 변경 리스너를 설정
@@ -107,7 +107,7 @@ class Search_Activity : AppCompatActivity() {
         GlobalScope.launch(Dispatchers.Main) {
             try {
                 val response = kakaoApiService.searchAddress(searchText)
-                val places = response.documents.map { document ->
+                val places = response.documents.forEach { document ->
                     mapOf(
                         MapContract.COLUMN_NAME to document.placeName,
                         MapContract.COLUMN_ADDRESS to document.addressName,
@@ -116,16 +116,15 @@ class Search_Activity : AppCompatActivity() {
                 }
 
                 // 검색 결과를 데이터베이스에 저장
-                savePlacesToDatabase(places)
+                //savePlacesToDatabase(places)
 
                 // 검색 결과가 없는 경우 "검색결과가 없습니다."
-                if (places.isEmpty()) {
+                if (searchText.isEmpty()) {
                     searchRecyclerView.visibility = RecyclerView.GONE
                     noResultTextView.visibility = RecyclerView.VISIBLE
                 } else {
                     searchRecyclerView.visibility = RecyclerView.VISIBLE
                     noResultTextView.visibility = RecyclerView.GONE
-                    searchResultAdapter.updateData(places)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -133,12 +132,12 @@ class Search_Activity : AppCompatActivity() {
         }
     }
 
-    // 검색 결과를 데이터베이스에 저장하는 메서드
-    private fun savePlacesToDatabase(places: List<Map<String, String>>) {
-        GlobalScope.launch(Dispatchers.IO) {
-            try {
-                val db = databaseHelper.writableDatabase
-                db.beginTransaction()
+                // 검색 결과를 데이터베이스에 저장하는 메서드
+                 private fun savePlacesToDatabase(places: List<Map<String, String>>) {
+                    GlobalScope.launch(Dispatchers.IO) {
+                        try {
+                                val db = databaseHelper.writableDatabase
+                            db.beginTransaction()
                 try {
                     // 기존 데이터를 삭제하고 새 데이터를 삽입
                     db.delete(MapContract.TABLE_CAFE, null, null)
@@ -163,51 +162,58 @@ class Search_Activity : AppCompatActivity() {
         }
     }
 
-    // ContentValues를 생성하는 메서드
-    private fun getContentValues(place: Map<String, String>): ContentValues {
-        return ContentValues().apply {
-            put(MapContract.COLUMN_NAME, place[MapContract.COLUMN_NAME])
-            put(MapContract.COLUMN_ADDRESS, place[MapContract.COLUMN_ADDRESS])
-            put(MapContract.COLUMN_CATEGORY, place[MapContract.COLUMN_CATEGORY])
-        }
-    }
+                // ContentValues를 생성하는 메서드
+                private fun getContentValues(place: Map<String, String>): ContentValues {
+                    return ContentValues().apply {
+                        put(MapContract.COLUMN_NAME, place[MapContract.COLUMN_NAME])
+                        put(MapContract.COLUMN_ADDRESS, place[MapContract.COLUMN_ADDRESS])
+                        put(MapContract.COLUMN_CATEGORY, place[MapContract.COLUMN_CATEGORY])
+                    }
+                }
 
-    // 검색 결과를 표시하기 위한 PlaceAdapter 클래스
-    inner class PlaceAdapter(private var data: List<Map<String, String>>) :
-        RecyclerView.Adapter<PlaceAdapter.PlaceViewHolder>() {
+                // 검색 결과를 표시하기 위한 PlaceAdapter 클래스
+                inner class PlaceAdapter(private var data: List<Map<String, String>>) :
+                    RecyclerView.Adapter<PlaceAdapter.PlaceViewHolder>() {
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaceViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.activity_place_item, parent, false)
-            return PlaceViewHolder(view)
-        }
+                    override fun onCreateViewHolder(
+                        parent: ViewGroup,
+                        viewType: Int
+                    ): PlaceViewHolder {
+                        val view = LayoutInflater.from(parent.context)
+                            .inflate(R.layout.activity_place_item, parent, false)
+                        return PlaceViewHolder(view)
+                    }
 
-        override fun onBindViewHolder(holder: PlaceViewHolder, position: Int) {
-            val place = data[position]
-            holder.bind(place)
-        }
+                    override fun onBindViewHolder(holder: PlaceViewHolder, position: Int) {
+                        val place = data[position]
+                        holder.bind(place)
+                    }
 
-        override fun getItemCount(): Int = data.size
+                    override fun getItemCount(): Int = data.size
 
-        fun updateData(newData: List<Map<String, String>>) {
-            data = newData
-            notifyDataSetChanged()
-        }
+                    fun updateData(newData: List<Map<String, String>>) {
+                        data = newData
+                        notifyDataSetChanged()
+                    }
 
-        // PlaceViewHolder 클래스
-        inner class PlaceViewHolder(itemView: android.view.View) : RecyclerView.ViewHolder(itemView) {
-            private val nameTextView: TextView = itemView.findViewById(R.id.name)
-            private val addressTextView: TextView = itemView.findViewById(R.id.place)
-            private val categoryTextView: TextView = itemView.findViewById(R.id.category)
+                    // PlaceViewHolder 클래스
+                    inner class PlaceViewHolder(itemView: android.view.View) :
+                        RecyclerView.ViewHolder(itemView) {
+                        private val nameTextView: TextView = itemView.findViewById(R.id.name)
+                        private val addressTextView: TextView = itemView.findViewById(R.id.place)
+                        private val categoryTextView: TextView =
+                            itemView.findViewById(R.id.category)
 
-            fun bind(place: Map<String, String>) {
-                val name = place[MapContract.COLUMN_NAME] ?: ""
-                val address = place[MapContract.COLUMN_ADDRESS] ?: ""
-                val category = place[MapContract.COLUMN_CATEGORY] ?: ""
+                        fun bind(place: Map<String, String>) {
+                            val name = place[MapContract.COLUMN_NAME] ?: ""
+                            val address = place[MapContract.COLUMN_ADDRESS] ?: ""
+                            val category = place[MapContract.COLUMN_CATEGORY] ?: ""
 
-                nameTextView.text = name
-                addressTextView.text = address
-                categoryTextView.text = category
+                            nameTextView.text = name
+                            addressTextView.text = address
+                            categoryTextView.text = category
+                        }
+                    }
+                }
             }
-        }
-    }
-}
+
