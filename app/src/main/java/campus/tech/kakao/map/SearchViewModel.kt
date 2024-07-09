@@ -6,7 +6,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class SearchViewModel(private val searchRepository: SearchRepository) : ViewModel() {
+class SearchViewModel(
+    private val searchRepository: SearchRepository,
+    private val savedSearchKeywordRepository: SavedSearchKeywordRepository
+) : ViewModel() {
 
     private val _searchResults = MutableStateFlow<List<Place>>(emptyList())
     val searchResults: StateFlow<List<Place>> get() = _searchResults
@@ -22,16 +25,18 @@ class SearchViewModel(private val searchRepository: SearchRepository) : ViewMode
             _searchResults.value = searchRepository.Search(searchKeyword)
         }
     }
-    fun saveSearchWord(searchWord: SearchWord){
-        searchRepository.saveSearchWord(searchWord)
-        getSavedSearchWords()
-    }
-    fun getSavedSearchWords(){
-        _savedSearchWords.value = searchRepository.getSavedSearchWords()
+
+    fun saveSearchKeyword(searchKeyword: SearchKeyword) {
+        savedSearchKeywordRepository.saveSearchKeyword(searchKeyword)
+        getSavedSearchKeywords()
     }
 
-    fun delSavedSearchWord(searchWord: SearchWord){
-        searchRepository.delSavedSearchWord(searchWord)
-        getSavedSearchWords()
+    fun getSavedSearchKeywords() {
+        _savedSearchKeywords.value = savedSearchKeywordRepository.getSavedSearchKeywords()
+    }
+
+    fun delSavedSearchKeyword(searchKeyword: SearchKeyword) {
+        savedSearchKeywordRepository.delSavedSearchKeyword(searchKeyword)
+        getSavedSearchKeywords()
     }
 }
