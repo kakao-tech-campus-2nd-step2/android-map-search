@@ -33,6 +33,9 @@ class MainActivity : AppCompatActivity() {
         observeViewModels()
     }
 
+    /**
+     * 사용할 ViewModel을 설정하는 함수
+     */
     private fun setupViewModels() {
         placeViewModel = ViewModelProvider(this)[PlaceViewModel::class.java]
         savedSearchWordViewModel = ViewModelProvider(this)[SavedSearchWordViewModel::class.java]

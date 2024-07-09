@@ -30,40 +30,57 @@ class PlaceRepository {
     ) {
         categoryCodeMap[categoryInput]?.let { categoryGroupCode ->
             fetchPlacesByCategory(categoryGroupCode, callback)
-        }
+        } ?: callback(emptyList())
     }
 
     private fun fetchPlacesByCategory(
         categoryGroupCode: String,
         callback: (List<Place>) -> Unit,
     ) {
-        kakaoLocalService.getPlacesByCategory(categoryGroupCode)
-            .enqueue(
-                object : Callback<PlaceResponse> {
-                    override fun onResponse(
-                        call: Call<PlaceResponse>,
-                        response: Response<PlaceResponse>,
-                    ) {
-                        if (response.isSuccessful) {
-                            handleSuccessfulResponse(response, callback)
-                        } else {
-                            handleErrorResponse(response, callback)
-                        }
-                    }
+        val placeList = mutableListOf<Place>()
+        val pageSize = 15
+        val totalPageCount = 7
 
-                    override fun onFailure(
-                        call: Call<PlaceResponse>,
-                        t: Throwable,
-                    ) {
-                        handleFailure(t, callback)
-                    }
-                },
-            )
+        repeat(totalPageCount) { page ->
+            kakaoLocalService.getPlacesByCategory(categoryGroupCode, page + 1, pageSize)
+                .enqueue(
+                    object : Callback<PlaceResponse> {
+                        override fun onResponse(
+                            call: Call<PlaceResponse>,
+                            response: Response<PlaceResponse>,
+                        ) {
+                            if (response.isSuccessful) {
+                                handleSuccessfulResponse(response, placeList)
+
+                                if (isLastPage(page, totalPageCount)) {
+                                    callback(placeList)
+                                }
+                            } else {
+                                handleErrorResponse(response, callback)
+                            }
+                        }
+
+                        override fun onFailure(
+                            call: Call<PlaceResponse>,
+                            t: Throwable,
+                        ) {
+                            handleFailure(t, callback)
+                        }
+                    },
+                )
+        }
+    }
+
+    private fun isLastPage(
+        currentPage: Int,
+        totalPageCount: Int,
+    ): Boolean {
+        return currentPage == totalPageCount - 1
     }
 
     private fun handleSuccessfulResponse(
         response: Response<PlaceResponse>,
-        callback: (List<Place>) -> Unit,
+        allPlaces: MutableList<Place>,
     ) {
         val places =
             response.body()?.documents?.map { dto ->
@@ -74,7 +91,7 @@ class PlaceRepository {
                     category = dto.category,
                 )
             } ?: emptyList()
-        callback(places)
+        allPlaces.addAll(places)
     }
 
     private fun handleErrorResponse(

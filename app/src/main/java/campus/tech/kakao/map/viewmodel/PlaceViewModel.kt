@@ -21,4 +21,5 @@ class PlaceViewModel : ViewModel() {
             _searchResults.value = places
         }
     }
+    
 }
