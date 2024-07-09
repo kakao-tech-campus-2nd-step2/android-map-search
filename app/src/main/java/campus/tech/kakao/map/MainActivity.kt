@@ -12,11 +12,13 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import retrofit2.Call
+import campus.tech.kakao.map.SearchResult
 
 class MainActivity : AppCompatActivity() {
-    private val API_KEY = "276613de22bf074fb398b9eed102f89b"
+    private val API_KEY = "KakaoAK 276613de22bf074fb398b9eed102f89b"
 
     private lateinit var db: DataDbHelper
     private lateinit var recyclerView: RecyclerView
@@ -40,6 +42,7 @@ class MainActivity : AppCompatActivity() {
         setRecyclerView()
         setSearchListener()
     }
+
     private fun initialize() {
         recyclerView = findViewById(R.id.recyclerView)
         inputText = findViewById(R.id.inputText)
@@ -47,7 +50,6 @@ class MainActivity : AppCompatActivity() {
         resultView = findViewById(R.id.resultView)
         searchView = findViewById(R.id.searchView)
     }
-
 
     private fun setCancelBtn() {
         cancelBtn.setOnClickListener {
@@ -138,28 +140,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun searchLocations(key: String) {
-        val readDB = db.readableDatabase
+        val apiService = RetrofitClient.instance
+        val call: Call<campus.tech.kakao.map.SearchResult> = apiService.searchPlaces(API_KEY, key)
+        call.enqueue(campus.tech.kakao.map.SearchCallback(this))
+    }
+
+    fun updateSearchResults(results: List<Place>) {
         locationList.clear()
-
-        val cursor = readDB.query(
-            "LOCATION",
-            null,
-            "name LIKE ? OR location LIKE ? OR category LIKE ?",
-            arrayOf("%$key%", "%$key%", "%$key%"),
-            null,
-            null,
-            null
-        )
-
-        cursor.use { cur ->
-            while (cur.moveToNext()) {
-                val name = cur.getString(cur.getColumnIndexOrThrow("name"))
-                val location = cur.getString(cur.getColumnIndexOrThrow("location"))
-                val category = cur.getString(cur.getColumnIndexOrThrow("category"))
-                locationList.add(LocationData(name, location, category))
-            }
+        for (result in results) {
+            locationList.add(LocationData(result.place_name, result.address_name, result.category_group_name))
         }
-
         updateRecyclerView()
         isShowText()
     }

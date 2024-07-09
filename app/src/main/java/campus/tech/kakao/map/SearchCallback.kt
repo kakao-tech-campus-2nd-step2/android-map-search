@@ -5,13 +5,12 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class SearchCallback : Callback<SearchResult> {
+class SearchCallback(private val activity: MainActivity) : Callback<SearchResult> {
     override fun onResponse(call: Call<SearchResult>, response: Response<SearchResult>) {
         if (response.isSuccessful) {
             val result = response.body()
-            result?.documents?.forEach { place ->
-                // 여기에 place 데이터 처리 로직
-                Log.d("SearchCallback", "Place: ${place.place_name}")
+            result?.documents?.let { places ->
+                activity.updateSearchResults(places)
             }
             Log.d("SearchCallback", "Data received from Kakao API")
         } else {
