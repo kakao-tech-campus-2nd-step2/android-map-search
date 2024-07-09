@@ -15,7 +15,6 @@ import campus.tech.kakao.map.viewModel.MapRepository
 import campus.tech.kakao.map.viewModel.PlacesViewModel
 import campus.tech.kakao.map.viewModel.PlacesViewModelFactory
 import com.kakao.sdk.common.KakaoSdk
-import com.kakao.sdk.common.util.Utility
 import com.kakao.vectormap.KakaoMapSdk
 
 class MainActivity : AppCompatActivity() {
@@ -47,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         setUpViewModelObservers()
 
         binding.searchInput.addTextChangedListener { text ->
-            viewModel.filterPlace(text.toString())
+            viewModel.filterPlaces(text.toString())
         }
 
         binding.deleteInput.setOnClickListener {
@@ -55,7 +54,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         updateSearchHistoryVisibility()
-        Log.d("KeyHash", "${Utility.getKeyHash(this)}")
     }
 
     private fun setUpSearchHistoryAdapter() {
