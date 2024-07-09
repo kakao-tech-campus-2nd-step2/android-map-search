@@ -17,13 +17,7 @@ class MapViewActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("MapViewActivity", "onCreate called")
-
-
-        Log.d("MapViewActivity", "Setting content view")
         setContentView(R.layout.activity_map_view)
-        Log.d("MapViewActivity", "Content view set")
-
 
         try {
             mapView = findViewById(R.id.map)
