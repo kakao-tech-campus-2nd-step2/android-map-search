@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: PlacesViewModel
     private lateinit var placesAdapter: PlacesAdapter
 
-    private var searchHistoryList = ArrayList<RecentSearchWord>()
+    private lateinit var searchHistoryList: ArrayList<RecentSearchWord>
     private lateinit var searchHistoryAdapter: SearchHistoryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,13 +40,13 @@ class MainActivity : AppCompatActivity() {
         val viewModelFactory = PlacesViewModelFactory(repository)
         viewModel = ViewModelProvider(this, viewModelFactory).get(PlacesViewModel::class.java)
 
-        searchHistoryList = repository.getSearchHistory()
+        searchHistoryList = repository.searchHistoryList
         setUpSearchHistoryAdapter()
         setUpPlacesAdapter()
         setUpViewModelObservers()
 
         binding.searchInput.addTextChangedListener { text ->
-            viewModel.filterPlaces(text.toString())
+            viewModel.searchPlaces(text.toString())
         }
 
         binding.deleteInput.setOnClickListener {
