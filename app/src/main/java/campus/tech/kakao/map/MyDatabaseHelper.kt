@@ -88,10 +88,9 @@ class MyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, "History.db
             nameTextView.text = MapContract.COLUMN_NAME
             addressTextView.text = MapContract.COLUMN_ADDRESS
             categoryTextView.text = MapContract.COLUMN_CATEGORY
-            }
         }
     }
-
+}
 
 
 
