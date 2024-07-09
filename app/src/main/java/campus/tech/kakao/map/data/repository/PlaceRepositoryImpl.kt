@@ -5,10 +5,8 @@ import campus.tech.kakao.map.data.network.KaKaoLocalApiClient
 import campus.tech.kakao.map.data.network.PlaceResponse
 import campus.tech.kakao.map.data.network.service.KakaoLocalService
 import campus.tech.kakao.map.model.Place
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import retrofit2.Response
 
 class PlaceRepositoryImpl : PlaceRepository {
@@ -26,49 +24,41 @@ class PlaceRepositoryImpl : PlaceRepository {
             "병원" to "HP8", "약국" to "PM9",
         )
 
-    override fun getPlacesByCategory(
-        categoryInput: String,
-        callback: (List<Place>) -> Unit,
-    ) {
-        categoryCodeMap[categoryInput]?.let { categoryGroupCode ->
-            CoroutineScope(Dispatchers.IO).launch {
-                fetchPlacesByCategory(categoryGroupCode, callback)
-            }
-        } ?: callback(emptyList())
+    override suspend fun getPlacesByCategory(categoryInput: String): List<Place> {
+        val categoryGroupCode = categoryCodeMap[categoryInput] ?: return emptyList()
+        return fetchPlacesByCategory(categoryGroupCode)
     }
 
-    private suspend fun fetchPlacesByCategory(
-        categoryGroupCode: String,
-        callback: (List<Place>) -> Unit,
-    ) {
+    private suspend fun fetchPlacesByCategory(categoryGroupCode: String): List<Place> {
         val placeList = mutableListOf<Place>()
         val pageSize = 15
         val totalPageCount = 7
 
-        for (page in 1..totalPageCount) {
-            try {
-                val response =
-                    kakaoLocalService.getPlacesByCategory(categoryGroupCode, page, pageSize)
-
-                if (response.isSuccessful) {
-                    handleSuccessfulResponse(response, placeList)
-                } else {
-                    withContext(Dispatchers.Main) {
-                        handleErrorResponse(response, callback)
-                        return@withContext
+        coroutineScope {
+            val deferredResults =
+                (1..totalPageCount).map { page ->
+                    async {
+                        try {
+                            kakaoLocalService.getPlacesByCategory(categoryGroupCode, page, pageSize)
+                        } catch (e: Exception) {
+                            null
+                        }
                     }
                 }
-            } catch (e: Exception) {
-                Log.e("PlaceRepository", "API call failed", e)
-                withContext(Dispatchers.Main) {
-                    callback(emptyList())
-                    return@withContext
+
+            deferredResults.forEach { deferred ->
+                val response = deferred.await()
+                response?.let {
+                    if (it.isSuccessful) {
+                        handleSuccessfulResponse(it, placeList)
+                    } else {
+                        handleErrorResponse(it)
+                    }
                 }
             }
         }
-        withContext(Dispatchers.Main) {
-            callback(placeList)
-        }
+
+        return placeList
     }
 
     private fun handleSuccessfulResponse(
@@ -87,11 +77,7 @@ class PlaceRepositoryImpl : PlaceRepository {
         allPlaces.addAll(places)
     }
 
-    private fun handleErrorResponse(
-        response: Response<PlaceResponse>?,
-        callback: (List<Place>) -> Unit,
-    ) {
+    private fun handleErrorResponse(response: Response<PlaceResponse>?) {
         Log.e("PlaceRepository", "Failed to fetch places: ${response?.errorBody()?.string()}")
-        callback(emptyList())
     }
 }

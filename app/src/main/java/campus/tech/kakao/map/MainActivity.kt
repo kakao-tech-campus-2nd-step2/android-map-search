@@ -22,6 +22,7 @@ import campus.tech.kakao.map.model.SavedSearchWord
 import campus.tech.kakao.map.viewmodel.PlaceViewModel
 import campus.tech.kakao.map.viewmodel.SavedSearchWordViewModel
 import campus.tech.kakao.map.viewmodel.ViewModelFactory
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -251,7 +252,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun collectSearchResults() {
         lifecycleScope.launch {
-            placeViewModel.searchResults.collect { places ->
+            placeViewModel.searchResults.collectLatest { places ->
                 (binding.searchResultRecyclerView.adapter as? ResultRecyclerViewAdapter)?.submitList(places)
                 binding.noSearchResultTextView.visibility = if (places.isEmpty()) View.VISIBLE else View.GONE
             }
@@ -263,10 +264,8 @@ class MainActivity : AppCompatActivity() {
      */
     private fun collectSavedSearchWords() {
         lifecycleScope.launch {
-            savedSearchWordViewModel.savedSearchWords.collect { savedSearchWords ->
-                (binding.savedSearchWordRecyclerView.adapter as? SavedSearchWordRecyclerViewAdapter)?.submitList(
-                    savedSearchWords,
-                )
+            savedSearchWordViewModel.savedSearchWords.collectLatest { savedSearchWords ->
+                (binding.savedSearchWordRecyclerView.adapter as? SavedSearchWordRecyclerViewAdapter)?.submitList(savedSearchWords)
                 binding.savedSearchWordRecyclerView.visibility =
                     if (savedSearchWords.isEmpty()) View.GONE else View.VISIBLE
             }
