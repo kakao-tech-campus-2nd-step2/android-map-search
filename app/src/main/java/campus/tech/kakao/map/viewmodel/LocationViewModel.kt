@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import campus.tech.kakao.map.Place
 import campus.tech.kakao.map.model.Location
 import campus.tech.kakao.map.model.Repository
 
@@ -16,7 +17,6 @@ class LocationViewModel(private val repository: Repository): ViewModel(){
     fun clearSearch() {
         searchText.value = ""
     }
-
     fun findData(name: String): List<Location>{
          return repository.selectData(name)
     }
@@ -35,11 +35,15 @@ class LocationViewModel(private val repository: Repository): ViewModel(){
         currentList.add(0, location)
         _logList.value = currentList
     }
-
     fun removeLog(position: Int) {
         val currentList = _logList.value?.toMutableList() ?: return
         currentList.removeAt(position)
         _logList.value = currentList
     }
-
+    fun insertSearchedData(places: List<Place>) {
+        repository.insertSearchedData(places)
+    }
+    fun resetData(){
+        repository.deleteData()
+    }
 }

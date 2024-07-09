@@ -15,6 +15,7 @@ object LocationContract{
             "${COLUMN_TYPE} TEXT" +
             ");"
 
+    const val DELETE_QUERY = "DELETE FROM $TABLE_NAME"
     const val DROP_QUERY = "DROP TABLE IF EXISTS ${TABLE_NAME}"
 
     const val TABLE_LOG_NAME = "DB_Log"
@@ -25,4 +26,5 @@ object LocationContract{
             ");"
 
     const val DROP_LOG_QUERY = "DROP TABLE IF EXISTS $TABLE_LOG_NAME"
+
 }
