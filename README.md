@@ -3,3 +3,9 @@
 
 ### 기능 구현
 [] 이전 과제 코드 바탕 세팅 
+[] 카카오 API 앱 등록
+[] 의존성 파일 확인 
+[] RetrofitInstance 구현
+[] MapItem 매핑 구현
+[] KakaoAPIService 구현 
+
