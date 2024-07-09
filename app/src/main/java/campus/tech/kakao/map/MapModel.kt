@@ -23,6 +23,7 @@ class MapModel(mContext: Context) {
         clearDb()
         request(keyword)
     }
+
     fun insertLocation(location: Location) {
         val writableDb = helper.writableDatabase
         val content = ContentValues()
@@ -86,8 +87,20 @@ class MapModel(mContext: Context) {
 
     private fun getLocation(document: Document): Location {
         val name = document.placeName
-        val category = document.categoryGroupName
-        val address = document.roadAddressName
+        val category =
+            if (document.categoryGroupName != "") {
+                document.categoryGroupName
+            } else {
+                Location.NORMAL
+            }
+
+        val address =
+            if (document.roadAddressName != "") {
+                document.roadAddressName
+            } else {
+                document.addressName
+        }
+
 
         return Location(name, category, address)
     }
@@ -172,15 +185,11 @@ class MapModel(mContext: Context) {
     }
 
     private fun updateDb(serverResult: ServerResult, page: Int) {
-        Log.d("Model", serverResult.meta.toString())
-        Log.d("Model", serverResult.docList.toString())
-        Log.d("Model", "$page")
         val res = mutableListOf<Location>()
         serverResult.docList.forEach { document ->
             val location = getLocation(document)
             insertLocation(location)
         }
-        Log.d("Model", "==============")
         if (!serverResult.meta.isEnd) {
             requestNextPage(serverResult, page)
         }
