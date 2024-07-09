@@ -9,9 +9,6 @@ import campus.tech.kakao.map.model.Place
 import campus.tech.kakao.map.model.RecentSearchWord
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class MapRepository(private val context: Context) {
     private val localDB: PlacesDBHelper = PlacesDBHelper(context)

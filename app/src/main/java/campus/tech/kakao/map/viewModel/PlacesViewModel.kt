@@ -73,7 +73,8 @@ class PlacesViewModel(private val repository: MapRepository) : ViewModel() {
                     val body = response.body()
                     val responseList = mutableListOf<Place>()
                     body?.documents?.forEach {
-                        responseList.add(Place(it.placeName, it.addressName, it.categoryGroupName))
+                        var category = it.categoryName.split(" \u003e ").last()
+                        responseList.add(Place(it.placeName, it.addressName, category))
                     }
                     _places.value = responseList.toMutableList()
                 }
