@@ -59,4 +59,4 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 }
 
-fun getApiKey(key: String): String { return gradleLocalProperties(rootDir).getProperty(key) }
+fun getApiKey(key: String): String = gradleLocalProperties(rootDir, providers).getProperty(key)
