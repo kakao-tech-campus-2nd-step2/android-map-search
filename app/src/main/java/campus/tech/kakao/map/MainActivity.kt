@@ -54,6 +54,13 @@ class MainActivity : AppCompatActivity() {
 
         mapItemViewModel.kakaoMapItemList.observe(this) {
             mapListAdapter.updateMapItemList(it)
+            if (mapItemViewModel.kakaoMapItemList.value == null) {
+                mainText.visibility = View.VISIBLE
+            } else if (mapItemViewModel.kakaoMapItemList.value!!.isEmpty()){
+                mainText.visibility = View.VISIBLE
+            } else {
+                mainText.visibility = View.INVISIBLE
+            }
         }
 
         mapItemViewModel.selectItemList.observe(this) {
@@ -66,11 +73,6 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 CoroutineScope(Dispatchers.Default).launch {
                     mapItemViewModel.searchKakaoMapItem(s.toString())
-                }
-                if (mapItemViewModel.kakaoMapItemList.value == null) {
-                    mainText.visibility = View.VISIBLE
-                } else {
-                    mainText.visibility = View.INVISIBLE
                 }
             }
 
