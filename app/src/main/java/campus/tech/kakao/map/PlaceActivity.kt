@@ -11,6 +11,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.domain.model.Place
+import campus.tech.kakao.map.presentation.PlaceViewModel
+import campus.tech.kakao.map.presentation.PlaceViewModelFactory
 
 class PlaceActivity : AppCompatActivity() {
     private lateinit var placeViewModel: PlaceViewModel
