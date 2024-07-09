@@ -118,11 +118,30 @@ class PlaceRepository(context: Context) {
                 }
             })
 
-        for (i in 1..15){
-            val place = Place(R.drawable.hospital, "약국$i", "강원도 강릉시 남부로{$i}번길", PlaceCategory.PHARMACY)
-            placeList.add(place)
-            insertPlace(place)
-        }
+        retrofitService.getPlace(apiKey, "PM9")
+            .enqueue(object : Callback<KakaoResponse> {
+                override fun onResponse(
+                    call: Call<KakaoResponse>,
+                    response: Response<KakaoResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val documentList = response.body()?.documents
+                        documentList?.forEach {
+                            Log.d("KakaoAPI", "Place Name: ${it.place_name}, Address: ${it.address_name}")
+                            val place = Place(R.drawable.hospital, it.place_name, it.address_name, PlaceCategory.PHARMACY)
+                            placeList.add(place)
+                            insertPlace(place)
+                        }
+                    } else {
+                        val errorBody = response.errorBody()?.string()
+                        Log.d("KakaoAPI", "Error: $errorBody")
+                    }
+                }
+
+                override fun onFailure(call: Call<KakaoResponse>, t: Throwable) {
+                    Log.d("KakaoAPI", "Failure: ${t.message}")
+                }
+            })
     }
 
     fun returnPlaceList() = placeList
