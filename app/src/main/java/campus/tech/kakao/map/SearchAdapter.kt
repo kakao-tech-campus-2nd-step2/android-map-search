@@ -29,7 +29,7 @@ class SearchAdapter(private val onItemClicked: (Document) -> Unit) : RecyclerVie
         holder.binding.resultCategoryTextView.text = result.category*/
         holder.binding.resultTextView.text = result.place_name
         holder.binding.resultAddressTextView.text = result.address_name
-        holder.binding.resultCategoryTextView.text = result.category_name
+        holder.binding.resultCategoryTextView.text = result.category_group_name
         Log.e("SearchAdapter", "Unexpected result format: $result")
 
         holder.binding.root.setOnClickListener {
