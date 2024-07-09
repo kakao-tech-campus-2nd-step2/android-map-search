@@ -4,21 +4,33 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MapViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val dbHelper = DbHelper(application)
 
     private val _searchResults = MutableLiveData<List<MapItem>>()
     val searchResults: LiveData<List<MapItem>> get() = _searchResults
 
-    fun insertData() {
-        dbHelper.insertData()
-    }
-
     fun searchPlaces(keyword: String) {
-        val results = dbHelper.searchPlaces(keyword)
-        _searchResults.postValue(results)
+        val apiKey = "KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}"
+        RetrofitClient.apiService.searchPlaces(apiKey, keyword).enqueue(object :
+            Callback<KakaoMapProductResponse> {
+            override fun onResponse(call: Call<KakaoMapProductResponse>, response: Response<KakaoMapProductResponse>) {
+                if (response.isSuccessful) {
+                    val documents = response.body()?.documents ?: emptyList()
+                    val results = documents.map { MapItem(it.place_name, it.address_name, it.category_name) }
+                    _searchResults.postValue(results)
+                } else {
+                    _searchResults.postValue(emptyList())
+                }
+            }
+
+            override fun onFailure(call: Call<KakaoMapProductResponse>, t: Throwable) {
+                _searchResults.postValue(emptyList())
+            }
+        })
     }
 }
 
