@@ -1,20 +1,28 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
 
+fun getApiKey(key: String): String = gradleLocalProperties(rootDir, providers).getProperty(key)
+
 android {
-    namespace = "campus.tech.kakao.map"
+    namespace = "ksc.campus.tech.kakao.map"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "campus.tech.kakao.map"
+        applicationId = "ksc.campus.tech.kakao.map"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        resValue("string", "KAKAO_API_KEY", getApiKey("KAKAO_API_KEY"))
+        buildConfigField("String", "KAKAO_REST_API_KEY", getApiKey("KAKAO_REST_API_KEY"))
+
     }
 
     buildTypes {
@@ -36,11 +44,14 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
 dependencies {
 
+    implementation ("androidx.activity:activity-ktx:1.2.2")
+    implementation ("androidx.fragment:fragment-ktx:1.3.3")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
