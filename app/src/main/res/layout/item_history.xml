@@ -7,8 +7,8 @@
 
     <ImageButton
         android:id="@+id/delButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@android:drawable/ic_menu_close_clear_cancel"
         app:layout_constraintStart_toEndOf="@id/historyTextView"
@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""
-        android:textSize="25dp"
+        android:textSize="15dp"
         app:layout_constraintStart_toEndOf="@id/delButton"
         app:layout_constraintEnd_toStartOf="@+id/delButton"
         app:layout_constraintTop_toTopOf="parent"
