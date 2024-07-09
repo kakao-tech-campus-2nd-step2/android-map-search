@@ -18,10 +18,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val dbHelper = DbHelper(application)
     private val repository = PlaceRepository(dbHelper)
+    //private val repository = PlaceRepository(apiService)
     private val sharedPreferences = application.getSharedPreferences("search_prefs", Context.MODE_PRIVATE)
 
     private val _searchResults = MutableLiveData<List<SearchResult>>()
     val searchResults: LiveData<List<SearchResult>> get() = _searchResults
+
+    //private val _searchResults = MutableLiveData<List<Document>>()
+    //val searchResults: LiveData<List<Document>> get() = _searchResults
 
     private val _savedSearches = MutableLiveData<List<String>>()
     val savedSearches: LiveData<List<String>> get() = _savedSearches
