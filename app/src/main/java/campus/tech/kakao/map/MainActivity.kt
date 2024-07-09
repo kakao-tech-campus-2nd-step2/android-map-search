@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity() {
                     val item = placeAdapter.getItem(position)
                     val searchHistory = SearchHistory(item.name)
                     viewModel.saveSearchHistory(searchHistory)
-                    Log.d("실행", "저장")
                 }
             }
         )
@@ -41,12 +40,10 @@ class MainActivity : AppCompatActivity() {
                     val item = viewModel.searchHistoryList.value?.get(position)
                     if (item != null) {
                         mainBinding.search.setText(item.searchHistory)
-                        Log.d("실행", "검색창")
                     }
                 }
                 override fun onXMarkClick(position: Int) {
                     viewModel.deleteSearchHistory(position)
-                    Log.d("실행", "삭제")
                 }
             }
         )
