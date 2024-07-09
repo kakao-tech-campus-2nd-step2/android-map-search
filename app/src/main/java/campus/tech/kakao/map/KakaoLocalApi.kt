@@ -11,7 +11,6 @@ interface KakaoLocalApi {
     fun searchKeyword(
         @Header("Authorization") key: String,
         @Query("query") query: String,
-        @Query("x") x: String? = null,
-        @Query("y") y: String? = null
+        @Query("size") size: Int = 15
     ): Call<SearchResult>
 }
