@@ -1,9 +1,10 @@
 package campus.tech.kakao.map
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.activity.viewModels
@@ -18,13 +19,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val placeAdapter: PlaceAdapter by lazy {
-        PlaceAdapter(placeList,
+        PlaceAdapter(locationList,
             LayoutInflater.from(this@MainActivity),
             object :
                 PlaceAdapter.OnItemClickListener {
                 override fun onItemClick(position: Int) {
                     val item = placeAdapter.getItem(position)
-                    val searchHistory = SearchHistory(item.name)
+                    val searchHistory = SearchHistory(item.placeName)
                     viewModel.saveSearchHistory(searchHistory)
                 }
             }
@@ -53,6 +54,8 @@ class MainActivity : AppCompatActivity() {
 
 
     private var placeList: List<Place> = emptyList()
+
+    private var locationList: List<Document> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,6 +91,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupSearchEditText(mainBinding: ActivityMainBinding) {
         val searchEditText = mainBinding.search
+        val handler = Handler(Looper.getMainLooper())
+        val delayMillis = 800L
 
         searchEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -95,8 +100,12 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
             override fun afterTextChanged(s: Editable?) {
-                val searchText = searchEditText.text.toString()
-                viewModel.getSearchResult(searchText)
+                val searchText = s.toString().trim()
+
+                handler.removeCallbacksAndMessages(null)
+                handler.postDelayed({
+                    viewModel.getPlace(searchText)
+                }, delayMillis)
             }
         })
     }
@@ -107,7 +116,7 @@ class MainActivity : AppCompatActivity() {
         })
         viewModel.getSearchHistoryList()
 
-        viewModel.placeList.observe(this@MainActivity, Observer {
+        viewModel.locationList.observe(this@MainActivity, Observer {
             placeAdapter.setData(it)
             mainBinding.emptyMainText.visibility = if (it.isNullOrEmpty()) View.VISIBLE else View.GONE
         })
