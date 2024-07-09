@@ -20,6 +20,8 @@ class MapActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
 
+        val mapView = findViewById<MapView>(R.id.mapView)
+        val searchText = findViewById<TextView>(R.id.search)
 
         mapView.start(object : MapLifeCycleCallback() {
             override fun onMapDestroy() {
@@ -36,6 +38,10 @@ class MapActivity : AppCompatActivity() {
             }
         })
 
+        searchText.setOnClickListener {
+            val intent = Intent(this,PlaceSearchActivity::class.java)
+            startActivity(intent)
+        }
 
     }
 }
