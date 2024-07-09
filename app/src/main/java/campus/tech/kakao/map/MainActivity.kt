@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -21,6 +22,7 @@ import campus.tech.kakao.map.model.SavedSearchWord
 import campus.tech.kakao.map.viewmodel.PlaceViewModel
 import campus.tech.kakao.map.viewmodel.SavedSearchWordViewModel
 import campus.tech.kakao.map.viewmodel.ViewModelFactory
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -34,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
         setupViewModels()
         setupViews()
-        observeViewModels()
+        setupObservers()
     }
 
     /**
@@ -239,38 +241,35 @@ class MainActivity : AppCompatActivity() {
     /**
      * viewModel을 관찰하도록 하는 함수.
      */
-    private fun observeViewModels() {
-        observeSearchResults()
-        observeSavedSearchWords()
+    private fun setupObservers() {
+        collectSearchResults()
+        collectSavedSearchWords()
     }
 
     /**
      * 검색 결과를 관찰하고, RecyclerView에 결과를 반영하는 함수.
      */
-    private fun observeSearchResults() {
-        placeViewModel.searchResults.observe(
-            this,
-        ) { places ->
-            (binding.searchResultRecyclerView.adapter as? ResultRecyclerViewAdapter)?.submitList(
-                places,
-            )
-            binding.noSearchResultTextView.visibility =
-                if (places.isEmpty()) View.VISIBLE else View.GONE
+    private fun collectSearchResults() {
+        lifecycleScope.launch {
+            placeViewModel.searchResults.collect { places ->
+                (binding.searchResultRecyclerView.adapter as? ResultRecyclerViewAdapter)?.submitList(places)
+                binding.noSearchResultTextView.visibility = if (places.isEmpty()) View.VISIBLE else View.GONE
+            }
         }
     }
 
     /**
      * 저장된 검색어를 관찰하고, RecyclerView에 결과를 반영하는 함수.
      */
-    private fun observeSavedSearchWords() {
-        savedSearchWordViewModel.savedSearchWords.observe(
-            this,
-        ) { savedSearchWords ->
-            (binding.savedSearchWordRecyclerView.adapter as? SavedSearchWordRecyclerViewAdapter)?.submitList(
-                savedSearchWords,
-            )
-            binding.savedSearchWordRecyclerView.visibility =
-                if (savedSearchWords.isEmpty()) View.GONE else View.VISIBLE
+    private fun collectSavedSearchWords() {
+        lifecycleScope.launch {
+            savedSearchWordViewModel.savedSearchWords.collect { savedSearchWords ->
+                (binding.savedSearchWordRecyclerView.adapter as? SavedSearchWordRecyclerViewAdapter)?.submitList(
+                    savedSearchWords,
+                )
+                binding.savedSearchWordRecyclerView.visibility =
+                    if (savedSearchWords.isEmpty()) View.GONE else View.VISIBLE
+            }
         }
     }
 }

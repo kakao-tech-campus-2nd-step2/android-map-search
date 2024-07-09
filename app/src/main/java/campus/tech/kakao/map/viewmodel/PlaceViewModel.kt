@@ -1,26 +1,21 @@
 package campus.tech.kakao.map.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import campus.tech.kakao.map.data.repository.PlaceRepository
 import campus.tech.kakao.map.model.Place
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class PlaceViewModel(private val placeRepository: PlaceRepository) : ViewModel() {
-    private val _searchResults = MutableLiveData<List<Place>>()
-    val searchResults: LiveData<List<Place>> get() = _searchResults
-
-    init {
-        _searchResults.value = emptyList()
-    }
+    private val _searchResults = MutableStateFlow<List<Place>>(emptyList())
+    val searchResults: StateFlow<List<Place>> get() = _searchResults
 
     fun searchPlacesByCategory(categoryGroupCode: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            placeRepository.getPlacesByCategory(categoryGroupCode) { places ->
-                _searchResults.postValue(places)
+        placeRepository.getPlacesByCategory(categoryGroupCode) { places ->
+            viewModelScope.launch {
+                _searchResults.emit(places)
             }
         }
     }
