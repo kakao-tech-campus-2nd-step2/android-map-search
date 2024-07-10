@@ -3,6 +3,7 @@ package campus.tech.kakao.map
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
@@ -11,6 +12,11 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class PlaceActivity : AppCompatActivity() {
 
@@ -41,7 +47,6 @@ class PlaceActivity : AppCompatActivity() {
         searchAdapter = SearchRecyclerViewAdapter(searchList, LayoutInflater.from(this), this, )
         rvSearchList.adapter = searchAdapter
         rvSearchList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-
 
         // Place list adapter
         placeAdapter = PlaceRecyclerViewAdapter(placeList, LayoutInflater.from(this), this, searchAdapter)
@@ -99,6 +104,8 @@ class PlaceActivity : AppCompatActivity() {
             rvSearchList.visibility = View.VISIBLE
         }
     }
+
+
 
 
 }
