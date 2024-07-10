@@ -1,4 +1,4 @@
-package campus.tech.kakao.map.viewmodel
+package campus.tech.kakao.map.ui.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
