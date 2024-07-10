@@ -1,5 +1,6 @@
 package campus.tech.kakao.map
 
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -8,7 +9,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 interface KakaoLocalService {   //retrofit interface
-    @Headers("Authorization: KakaoAK ${REST_API_KEY}")
+
     @GET("v2/local/search/keyword.json")
     fun searchKeyword(
         @Query("query") query: String,
@@ -47,7 +48,7 @@ data class Meta(
 )
 
 data class SameName(
-    val region : String,    //질의어에서 인식된 지역의 리스트 (예: '중앙로 맛집' 에서 '중앙로'에 해당하는 지역 리스트)
+    val region : List<String>,    //질의어에서 인식된 지역의 리스트 (예: '중앙로 맛집' 에서 '중앙로'에 해당하는 지역 리스트)
     val keyword : String,   //질의어에서 지역 정보를 제외한 키워드 (예: '중앙로 맛집' 에서 '맛집')
     val selected_region : String    //인식된 지역 리스트 중 현재 검색에 사용된 지역 정보
 )
@@ -55,12 +56,24 @@ data class SameName(
 object RetrofitInstance {
     private const val BASE_URL = "https://dapi.kakao.com/"
 
+    private val client = OkHttpClient.Builder()
+        .addInterceptor { chain ->
+            val apiKey = BuildConfig.KAKAO_REST_API_KEY
+            val newRequest = chain.request().newBuilder()
+                .addHeader("Authorization", "KakaoAK $apiKey")
+                .build()
+            chain.proceed(newRequest)
+        }
+        .build()
+
     val api: KakaoLocalService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
+            .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(KakaoLocalService::class.java)
     }
 }
+
 

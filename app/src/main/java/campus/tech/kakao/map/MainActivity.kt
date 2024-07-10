@@ -71,9 +71,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun searchPlaces(query: String) {
         val call = RetrofitInstance.api.searchKeyword(query) //API 요청
+
         call.enqueue(object : Callback<KakaoSearchResponse> { //비동기 API 요청
+
             override fun onResponse(call: Call<KakaoSearchResponse>, response: Response<KakaoSearchResponse>) {
-                if (response.isSuccessful) {
+
+                if (response.isSuccessful) {    //성공했을 때
                     val places = response.body()?.documents?.map { document ->
                         Place(
                             id = document.id.toInt(),
@@ -83,12 +86,14 @@ class MainActivity : AppCompatActivity() {
                         )
                     } ?: emptyList()
                     placeAdapter.updateData(places)
-                } else {
+                }
+                else {  //실패했을 때
                     Log.e("API_ERROR", "Error: ${response.errorBody()?.string()}")
                 }
+
             }
 
-            override fun onFailure(call: Call<KakaoSearchResponse>, t: Throwable) {
+            override fun onFailure(call: Call<KakaoSearchResponse>, t: Throwable) { //실패 했을 때
                 Log.e("API_ERROR", "Failure: ${t.message}")
             }
         })
