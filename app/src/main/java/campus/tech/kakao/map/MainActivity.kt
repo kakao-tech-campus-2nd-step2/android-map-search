@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
 
@@ -56,7 +58,8 @@ class MainActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 // 텍스트 변경 후 호출
                 val query = s.toString()
-                searchPlaces(query)
+                searchKeyword(query)
+                Log.d("testt","검색하기")
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
@@ -69,8 +72,14 @@ class MainActivity : AppCompatActivity() {
 
     } //onCreate
 
-    private fun searchPlaces(query: String) {
-        val call = RetrofitInstance.api.searchKeyword(query) //API 요청
+    private fun searchKeyword(keyword : String){
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(KakaoAPI::class.java)   // 통신 인터페이스를 객체로 생성
+        val call = api.searchKeyword("KakaoAK $KAKAO_REST_API_KEY", keyword)   // 검색 조건 입력
+
         call.enqueue(object : Callback<KakaoSearchResponse> { //비동기 API 요청
             override fun onResponse(call: Call<KakaoSearchResponse>, response: Response<KakaoSearchResponse>) {
                 if (response.isSuccessful) {
@@ -82,16 +91,21 @@ class MainActivity : AppCompatActivity() {
                             kind = document.category_name
                         )
                     } ?: emptyList()
-                    placeAdapter.updateData(places)
+                    placeAdapter.updateData(places) //새 데이터 설정
+                    Log.d("testt","api 완료")
                 } else {
-                    Log.e("API_ERROR", "Error: ${response.errorBody()?.string()}")
+                    Log.d("testt", "Error: ${response.errorBody()?.string()}")
                 }
             }
 
             override fun onFailure(call: Call<KakaoSearchResponse>, t: Throwable) {
-                Log.e("API_ERROR", "Failure: ${t.message}")
+                Log.d("testt", "Failure: ${t.message}")
             }
         })
+    }
+    companion object{
+        const val BASE_URL = "https://dapi.kakao.com/"
+        const val KAKAO_REST_API_KEY = "5c9da7f5fde44dde9598baa428277ec4"
     }
 
 
