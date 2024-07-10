@@ -126,9 +126,9 @@ class Search_Activity : AppCompatActivity() {
 
                 val places = documents.map { document ->
                     mapOf(
-                        MapContract.COLUMN_NAME to (document.placeName ?: "카페"),
+                        MapContract.COLUMN_NAME to (document.placeName ?: "No Name"),
                         MapContract.COLUMN_ADDRESS to (document.addressName ?: "No Address"),
-                        MapContract.COLUMN_CATEGORY to "카페"
+                        MapContract.COLUMN_CATEGORY to (document.categoryName ?: "No Category")
                     )
                 }
 
