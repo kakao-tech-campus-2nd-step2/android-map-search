@@ -3,7 +3,7 @@
 - 카카오 테크 캠퍼스 과제(위치 검색 - 네트워크 통신) 수행을 위한 저장소입니다.
 
 ## 동작 영상
-![week3_step1](https://github.com/kakao-tech-campus-2nd-step2/android-map-search/assets/102301656/b46ccdb7-7f91-452d-a7e1-f5a0c73edeb9)
+![week3_2](https://github.com/kakao-tech-campus-2nd-step2/android-map-search/assets/102301656/7c40238b-7ded-4042-beaf-881865e738d6)
 
 ## flow chart
 
