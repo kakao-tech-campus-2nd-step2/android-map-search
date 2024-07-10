@@ -11,7 +11,7 @@ data class Document(
     @SerializedName("category_group_code")
     val categoryGroupCode: String?,
     @SerializedName("category_group_name")
-    val categoryGroupName: String?,
+    val categoryGroupName: String,
     val phone: String?,
     @SerializedName("address_name")
     val addressName: String,
