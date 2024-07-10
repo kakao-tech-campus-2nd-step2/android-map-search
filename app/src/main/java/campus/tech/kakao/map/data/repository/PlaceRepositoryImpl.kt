@@ -32,7 +32,7 @@ class PlaceRepositoryImpl : PlaceRepository {
     private suspend fun fetchPlacesByCategory(categoryGroupCode: String): List<Place> {
         val placeList = mutableListOf<Place>()
         val pageSize = 15
-        val totalPageCount = 7
+        val totalPageCount = 3
 
         coroutineScope {
             val deferredResults =
