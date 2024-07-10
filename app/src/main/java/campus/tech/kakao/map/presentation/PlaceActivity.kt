@@ -74,13 +74,11 @@ class PlaceActivity : AppCompatActivity() {
         placeViewModel.loadSearchHistory()
     }
 
-    private fun updateUI(place: List<Place>) {
-        placeViewModel.places.observe(this) { places ->
-            if (places.isEmpty()) {
-                showEmptyMessage()
-            } else {
-                showRecyclerView(places)
-            }
+    private fun updateUI(places: List<Place>) {
+        if (places.isEmpty()) {
+            showEmptyMessage()
+        } else {
+            showRecyclerView(places)
         }
     }
 
@@ -101,7 +99,8 @@ class PlaceActivity : AppCompatActivity() {
                 placeViewModel.searchPlaces(query)
             },
         )
-        binding.historyRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        binding.historyRecyclerView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.historyRecyclerView.adapter = historyAdapter
     }
 
@@ -114,7 +113,6 @@ class PlaceActivity : AppCompatActivity() {
                     p2: Int,
                     p3: Int,
                 ) {
-                    //
                 }
 
                 override fun onTextChanged(
@@ -123,7 +121,10 @@ class PlaceActivity : AppCompatActivity() {
                     p2: Int,
                     p3: Int,
                 ) {
-                    Log.d("PlaceActivity", "Search query: ${p0.toString()}")
+                    if (p0.isNullOrBlank()) {
+                        showEmptyMessage()
+                        return
+                    }
                     placeViewModel.searchPlaces(query = p0.toString())
                 }
 

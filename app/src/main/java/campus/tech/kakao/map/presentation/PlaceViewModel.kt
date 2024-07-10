@@ -18,10 +18,7 @@ class PlaceViewModel(private val placeRepository: PlaceRepository) : ViewModel()
 
 
     fun searchPlaces(query: String) {
-        Log.d("testt", "Searching places for API and Query: $apiKey $query")
-
         placeRepository.searchPlaces(apiKey, query) { result ->
-            Log.d("testt", "Search result: $result")
             _places.postValue(result)
         }
     }
