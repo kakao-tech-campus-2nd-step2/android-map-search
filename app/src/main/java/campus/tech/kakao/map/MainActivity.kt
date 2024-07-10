@@ -3,6 +3,7 @@ package campus.tech.kakao.map
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 
@@ -23,18 +24,20 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val searchRepository = SearchRepository(this)
-        val viewModelProviderFactory = SearchViewModelFactory(searchRepository)
+        val searchRepository = SearchRepository()
+        val savedSearchKeywordRepository = SavedSearchKeywordRepository(this)
+        val viewModelProviderFactory =
+            SearchViewModelFactory(searchRepository, savedSearchKeywordRepository)
         viewModel =
             ViewModelProvider(this, viewModelProviderFactory)[SearchViewModel::class.java]
 
-        addDelSearchWordListener()
+        addDelSearchKeywordListener()
         addDetectSearchWindowChangedListener()
-        getSavedSearchWord()
+        getSavedSearchKeyword()
     }
 
-    private fun addDelSearchWordListener() {
-        binding.delSearchWord.setOnClickListener {
+    private fun addDelSearchKeywordListener() {
+        binding.delSearchKeyword.setOnClickListener {
             binding.searchWindow.text = null
         }
     }
@@ -46,8 +49,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val searchWord = SearchWord(s.toString())
-                viewModel.getSearchResults(searchWord)
+                val searchKeyWord = SearchKeyword(s.toString())
+                viewModel.getSearchResults(searchKeyWord)
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -56,28 +59,35 @@ class MainActivity : AppCompatActivity() {
         })
 
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.searchResults.collect {
                     if (it.isEmpty()) {
-                        showView(binding.searchResultEmpty, true)
+                        showView(binding.emptySearchResults, true)
                         showView(binding.searchResultsList, false)
                     } else {
-                        showView(binding.searchResultEmpty, false)
+                        showView(binding.emptySearchResults, false)
                         showView(binding.searchResultsList, true)
-                        binding.searchResultsList.adapter = SearchResultsAdapter(it, layoutInflater, viewModel::saveSearchWord)
-                        binding.searchResultsList.layoutManager = LinearLayoutManager(this@MainActivity)
+                        binding.searchResultsList.adapter =
+                            SearchResultsAdapter(it, layoutInflater, viewModel::saveSearchKeyword)
+                        binding.searchResultsList.layoutManager =
+                            LinearLayoutManager(this@MainActivity)
                     }
                 }
             }
         }
     }
 
-    private fun getSavedSearchWord() {
+    private fun getSavedSearchKeyword() {
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
-                viewModel.savedSearchWords.collect{
-                    binding.savedSearchWordsList.adapter = SavedSearchWordsAdapter(it, layoutInflater, viewModel::delSavedSearchWord)
-                    binding.savedSearchWordsList.layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.savedSearchKeywords.collect {
+                    binding.savedSearchKeywordsList.adapter =
+                        SavedSearchKeywordsAdapter(it, layoutInflater, viewModel::delSavedSearchKeyword)
+                    binding.savedSearchKeywordsList.layoutManager = LinearLayoutManager(
+                        this@MainActivity,
+                        LinearLayoutManager.HORIZONTAL,
+                        false
+                    )
                 }
             }
         }
