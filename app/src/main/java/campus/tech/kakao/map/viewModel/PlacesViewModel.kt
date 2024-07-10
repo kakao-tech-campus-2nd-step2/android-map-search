@@ -1,57 +1,26 @@
 package campus.tech.kakao.map.viewModel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import campus.tech.kakao.map.dto.SearchResponse
 import campus.tech.kakao.map.model.Place
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class PlacesViewModel(private val repository: MapRepository) : ViewModel() {
 
-    private val _places: MutableLiveData<List<Place>> by lazy {
-        MutableLiveData<List<Place>>()
-    }
-    val places: LiveData<List<Place>> = _places
+    val places: LiveData<List<Place>> = repository.places
 
-    init {
-        _places.postValue(emptyList())
+    fun searchPlaces(search: String) {
+        repository.searchPlaces(search)
     }
 
-    private fun loadPlaces() {
-        viewModelScope.launch() {
-            val placesFromRepo = repository.getAllPlaces()
-            _places.postValue(placesFromRepo)
-        }
-    }
-
-    fun insertPlace(name: String, address: String, category: String = "") {
-        viewModelScope.launch() {
-            repository.insertPlace(name, address, category)
-            loadPlaces()
-        }
-    }
-
-    fun deletePlace(name: String, address: String, category: String = "") {
-        viewModelScope.launch() {
-            repository.deletePlace(name, address, category)
-            loadPlaces()
-        }
-    }
-
-    fun getAllPlaces(): List<Place> {
-        return repository.getAllPlaces()
-    }
-
-    fun filterPlace(search: String) {
-        viewModelScope.launch() {
-            val allPlaces = repository.getAllPlaces()
-            val filtered = if (search.isEmpty()) {
-                emptyList()
-            } else {
-                allPlaces.filter { it.name.contains(search, ignoreCase = true) }
-            }
-            _places.postValue(filtered)
-        }
+    fun searchDBPlaces(search: String) {
+        repository.searchDBPlaces(search)
     }
 }
