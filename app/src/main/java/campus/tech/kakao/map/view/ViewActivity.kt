@@ -113,7 +113,7 @@ class ViewActivity : AppCompatActivity() {
             ) {
                 if (response.isSuccessful) {
                     response.body()?.let { result ->
-                        val places = PlaceMapper.mapCategoryNames(result.documents)
+                        val places = PlaceMapper.mapPlaces(result.documents)
                         viewModel.updatePlaces(places)
                         updateSearchedPlaceList(keyword)
                     }

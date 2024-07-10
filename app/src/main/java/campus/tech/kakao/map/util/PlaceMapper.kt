@@ -4,13 +4,17 @@ import campus.tech.kakao.map.domain.model.Place
 
 class PlaceMapper {
     companion object{
-        fun mapCategoryNames(places: List<Place>): List<Place> {
+        fun mapPlaces(places: List<Place>): List<Place> {
             return places.map { place ->
-                place.copy(category_name = getLastCategoryName(place.category_name))
+                place.copy(category_name = setCategoryName(place.category_name),
+                    place_name = setPlaceName(place.place_name)
+                )
             }
         }
-
-        private fun getLastCategoryName(categoryName: String): String {
+        private fun setPlaceName(placeName: String): String {
+            return if (placeName.length > 8){ placeName.take(8)+"..." } else placeName
+        }
+        private fun setCategoryName(categoryName: String): String {
             return categoryName.split(" ").lastOrNull() ?: ""
         }
     }
