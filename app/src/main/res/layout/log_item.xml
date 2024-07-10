@@ -4,8 +4,8 @@
 
     <data>
         <variable
-            name="location"
-            type="campus.tech.kakao.map.model.Location" />
+            name="place"
+            type="campus.tech.kakao.map.domain.model.Place" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
@@ -27,7 +27,7 @@
             android:id="@+id/tvLog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{location.name}"
+            android:text="@{place.place_name}"
             android:textStyle="bold"
             android:layout_marginLeft="12dp"
             app:layout_constraintTop_toTopOf="parent"

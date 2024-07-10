@@ -6,18 +6,18 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.DiffUtilCallback
 import campus.tech.kakao.map.databinding.LogItemBinding
-import campus.tech.kakao.map.model.Location
+import campus.tech.kakao.map.domain.model.Place
 
 class LogAdapter(
-    private val onRemoveLog: (Int) -> Unit
+    private val onRemoveLog: (String) -> Unit
 )
-    : ListAdapter<Location,LogAdapter.LogViewHolder>(DiffUtilCallback()) {
+    : ListAdapter<Place, LogAdapter.LogViewHolder>(DiffUtilCallback()) {
     inner class LogViewHolder(private val binding: LogItemBinding)
         : RecyclerView.ViewHolder(binding.root){
-        fun bind(location: Location){
-            binding.location = location
+        fun bind(place: Place){
+            binding.place = place
             binding.btnLogDel.setOnClickListener {
-                onRemoveLog(bindingAdapterPosition)
+                onRemoveLog(place.id)
             }
         }
     }

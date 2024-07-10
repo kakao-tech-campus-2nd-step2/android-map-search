@@ -5,20 +5,20 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.DiffUtilCallback
+import campus.tech.kakao.map.domain.model.Place
 import campus.tech.kakao.map.databinding.ListItemBinding
-import campus.tech.kakao.map.model.Location
 
 
-class LocationAdapter(
-    private var onItemClicked: (Location) -> Unit
-): ListAdapter<Location,LocationAdapter.LocationViewHolder>(DiffUtilCallback()) {
+class SearchedPlaceAdapter(
+    private var onItemClicked: (Place) -> Unit
+): ListAdapter<Place, SearchedPlaceAdapter.LocationViewHolder>(DiffUtilCallback()) {
 
     inner class LocationViewHolder(private val binding: ListItemBinding )
         :RecyclerView.ViewHolder(binding.root){
-            fun bind(location: Location){
-                binding.location = location
+            fun bind(place: Place){
+                binding.place = place
                 binding.root.setOnClickListener {
-                    onItemClicked(location)
+                    onItemClicked(place)
                 }
             }
     }

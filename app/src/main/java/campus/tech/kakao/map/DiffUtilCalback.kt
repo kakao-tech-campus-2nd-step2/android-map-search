@@ -1,14 +1,14 @@
 package campus.tech.kakao.map
 
 import androidx.recyclerview.widget.DiffUtil
-import campus.tech.kakao.map.model.Location
+import campus.tech.kakao.map.domain.model.Place
 
-class DiffUtilCallback: DiffUtil.ItemCallback<Location>(){
-    override fun areItemsTheSame(oldItem: Location, newItem: Location): Boolean {
-        return oldItem.name == newItem.name
+class DiffUtilCallback: DiffUtil.ItemCallback<Place>(){
+    override fun areItemsTheSame(oldItem: Place, newItem: Place): Boolean {
+        return oldItem.id == newItem.id
     }
 
-    override fun areContentsTheSame(oldItem: Location, newItem: Location): Boolean {
+    override fun areContentsTheSame(oldItem: Place, newItem: Place): Boolean {
         return oldItem == newItem
     }
 }
