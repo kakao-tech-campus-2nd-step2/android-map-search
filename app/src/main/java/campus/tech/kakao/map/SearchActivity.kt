@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.Adapter.DocumentAdapter
 import campus.tech.kakao.map.Adapter.WordAdapter
 
-class MainActivity : AppCompatActivity() {
+class SearchActivity : AppCompatActivity() {
 
     private lateinit var model: MainViewModel
     private lateinit var search:EditText
@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var wordAdapter: WordAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_search)
         setupUI()
         searchResult.layoutManager = LinearLayoutManager(this)
         searchWordResult.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
