@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.R
+import campus.tech.kakao.map.databinding.PlaceItemBinding
 import campus.tech.kakao.map.domain.model.Place
 
 class PlaceAdapter(
@@ -13,18 +14,23 @@ class PlaceAdapter(
 ) : RecyclerView.Adapter<PlaceAdapter.PlaceViewHolder>() {
     private var places: List<Place> = emptyList()
 
-    class PlaceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val nameTextView: TextView = itemView.findViewById(R.id.nameTextView)
-        val addressTextView: TextView = itemView.findViewById(R.id.addressTextView)
-        val typeTextView: TextView = itemView.findViewById(R.id.typeTextView)
+    class PlaceViewHolder(private val binding: PlaceItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(place: Place, onItemClick: (Place) -> Unit) {
+            binding.nameTextView.text = place.placeName
+            binding.addressTextView.text = place.addressName
+            binding.typeTextView.text = place.categoryName
+            binding.root.setOnClickListener {
+                onItemClick(place)
+            }
+        }
     }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
     ): PlaceViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.place_item, parent, false)
-        return PlaceViewHolder(view)
+        val binding = PlaceItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return PlaceViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
@@ -35,13 +41,7 @@ class PlaceAdapter(
         holder: PlaceViewHolder,
         position: Int,
     ) {
-        val place = places[position]
-        holder.nameTextView.text = place.placeName
-        holder.addressTextView.text = place.addressName
-        holder.typeTextView.text = place.categoryName
-        holder.itemView.setOnClickListener {
-            onItemClick(place)
-        }
+        holder.bind(places[position], onItemClick)
     }
 
     fun updateData(newPlaces: List<Place>) {

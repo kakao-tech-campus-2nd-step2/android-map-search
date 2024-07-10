@@ -31,6 +31,7 @@ class PlaceActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initializeViewModel()
+        initializeAdapters()
         initializeRecyclerView()
 
         setUpSearchEditText()
@@ -56,19 +57,16 @@ class PlaceActivity : AppCompatActivity() {
     private fun initializeViewModel() {
         val placeRepository = PlaceRepositoryImpl(context = this)
 
-
         placeViewModel = ViewModelProvider(
             this,
             PlaceViewModelFactory(placeRepository)
-        ).get(PlaceViewModel::class.java)
+        )[PlaceViewModel::class.java]
 
         placeViewModel.places.observe(this) { places ->
-            Log.d("PlaceActivity", "Places observed: $places")
             updateUI(places)
         }
 
         placeViewModel.searchHistory.observe(this) { history ->
-            Log.d("PlaceActivity", "History observed: $history")
             historyAdapter.updateData(history)
         }
         placeViewModel.loadSearchHistory()
@@ -83,11 +81,18 @@ class PlaceActivity : AppCompatActivity() {
     }
 
     private fun initializeRecyclerView() {
+        binding.placeRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.placeRecyclerView.adapter = placeAdapter
+
+        binding.historyRecyclerView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        binding.historyRecyclerView.adapter = historyAdapter
+    }
+
+    private fun initializeAdapters() {
         placeAdapter = PlaceAdapter { place ->
             placeViewModel.saveSearchQuery(place)
         }
-        binding.placeRecyclerView.layoutManager = LinearLayoutManager(this)
-        binding.placeRecyclerView.adapter = placeAdapter
 
         historyAdapter = SearchHistoryAdapter(
             historyList = emptyList(),
@@ -97,29 +102,17 @@ class PlaceActivity : AppCompatActivity() {
             onItemClick = { query ->
                 binding.searchEditText.setText(query)
                 placeViewModel.searchPlaces(query)
-            },
+            }
         )
-        binding.historyRecyclerView.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        binding.historyRecyclerView.adapter = historyAdapter
     }
 
     private fun setUpSearchEditText() {
         binding.searchEditText.addTextChangedListener(
             object : TextWatcher {
-                override fun beforeTextChanged(
-                    p0: CharSequence?,
-                    p1: Int,
-                    p2: Int,
-                    p3: Int,
-                ) {
-                }
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
                 override fun onTextChanged(
-                    p0: CharSequence?,
-                    p1: Int,
-                    p2: Int,
-                    p3: Int,
+                    p0: CharSequence?, p1: Int, p2: Int, p3: Int,
                 ) {
                     if (p0.isNullOrBlank()) {
                         showEmptyMessage()
@@ -128,9 +121,7 @@ class PlaceActivity : AppCompatActivity() {
                     placeViewModel.searchPlaces(query = p0.toString())
                 }
 
-                override fun afterTextChanged(p0: Editable?) {
-                    //
-                }
+                override fun afterTextChanged(p0: Editable?) {}
             },
         )
     }
