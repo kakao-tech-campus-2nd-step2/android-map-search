@@ -114,7 +114,7 @@ class MainActivity : AppCompatActivity(), OnClickPlaceListener, OnClickSavedPlac
 
             override fun afterTextChanged(searchText: Editable?) {
                 val text = searchText.toString()
-//                viewModel.getPlaceWithCategory(text)
+                Log.d("inputField", "text : ${text}")
                 viewModel.getKakaoLocalData(text)
 
             }

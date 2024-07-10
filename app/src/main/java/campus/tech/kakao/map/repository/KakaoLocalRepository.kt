@@ -14,34 +14,35 @@ import retrofit2.converter.gson.GsonConverterFactory
 class KakaoLocalRepository {
 
 
-    fun getPlaceData(text : String, callback: (List<Place>) -> Unit) {
+    fun getPlaceData(text: String, callback: (List<Place>) -> Unit) {
+        Log.d("inputField", "inputText : ${text} ")
         var placeList = listOf<Place>()
         val retrofitService = Retrofit.Builder()
             .baseUrl(BuildConfig.KAKAO_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(KakaoLocalApi::class.java)
+        val kakaoApi = retrofitService.create(KakaoLocalApi::class.java)
 
-        retrofitService.getPlaceData(BuildConfig.KAKAO_LOCAL_API_KEY, text).enqueue(object : Callback<ResultSearch> {
-            override fun onResponse(
-                call: Call<ResultSearch>,
-                response: Response<ResultSearch>
-            ) {
-                if (response.isSuccessful) {
-                    val body = response.body()
-                    Log.d("testt", "body : ${body?.documents}")
-                    placeList = body?.documents ?: listOf<Place>()
-                    Log.d("testt", "placeList : ${placeList} ")
+        kakaoApi.getPlaceData(BuildConfig.KAKAO_LOCAL_API_KEY, text)
+            .enqueue(object : Callback<ResultSearch> {
+                override fun onResponse(
+                    call: Call<ResultSearch>,
+                    response: Response<ResultSearch>
+                ) {
+                    if (response.isSuccessful) {
+                        val body = response.body()
+                        Log.d("testt", "body : ${body?.documents}")
+                        placeList = body?.documents ?: listOf<Place>()
+                        Log.d("inputField", "placeList : ${placeList} ")
+                        callback(placeList)
+                    }
+                }
+
+                override fun onFailure(call: Call<ResultSearch>, t: Throwable) {
+                    Log.d("testt", "error : $t")
+                    Log.d("inputField", "placeList : ${placeList} ")
                     callback(placeList)
                 }
-            }
-
-            override fun onFailure(call: Call<ResultSearch>, t: Throwable) {
-                Log.d("testt","error : $t")
-                callback(placeList)
-            }
-        })
+            })
     }
-
-
 }

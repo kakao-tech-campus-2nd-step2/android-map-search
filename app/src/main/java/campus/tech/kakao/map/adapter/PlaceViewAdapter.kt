@@ -33,7 +33,6 @@ class PlaceViewAdapter(
 
 class PlaceDiffCallBack : DiffUtil.ItemCallback<Place>() {
     override fun areItemsTheSame(oldItem: Place, newItem: Place): Boolean {
-        Log.d("testt", "areItemsTheSame: ${oldItem === newItem}")
         return oldItem === newItem
     }
 

@@ -24,15 +24,15 @@ class MainActivityViewModel(
         getPlaceWithCategory("")
     }
     fun getPlace() {
-        _place.postValue(placeRepository.getAllPlace())
+        _place.value = (placeRepository.getAllPlace())
     }
 
     fun getPlaceWithCategory(category: String) {
-        _place.postValue(placeRepository.getPlaceWithCategory(category))
+        _place.value = (placeRepository.getPlaceWithCategory(category))
     }
 
     fun getSavedPlace() {
-        _savedPlace.postValue(savedPlaceRepository.getAllSavedPlace())
+        _savedPlace.value = (savedPlaceRepository.getAllSavedPlace())
     }
 
     fun savePlace(place: Place) {
@@ -46,9 +46,11 @@ class MainActivityViewModel(
     }
 
     fun getKakaoLocalData(text:String){
+        if (text.isNotEmpty())
         kakaoLocalRepository.getPlaceData(text) { placeList ->
-            _place.postValue(placeList)
+            _place.value = (placeList)
         }
+        else _place.value = listOf<Place>()
     }
 
 
