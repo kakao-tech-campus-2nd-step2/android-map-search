@@ -72,6 +72,7 @@ class PlaceActivity : AppCompatActivity() {
                     val searchResult = placeDatabaseAccess.searchPlace(keyword)
                     placeAdapter.updatePlace(searchResult)
                     controlPlaceVisibility(searchResult)
+                    searchKeyword(keyword)
                 }
 
             }
@@ -104,7 +105,6 @@ class PlaceActivity : AppCompatActivity() {
             rvSearchList.visibility = View.VISIBLE
         }
     }
-
 
     private fun searchKeyword(keyword: String) {
         // Retrofit 객체 생성
