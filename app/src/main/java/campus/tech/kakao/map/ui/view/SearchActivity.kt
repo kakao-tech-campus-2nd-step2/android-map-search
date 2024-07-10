@@ -1,4 +1,4 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.map.ui.view
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,10 +14,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import campus.tech.kakao.map.R
 import campus.tech.kakao.map.data.SavedSearchWordDBHelper
 import campus.tech.kakao.map.data.repository.PlaceRepositoryImpl
 import campus.tech.kakao.map.data.repository.SavedSearchWordRepositoryImpl
-import campus.tech.kakao.map.databinding.ActivityMainBinding
+import campus.tech.kakao.map.databinding.ActivitySearchBinding
 import campus.tech.kakao.map.model.Place
 import campus.tech.kakao.map.model.SavedSearchWord
 import campus.tech.kakao.map.ui.viewmodel.PlaceViewModel
@@ -26,14 +27,14 @@ import campus.tech.kakao.map.ui.viewmodel.ViewModelFactory
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+class SearchActivity : AppCompatActivity() {
+    private lateinit var binding: ActivitySearchBinding
     private lateinit var placeViewModel: PlaceViewModel
     private lateinit var savedSearchWordViewModel: SavedSearchWordViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setupViewModels()
