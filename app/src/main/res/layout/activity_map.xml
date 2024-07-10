@@ -20,12 +20,12 @@
         android:padding="10dp">
         <TextView
             android:id="@+id/search"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="40dp"
             android:hint="@string/search_hint"
             android:layout_weight="1"
             android:background="@null"
-            android:gravity="center|left"/>
+            android:gravity="center|start"/>
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
