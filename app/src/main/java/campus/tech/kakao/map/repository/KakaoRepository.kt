@@ -12,14 +12,9 @@ class KakaoRepository {
     init {
         val retrofit = Retrofit.Builder()
             .baseUrl("https://dapi.kakao.com")
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create()) //
             .build()
 
         api = retrofit.create(KakaoLocalApi::class.java)
-    }
-
-    fun searchKeyword(query: String, callback: retrofit2.Callback<ResultSearchKeyword>) {
-        val call = api.searchKeyword(query)
-        call.enqueue(callback)
     }
 }
