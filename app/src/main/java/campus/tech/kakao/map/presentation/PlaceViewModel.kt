@@ -18,7 +18,7 @@ class PlaceViewModel(private val placeRepository: PlaceRepository) : ViewModel()
 
 
     fun searchPlaces(query: String) {
-        Log.d("testt", "Searching places for query: $apiKey")
+        Log.d("testt", "Searching places for API and Query: $apiKey $query")
 
         placeRepository.searchPlaces(apiKey, query) { result ->
             Log.d("testt", "Search result: $result")
@@ -26,13 +26,19 @@ class PlaceViewModel(private val placeRepository: PlaceRepository) : ViewModel()
         }
     }
 
-    fun saveSearchQuery(placeName: String) {
-        //        placeRepository.saveSearchHistory(placeName)
-//        loadSearchHistory()
+    fun saveSearchQuery(place: Place) {
+        placeRepository.saveSearchQuery(place)
+        loadSearchHistory()
+    }
+
+    fun loadSearchHistory() {
+        val history = placeRepository.getSearchHistory()
+        _searchHistory.postValue(history.toList())
     }
 
     fun removeSearchQuery(query: String) {
-//        repository.removeSearchQuery(query)
-//        loadSearchHistory()
+        placeRepository.removeSearchQuery(query)
+        loadSearchHistory()
     }
+
 }

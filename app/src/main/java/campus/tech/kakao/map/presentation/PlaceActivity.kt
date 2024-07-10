@@ -21,6 +21,7 @@ import campus.tech.kakao.map.domain.repository.PlaceRepository
 class PlaceActivity : AppCompatActivity() {
     private lateinit var placeViewModel: PlaceViewModel
     private lateinit var placeAdapter: PlaceAdapter
+    private lateinit var historyAdapter: SearchHistoryAdapter
 
     private lateinit var binding: ActivityPlaceBinding
 
@@ -53,16 +54,24 @@ class PlaceActivity : AppCompatActivity() {
 
 
     private fun initializeViewModel() {
-        val placeRepository = PlaceRepositoryImpl()
+        val placeRepository = PlaceRepositoryImpl(context = this)
+
 
         placeViewModel = ViewModelProvider(
             this,
             PlaceViewModelFactory(placeRepository)
         ).get(PlaceViewModel::class.java)
+
         placeViewModel.places.observe(this) { places ->
             Log.d("PlaceActivity", "Places observed: $places")
             updateUI(places)
         }
+
+        placeViewModel.searchHistory.observe(this) { history ->
+            Log.d("PlaceActivity", "History observed: $history")
+            historyAdapter.updateData(history)
+        }
+        placeViewModel.loadSearchHistory()
     }
 
     private fun updateUI(place: List<Place>) {
@@ -77,10 +86,23 @@ class PlaceActivity : AppCompatActivity() {
 
     private fun initializeRecyclerView() {
         placeAdapter = PlaceAdapter { place ->
-            placeViewModel.saveSearchQuery(place.placeName)
+            placeViewModel.saveSearchQuery(place)
         }
         binding.placeRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.placeRecyclerView.adapter = placeAdapter
+
+        historyAdapter = SearchHistoryAdapter(
+            historyList = emptyList(),
+            onDeleteClick = { query ->
+                placeViewModel.removeSearchQuery(query)
+            },
+            onItemClick = { query ->
+                binding.searchEditText.setText(query)
+                placeViewModel.searchPlaces(query)
+            },
+        )
+        binding.historyRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        binding.historyRecyclerView.adapter = historyAdapter
     }
 
     private fun setUpSearchEditText() {
