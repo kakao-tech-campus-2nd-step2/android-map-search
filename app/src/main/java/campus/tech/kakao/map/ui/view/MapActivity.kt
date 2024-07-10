@@ -1,5 +1,6 @@
 package campus.tech.kakao.map.ui.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +22,7 @@ class MapActivity : AppCompatActivity() {
         KakaoMapSdk.init(this, getString(R.string.kakao_api_key))
 
         startMapView()
+        setSearchBoxClickListener()
     }
 
     /**
@@ -31,6 +33,23 @@ class MapActivity : AppCompatActivity() {
             createMapLifeCycleCallback(),
             createKakaoMapReadyCallback(),
         )
+    }
+
+    /**
+     * Search Box 클릭 리스너를 설정하는 함수.
+     */
+    private fun setSearchBoxClickListener() {
+        binding.searchBoxLayout.setOnClickListener {
+            navigateToSearchActivity()
+        }
+    }
+
+    /**
+     * SearchActivity로 이동하는 함수.
+     */
+    private fun navigateToSearchActivity() {
+        val intent = Intent(this@MapActivity, SearchActivity::class.java)
+        startActivity(intent)
     }
 
     /**
