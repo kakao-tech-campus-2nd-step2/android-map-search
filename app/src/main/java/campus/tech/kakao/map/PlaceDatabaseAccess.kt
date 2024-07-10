@@ -22,6 +22,11 @@ class PlaceDatabaseAccess(context: Context) {
         db.delete(PlaceContract.Place.TABLE_NAME, "${PlaceContract.Place.COLUMN_NAME} = ?", arrayOf(name))
     }
 
+    fun deleteAllPlaces() {
+        val db = dbHelper.writableDatabase
+        db.delete(PlaceContract.Place.TABLE_NAME, null, null)
+    }
+
     fun getAllPlace(): List<PlaceDataModel> {
         val db = dbHelper.readableDatabase
         val cursor: Cursor = db.rawQuery("SELECT * FROM ${PlaceContract.Place.TABLE_NAME}", null)
@@ -41,7 +46,10 @@ class PlaceDatabaseAccess(context: Context) {
 
     fun searchPlace(keyword: String): List<PlaceDataModel> {
         val db = dbHelper.readableDatabase
-        val cursor: Cursor = db.rawQuery("SELECT * FROM ${PlaceContract.Place.TABLE_NAME} WHERE ${PlaceContract.Place.COLUMN_NAME} LIKE ?", arrayOf("%$keyword%"))
+        val cursor: Cursor = db.rawQuery(
+            "SELECT * FROM ${PlaceContract.Place.TABLE_NAME} WHERE ${PlaceContract.Place.COLUMN_NAME} LIKE ?",
+            arrayOf("%$keyword%")
+        )
         val dataList = mutableListOf<PlaceDataModel>()
 
         if (cursor.moveToFirst()) {
@@ -55,4 +63,5 @@ class PlaceDatabaseAccess(context: Context) {
         cursor.close()
         return dataList
     }
+
 }

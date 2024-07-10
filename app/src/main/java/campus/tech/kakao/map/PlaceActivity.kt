@@ -34,6 +34,8 @@ class PlaceActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.search_layout)
 
+        placeDatabaseAccess.deleteAllPlaces()
+
         etSearch = findViewById<EditText>(R.id.etSearch)
         btnErase = findViewById<ImageButton>(R.id.btnErase)
         tvNoData = findViewById<TextView>(R.id.tvNoData)
