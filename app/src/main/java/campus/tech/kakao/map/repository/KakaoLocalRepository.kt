@@ -17,12 +17,12 @@ class KakaoLocalRepository {
     fun getPlaceData(text : String, callback: (List<Place>) -> Unit) {
         var placeList = listOf<Place>()
         val retrofitService = Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
+            .baseUrl(BuildConfig.KAKAO_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(KakaoLocalApi::class.java)
 
-        retrofitService.getPlaceData(BuildConfig.API_KEY, text).enqueue(object : Callback<ResultSearch> {
+        retrofitService.getPlaceData(BuildConfig.KAKAO_LOCAL_API_KEY, text).enqueue(object : Callback<ResultSearch> {
             override fun onResponse(
                 call: Call<ResultSearch>,
                 response: Response<ResultSearch>

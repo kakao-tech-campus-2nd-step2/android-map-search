@@ -20,8 +20,8 @@ android {
 
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "API_KEY", gradleLocalProperties(rootDir, providers).getProperty("API_KEY"))
-        buildConfigField("String", "BASE_URL", gradleLocalProperties(rootDir, providers).getProperty("BASE_URL"))
+        buildConfigField("String", "KAKAO_LOCAL_API_KEY", gradleLocalProperties(rootDir, providers).getProperty("KAKAO_LOCAL_API_KEY"))
+        buildConfigField("String", "KAKAO_BASE_URL", gradleLocalProperties(rootDir, providers).getProperty("KAKAO_BASE_URL"))
 
     }
 
