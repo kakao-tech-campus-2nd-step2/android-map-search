@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
@@ -210,7 +211,7 @@ class MainActivity : AppCompatActivity() {
         ) {
             val savedSearchWord = getItem(position)
             holder.bind(savedSearchWord)
-            holder.itemView.setOnClickListener {
+            holder.itemView.findViewById<ImageView>(R.id.saved_search_word_clear_image_view).setOnClickListener {
                 clickListener.onSavedSearchWordClearImageViewClicked(savedSearchWord)
             }
         }
