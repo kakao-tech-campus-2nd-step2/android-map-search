@@ -13,8 +13,6 @@ import campus.tech.kakao.map.databinding.ActivitySearchBinding
 import campus.tech.kakao.map.viewModel.MapRepository
 import campus.tech.kakao.map.viewModel.PlacesViewModel
 import campus.tech.kakao.map.viewModel.PlacesViewModelFactory
-import com.kakao.sdk.common.KakaoSdk
-import com.kakao.vectormap.KakaoMapSdk
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var repository: MapRepository
@@ -29,11 +27,6 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val key = getString(R.string.kakao_api_key)
-        val restKey = BuildConfig.KAKAO_REST_API_KEY
-        KakaoSdk.init(this, key)
-        KakaoMapSdk.init(this, restKey)
 
         repository = MapRepository(this)
         val viewModelFactory = PlacesViewModelFactory(repository)
