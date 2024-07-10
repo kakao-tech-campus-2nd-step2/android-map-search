@@ -1,15 +1,9 @@
 package campus.tech.kakao.map
 
-import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.ListView
-import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -36,11 +30,8 @@ class MainActivity : AppCompatActivity() {
 
         setupRecyclerViews()
 
-        viewModel.insertInitialData()
-
         viewModel.searchResults.observe(this, Observer { results ->
             Log.d("MainActivity", "Search results updated: $results")
-            //binding.searchRecyclerView.adapter = SearchAdapter(results)
             searchAdapter.updateResults(results)
             binding.searchRecyclerView.visibility = if (results.isEmpty()) View.GONE else View.VISIBLE
             binding.noResult.visibility = if (results.isEmpty())View.VISIBLE else View.GONE
@@ -74,7 +65,7 @@ class MainActivity : AppCompatActivity() {
                 val query = s.toString()
                 Log.d("MainActivity", "Search query: $query")
                 if(query.isNotEmpty()) {
-                    viewModel.searchDatabase(query)
+                    viewModel.searchPlaces(query)
                 } else {
                     searchAdapter.updateResults(emptyList())
                     binding.searchRecyclerView.visibility = View.GONE
@@ -89,7 +80,7 @@ class MainActivity : AppCompatActivity() {
 
     fun setupRecyclerViews() {
         searchAdapter = SearchAdapter { result ->
-            viewModel.addSearch(result.name)
+            viewModel.addSearch(result.place_name)
         }
 
         savedSearchAdapter = SavedSearchAdapter { place ->
