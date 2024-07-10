@@ -106,6 +106,43 @@ class PlaceActivity : AppCompatActivity() {
     }
 
 
+    private fun searchKeyword(keyword: String) {
+        // Retrofit 객체 생성
+        val retrofitLocalService = Retrofit.Builder()
+            .baseUrl(getString(R.string.BASE_URL))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(RetrofitLocalService::class.java)
+
+        retrofitLocalService.requestPlace("KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}", keyword, 2, 15).enqueue(object :
+            Callback<SearchResult> {
+            override fun onResponse(call: Call<SearchResult>, response: Response<SearchResult>) {
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    Log.d("apiTest", "$body")
+                    body?.let {
+                        for (placeInfo in it.documents) {
+                            val place = PlaceDataModel(
+                                name = placeInfo.place_name,
+                                category = placeInfo.category_group_name,
+                                address = placeInfo.address_name
+                            )
+                            placeDatabaseAccess.insertPlace(place)
+                        }
+                    }
+                }
+                else {
+                    val errorBody = response.errorBody()?.string()
+                    Log.d("apiTest", "Error response: $errorBody")
+
+                }
+            }
+
+            override fun onFailure(call: Call<SearchResult>, throwable: Throwable) {
+                Log.w("apiTest", "$throwable")
+            }
+        })
+    }
 
 
 }
