@@ -3,21 +3,30 @@ package campus.tech.kakao.map
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import campus.tech.kakao.map.databinding.ActivityMainBinding
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var binding: ActivityMainBinding
-    lateinit var DBHelper: DBHelper
-    lateinit var HistoryDBHelper : HistoryDBHelper
-    lateinit var DB: SQLiteDatabase
-    lateinit var HistoryDB : SQLiteDatabase
-    lateinit var adapter: RecycleAdapter
-    lateinit var horadapter : HorRecycleAdapter
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var HistoryDBHelper : HistoryDBHelper
+    private lateinit var HistoryDB : SQLiteDatabase
+    private lateinit var adapter: RecycleAdapter
+    private lateinit var horadapter : HorRecycleAdapter
+    private val listItems = arrayListOf<ListLayout>()
+
+    companion object {
+        const val BASE_URL = "https://dapi.kakao.com/"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,14 +40,13 @@ class MainActivity : AppCompatActivity() {
             SearchText.setText(null)
         }
 
-        DBHelper = DBHelper(this, "place.db", null, 2)
         HistoryDBHelper = HistoryDBHelper(this,"history.db",null,2)
 
-        MakeDummyData("카페")
-        MakeDummyData("약국")
+        searchKeyword("카페")
 
         SetupView()
     }
+
 
     fun SetupView() {
         val Search = binding.SearchText
@@ -75,28 +83,49 @@ class MainActivity : AppCompatActivity() {
             } else {
                 NoSearchText.visibility = View.INVISIBLE
                 RecyclerView.visibility = View.VISIBLE
-                SearchPlaces(searchText)
+                searchKeyword(searchText)
             }
         }
     }
 
-    fun SearchPlaces(Keyword: String) {
-        val selection = "${PlaceEntry.COLUMN_CATEGORY} LIKE ?"
-        val selectionArgs = arrayOf("%$Keyword%")
-        DB = DBHelper.readableDatabase
-        val cursor = DB.query(
-            PlaceEntry.TABLE_NAME,
-            null,
-            selection,
-            selectionArgs,
-            null,
-            null,
-            null
-        )
-        adapter.SubmitCursor(cursor)
+    private fun searchKeyword(keyword: String) {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api = retrofit.create(KakaoAPI::class.java)
+        val call = api.getSearchKeyword("KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}", keyword)
+
+
+        call.enqueue(object: Callback<ResultSearch> {
+            override fun onResponse(
+                call: Call<ResultSearch>,
+                response: Response<ResultSearch>
+            ) {
+                searchPlaceAPI(response.body())
+                adapter.submitList(listItems)
+            }
+
+            override fun onFailure(p0: Call<ResultSearch>, p1: Throwable) {
+            }
+
+        })
     }
 
-    fun SearchHistory(name : String): Int {
+    private fun searchPlaceAPI(searchResult: ResultSearch?){
+        if (!searchResult?.documents.isNullOrEmpty()){
+            listItems.clear()
+            for (document in searchResult!!.documents){
+                val item = ListLayout(document.place_name,document.road_address_name,document.category_group_name)
+                listItems.add(item)
+            }
+
+        }
+    }
+
+
+
+    private fun SearchHistory(name : String): Int {
         val selection = "${HistoryEntry.COLUMN_NAME} = ?"
         val selectionArgs = arrayOf(name)
         HistoryDB = HistoryDBHelper.readableDatabase
@@ -115,7 +144,7 @@ class MainActivity : AppCompatActivity() {
         return 0
     }
 
-    fun SubAllHistory(){
+    private fun SubAllHistory(){
         HistoryDB = HistoryDBHelper.readableDatabase
         val cursor = HistoryDB.query(
             HistoryEntry.TABLE_NAME,
@@ -128,30 +157,16 @@ class MainActivity : AppCompatActivity() {
         )
         horadapter.SubmitCursor(cursor)
     }
-    fun MakeDummyData(category: String) {
-        DB = DBHelper.writableDatabase
-        for (i in 1..20) {
-            val place = Place(category + i, "대구 경북대학교로 $i 길", category)
-            insertPlace(place)
-        }
-    }
 
-    fun insertPlace(place: Place) {
-        val values = ContentValues()
-        values.put(PlaceEntry.COLUMN_NAME, place.Name)
-        values.put(PlaceEntry.COLUMN_ADDRESS, place.Address)
-        values.put(PlaceEntry.COLUMN_CATEGORY, place.Category)
-        DB.insert(PlaceEntry.TABLE_NAME, null, values)
-    }
 
-    fun insertHistory(name : String){
+    private fun insertHistory(name : String){
         HistoryDB = HistoryDBHelper.writableDatabase
         val values = ContentValues()
         values.put(HistoryEntry.COLUMN_NAME,name)
         HistoryDB.insert(HistoryEntry.TABLE_NAME,null,values)
     }
 
-    fun DeleteItem(name : String){
+    private fun DeleteItem(name : String){
         val selection = "${HistoryEntry.COLUMN_NAME} = ?"
         val selectionArgs = arrayOf(name)
 
@@ -169,7 +184,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onDestroy() {
+    override  fun onDestroy() {
         super.onDestroy()
     }
 }
