@@ -1,44 +1,27 @@
 package campus.tech.kakao.map.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.util.Log
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import campus.tech.kakao.map.data.PlaceDBHelper
-import campus.tech.kakao.map.data.PlaceRepository
+import campus.tech.kakao.map.data.repository.PlaceRepository
 import campus.tech.kakao.map.model.Place
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class PlaceViewModel(application: Application) : AndroidViewModel(application) {
-    private val placeRepository: PlaceRepository
+class PlaceViewModel(private val placeRepository: PlaceRepository) : ViewModel() {
+    private val _searchResults = MutableStateFlow<List<Place>>(emptyList())
+    val searchResults: StateFlow<List<Place>> get() = _searchResults
 
-    private val _searchResults = MutableLiveData<List<Place>>()
-    val searchResults: LiveData<List<Place>> get() = _searchResults
-
-    init {
-        val dbHelper = PlaceDBHelper(application)
-        placeRepository = PlaceRepository(dbHelper)
-        clearSearchResults()
-    }
-
-    fun insertPlace(place: Place) {
-        placeRepository.insertPlace(place)
-    }
-
-    fun clearAllPlaces() {
-        placeRepository.clearAllPlaces()
-    }
-
-    private fun clearSearchResults() {
-        _searchResults.value = emptyList()
-    }
-
-    fun searchPlacesByCategory(category: String) {
+    fun searchPlacesByCategory(categoryInput: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val results = placeRepository.getPlacesByCategory(category)
-            _searchResults.postValue(results)
+            try {
+                val places = placeRepository.getPlacesByCategory(categoryInput)
+                _searchResults.emit(places)
+            } catch (e: Exception) {
+                Log.e("placeViewmodel", "Error searching places by category", e)
+            }
         }
     }
 }

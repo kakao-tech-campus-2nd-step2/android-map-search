@@ -2,43 +2,61 @@ package campus.tech.kakao.map
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import campus.tech.kakao.map.data.SavedSearchWordDBHelper
+import campus.tech.kakao.map.data.repository.PlaceRepositoryImpl
+import campus.tech.kakao.map.data.repository.SavedSearchWordRepositoryImpl
 import campus.tech.kakao.map.databinding.ActivityMainBinding
-import campus.tech.kakao.map.databinding.ItemPlaceBinding
-import campus.tech.kakao.map.databinding.ItemSavedSearchWordBinding
 import campus.tech.kakao.map.model.Place
 import campus.tech.kakao.map.model.SavedSearchWord
 import campus.tech.kakao.map.viewmodel.PlaceViewModel
 import campus.tech.kakao.map.viewmodel.SavedSearchWordViewModel
+import campus.tech.kakao.map.viewmodel.ViewModelFactory
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val placeViewModel by lazy { ViewModelProvider(this)[PlaceViewModel::class.java] }
-    private val savedSearchWordViewModel by lazy { ViewModelProvider(this)[SavedSearchWordViewModel::class.java] }
+    private lateinit var placeViewModel: PlaceViewModel
+    private lateinit var savedSearchWordViewModel: SavedSearchWordViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupBinding()
-        setupDummyData()
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        setupViewModels()
         setupViews()
-        observeViewModels()
+        setupObservers()
     }
 
-    private fun setupBinding() {
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        binding.apply {
-            this.placeViewModel = this@MainActivity.placeViewModel
-            this.savedSearchWordViewModel = this@MainActivity.savedSearchWordViewModel
-            this.lifecycleOwner = this@MainActivity
-        }
+    /**
+     * 사용할 ViewModel을 설정하는 함수
+     *
+     * - `placeRepository` : 장소 데이터를 제공 Repository
+     * - `dbHelper` : 저장된 검색어 데이터베이스를 관리하는 Helper
+     * - `savedSearchWordRepository` : 저장된 검색어 데이터를 제공 Repository
+     * - `viewModelFactory` : ViewModel 인스턴스를 생성하고 제공하는 Factory
+     */
+    private fun setupViewModels() {
+        val placeRepository = PlaceRepositoryImpl()
+        val dbHelper = SavedSearchWordDBHelper(applicationContext)
+        val savedSearchWordRepository = SavedSearchWordRepositoryImpl(dbHelper)
+        val viewModelFactory = ViewModelFactory(placeRepository, savedSearchWordRepository)
+
+        placeViewModel = ViewModelProvider(this, viewModelFactory)[PlaceViewModel::class.java]
+        savedSearchWordViewModel = ViewModelProvider(this, viewModelFactory)[SavedSearchWordViewModel::class.java]
     }
 
     /**
@@ -47,44 +65,6 @@ class MainActivity : AppCompatActivity() {
     private fun setupRecyclerViews() {
         setSearchResultRecyclerView()
         setSavedSearchWordRecyclerView()
-    }
-
-    /**
-     * 테스트용 더미 데이터를 place db에 삽입하기 위한 함수.
-     */
-    private fun setupDummyData() {
-        placeViewModel.clearAllPlaces()
-        testDataInsert()
-    }
-
-    /**
-     * 테스트용 더미 데이터(카페, 약국)를 삽입하는 함수
-     */
-    private fun testDataInsert() {
-        insertPlaces("서울 성동구 성수동", "카페")
-        insertPlaces("서울 강남구 대치동", "약국")
-        insertPlaces("서울 강남구 수서동", "약국")
-    }
-
-    /**
-     * place 데이터를 db에 삽입하는 함수.
-     *
-     * @param address 저장할 주소값
-     * @param category 저장할 카테고리값
-     */
-    private fun insertPlaces(
-        address: String,
-        category: String,
-    ) {
-        repeat(20) { idx ->
-            placeViewModel.insertPlace(
-                Place(
-                    name = "$category ${idx + 1}",
-                    address = "$address ${idx + 1}",
-                    category = category,
-                ),
-            )
-        }
     }
 
     /**
@@ -101,8 +81,8 @@ class MainActivity : AppCompatActivity() {
      */
     private fun setSearchEditText() {
         binding.searchEditText.addTextChangedListener { editable ->
-            val searchText = editable.toString().trim()
-            placeViewModel.searchPlacesByCategory(searchText)
+            val categoryInput = editable.toString().trim()
+            placeViewModel.searchPlacesByCategory(categoryInput)
         }
     }
 
@@ -148,8 +128,9 @@ class MainActivity : AppCompatActivity() {
             parent: ViewGroup,
             viewType: Int,
         ): PlaceViewHolder {
-            val binding = ItemPlaceBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            return PlaceViewHolder(binding)
+            val itemView =
+                LayoutInflater.from(parent.context).inflate(R.layout.item_place, parent, false)
+            return PlaceViewHolder(itemView)
         }
 
         override fun onBindViewHolder(
@@ -157,14 +138,19 @@ class MainActivity : AppCompatActivity() {
             position: Int,
         ) {
             val place = getItem(position)
-
-            holder.binding.place = place
+            holder.bind(place)
             holder.itemView.setOnClickListener {
                 clickListener.onPlaceItemClicked(place)
             }
         }
 
-        class PlaceViewHolder(val binding: ItemPlaceBinding) : RecyclerView.ViewHolder(binding.root)
+        class PlaceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            fun bind(place: Place) {
+                itemView.findViewById<TextView>(R.id.place_name_text_view).text = place.name
+                itemView.findViewById<TextView>(R.id.place_category_text_view).text = place.category
+                itemView.findViewById<TextView>(R.id.place_address_text_view).text = place.address
+            }
+        }
 
         private class PlaceDiffCallback : DiffUtil.ItemCallback<Place>() {
             override fun areItemsTheSame(
@@ -206,13 +192,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     class SavedSearchWordRecyclerViewAdapter(private val clickListener: OnSavedSearchWordClearImageViewClickListener) :
-        ListAdapter<SavedSearchWord, SavedSearchWordRecyclerViewAdapter.SavedSearchWordViewHolder>(SavedSearchWordDiffCallback()) {
+        ListAdapter<SavedSearchWord, SavedSearchWordRecyclerViewAdapter.SavedSearchWordViewHolder>(
+            SavedSearchWordDiffCallback(),
+        ) {
         override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int,
         ): SavedSearchWordViewHolder {
-            val binding = ItemSavedSearchWordBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            return SavedSearchWordViewHolder(binding)
+            val itemView =
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.item_saved_search_word, parent, false)
+            return SavedSearchWordViewHolder(itemView)
         }
 
         override fun onBindViewHolder(
@@ -220,15 +210,18 @@ class MainActivity : AppCompatActivity() {
             position: Int,
         ) {
             val savedSearchWord = getItem(position)
-            holder.binding.savedSearchWord = savedSearchWord
-            holder.itemView.setOnClickListener {
+            holder.bind(savedSearchWord)
+            holder.itemView.findViewById<ImageView>(R.id.saved_search_word_clear_image_view).setOnClickListener {
                 clickListener.onSavedSearchWordClearImageViewClicked(savedSearchWord)
             }
         }
 
-        class SavedSearchWordViewHolder(
-            val binding: ItemSavedSearchWordBinding,
-        ) : RecyclerView.ViewHolder(binding.root)
+        class SavedSearchWordViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            fun bind(savedSearchWord: SavedSearchWord) {
+                itemView.findViewById<TextView>(R.id.saved_search_word_text_view).text =
+                    savedSearchWord.name
+            }
+        }
 
         private class SavedSearchWordDiffCallback : DiffUtil.ItemCallback<SavedSearchWord>() {
             override fun areItemsTheSame(
@@ -250,30 +243,33 @@ class MainActivity : AppCompatActivity() {
     /**
      * viewModel을 관찰하도록 하는 함수.
      */
-    private fun observeViewModels() {
-        observeSearchResults()
-        observeSavedSearchWords()
+    private fun setupObservers() {
+        collectSearchResults()
+        collectSavedSearchWords()
     }
 
     /**
      * 검색 결과를 관찰하고, RecyclerView에 결과를 반영하는 함수.
      */
-    private fun observeSearchResults() {
-        placeViewModel.searchResults.observe(
-            this,
-        ) { places ->
-            (binding.searchResultRecyclerView.adapter as? ResultRecyclerViewAdapter)?.submitList(places)
+    private fun collectSearchResults() {
+        lifecycleScope.launch {
+            placeViewModel.searchResults.collectLatest { places ->
+                (binding.searchResultRecyclerView.adapter as? ResultRecyclerViewAdapter)?.submitList(places)
+                binding.noSearchResultTextView.visibility = if (places.isEmpty()) View.VISIBLE else View.GONE
+            }
         }
     }
 
     /**
      * 저장된 검색어를 관찰하고, RecyclerView에 결과를 반영하는 함수.
      */
-    private fun observeSavedSearchWords() {
-        savedSearchWordViewModel.savedSearchWords.observe(
-            this,
-        ) { savedSearchWords ->
-            (binding.savedSearchWordRecyclerView.adapter as? SavedSearchWordRecyclerViewAdapter)?.submitList(savedSearchWords)
+    private fun collectSavedSearchWords() {
+        lifecycleScope.launch {
+            savedSearchWordViewModel.savedSearchWords.collectLatest { savedSearchWords ->
+                (binding.savedSearchWordRecyclerView.adapter as? SavedSearchWordRecyclerViewAdapter)?.submitList(savedSearchWords)
+                binding.savedSearchWordRecyclerView.visibility =
+                    if (savedSearchWords.isEmpty()) View.GONE else View.VISIBLE
+            }
         }
     }
 }

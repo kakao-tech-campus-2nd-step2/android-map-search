@@ -1,8 +1,8 @@
 package campus.tech.kakao.map.model
 
 data class Place(
-    val id: Long = 0,
+    val id: String,
     val name: String,
-    val address: String? = null,
-    val category: String? = null,
+    val address: String,
+    val category: String?,
 )
