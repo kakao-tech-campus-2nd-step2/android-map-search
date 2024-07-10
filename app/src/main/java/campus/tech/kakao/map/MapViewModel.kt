@@ -20,7 +20,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             override fun onResponse(call: Call<KakaoMapProductResponse>, response: Response<KakaoMapProductResponse>) {
                 if (response.isSuccessful) {
                     val documents = response.body()?.documents ?: emptyList()
-                    val results = documents.map { MapItem(it.place_name, it.address_name, it.category_name) }
+                    val results = documents.map { MapItem(it.place_name, it.address_name, it.category_group_name) }
                     _searchResults.postValue(results)
                 } else {
                     _searchResults.postValue(emptyList())
