@@ -9,8 +9,8 @@
 
     <ImageView
         android:id="@+id/ivLocation"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:src="@drawable/location_on_24px"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,14 +32,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/place_name"
-            android:textSize="14sp"/>
+            android:textSize="16sp"/>
 
         <TextView
             android:id="@+id/tvPlaceAddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/place_address"
-            android:textSize="12sp"
+            android:textSize="14sp"
             android:textColor="#888888"/>
 
     </LinearLayout>
@@ -50,7 +50,7 @@
         android:layout_height="wrap_content"
         android:text="@string/category"
         android:textColor="#888888"
-        android:textSize="12sp"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
