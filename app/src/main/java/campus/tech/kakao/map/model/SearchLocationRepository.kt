@@ -2,31 +2,26 @@ package campus.tech.kakao.map.model
 
 import android.content.ContentValues
 import android.content.Context
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchLocationRepository(context: Context) {
-    private val locationDbHelper: LocationDbHelper = LocationDbHelper(context)
     private val historyDbHelper: HistoryDbHelper = HistoryDbHelper(context)
+    private val localSearchService = Retrofit.Builder()
+        .baseUrl("https://dapi.kakao.com/v2/local/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+        .create(LocalSearchService::class.java)
 
-    fun searchLocation(category: String): List<Location> {
-        val db = locationDbHelper.readableDatabase
-        val searchQuery = "SELECT * FROM ${LocationContract.TABLE_NAME} " +
-                "WHERE ${LocationContract.COLUMN_CATEGORY} = '$category'"
-        val cursor = db.rawQuery(searchQuery, null)
-
-        val result = mutableListOf<Location>()
-        while (cursor.moveToNext()) {
-            result.add(
-                Location(
-                    name = cursor.getString(cursor.getColumnIndexOrThrow(LocationContract.COLUMN_NAME)),
-                    address = cursor.getString(cursor.getColumnIndexOrThrow(LocationContract.COLUMN_ADDRESS)),
-                    category = cursor.getString(cursor.getColumnIndexOrThrow(LocationContract.COLUMN_CATEGORY))
-                )
+    suspend fun searchLocation(category: String): List<Location> {
+        val response = localSearchService.requestLocalSearch(query = category)
+        return response.body()?.documents?.map {
+            Location(
+                name = it.place_name,
+                address = it.address_name,
+                category = it.category_group_name
             )
-        }
-        cursor.close()
-        db.close()
-
-        return result.toList()
+        } ?: emptyList()
     }
 
     fun addHistory(locationName: String) {
