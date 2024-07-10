@@ -33,9 +33,13 @@ class MainActivity : AppCompatActivity(), DatabaseListener {
         message = findViewById(R.id.message)
         clear = findViewById(R.id.clear)
 
-        searchBox.doAfterTextChanged {
-            it?.let {
-                search(it.toString(), false)
+        searchBox.doAfterTextChanged { text ->
+            text?.let {
+                if (text.toString() == "") {
+                    hideResult()
+                } else {
+                    search(text.toString(), false)
+                }
             }
         }
 
@@ -56,25 +60,16 @@ class MainActivity : AppCompatActivity(), DatabaseListener {
         viewModel.insertHistory(historyName)
     }
 
-    override fun updateSearchResult() {
-        val searchResult = viewModel.searchResult.value!!
-        searchResultAdapter.refreshList()
-
-        if (searchResult.isNotEmpty() && searchBox.text.isNotEmpty()) {
-            searchResultView.isVisible = true
-            message.isVisible = false
-        } else {
-            searchResultView.isVisible = false
-            message.isVisible = true
-        }
+    private fun hideResult() {
+        searchResultView.isVisible = false
+        message.isVisible = true
     }
-
-    override fun updateSearchHistory() {
-        searchHistoryAdapter.refreshList()
+    private fun showResult() {
+        searchResultView.isVisible = true
+        message.isVisible = false
     }
-
     private fun search(locName: String, isExactMatch: Boolean) {
-        viewModel.searchLocation(locName, isExactMatch)
+        viewModel.searchByKeywordFromServer(locName, isExactMatch)
     }
 
     private fun initSearchResultView() {
@@ -96,9 +91,16 @@ class MainActivity : AppCompatActivity(), DatabaseListener {
     private fun observeData() {
         viewModel.searchHistory.observe(this, Observer {
             searchHistoryAdapter.history = it
+            searchHistoryAdapter.refreshList()
         })
         viewModel.searchResult.observe(this, Observer {
             searchResultAdapter.searchResult = it
+            if (it.isNotEmpty() && (searchBox.text.toString() != "")) {
+                showResult()
+            } else {
+                hideResult()
+            }
+            searchResultAdapter.refreshList()
         })
     }
 }

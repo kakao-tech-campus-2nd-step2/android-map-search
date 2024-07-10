@@ -1,5 +1,6 @@
 package campus.tech.kakao.map
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +22,6 @@ class ResultRecyclerAdapter(
             itemView.setOnClickListener {
                 if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
                     databaseListener.insertHistory(name.text.toString())
-                    databaseListener.updateSearchHistory()
                 }
             }
         }
