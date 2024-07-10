@@ -34,7 +34,7 @@ class SearchLocationActivity : AppCompatActivity() {
             }
         })
 
-        viewModel.getSearchResultLiveData().observe(this) {
+        viewModel.location.observe(this) {
             it?.let { locationData ->
                 binding.searchResultRecyclerView.adapter =
                     SearchLocationAdapter(locationData, this, viewModel)

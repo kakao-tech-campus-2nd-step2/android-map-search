@@ -3,8 +3,10 @@ package campus.tech.kakao.map.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import campus.tech.kakao.map.model.Location
 import campus.tech.kakao.map.model.SearchLocationRepository
+import kotlinx.coroutines.launch
 
 class SearchLocationViewModel : ViewModel() {
     private lateinit var repository: SearchLocationRepository
@@ -13,15 +15,16 @@ class SearchLocationViewModel : ViewModel() {
         _history.value = repository.getHistory()
     }
 
+    private val _location = MutableLiveData<List<Location>>()
+    val location: LiveData<List<Location>> = _location
+
     private val _history = MutableLiveData<List<String>>()
     val history: LiveData<List<String>> = _history
 
     fun searchLocation(category: String) {
-        repository.searchLocation(category)
-    }
-
-    fun getSearchResultLiveData(): LiveData<List<Location>> {
-        return repository.searchResultLiveData
+        viewModelScope.launch {
+            _location.value = repository.searchLocation(category)
+        }
     }
 
     fun addHistory(locationName: String) {
