@@ -46,6 +46,9 @@ class MainActivityViewModel(
     }
 
     fun getKakaoLocalData(text:String){
+        kakaoLocalRepository.getPlaceData(text) { placeList ->
+            _place.postValue(placeList)
+        }
     }
 
 

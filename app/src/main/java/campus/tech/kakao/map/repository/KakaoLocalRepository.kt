@@ -14,7 +14,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class KakaoLocalRepository {
 
 
-    fun getPlaceData(text : String, _place : MutableLiveData<List<Place>>){
+    fun getPlaceData(text : String, callback: (List<Place>) -> Unit) {
         var placeList = listOf<Place>()
         val retrofitService = Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
@@ -32,12 +32,13 @@ class KakaoLocalRepository {
                     Log.d("testt", "body : ${body?.documents}")
                     placeList = body?.documents ?: listOf<Place>()
                     Log.d("testt", "placeList : ${placeList} ")
-                    _place.postValue(placeList)
+                    callback(placeList)
                 }
             }
 
             override fun onFailure(call: Call<ResultSearch>, t: Throwable) {
                 Log.d("testt","error : $t")
+                callback(placeList)
             }
         })
     }
