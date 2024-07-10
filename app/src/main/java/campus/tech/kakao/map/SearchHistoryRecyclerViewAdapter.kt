@@ -8,16 +8,16 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.model.SearchResult
-import campus.tech.kakao.map.viewmodel.SearchViewModel
 
 class SearchHistoryRecyclerViewAdapter(
     private var searchHistoryList: MutableList<SearchResult>,
-    private val searchEditText: EditText,
-    private val OnClearButtonClicked: (SearchResult) -> Unit,
-    private val OnItemsClicked: (SearchResult) -> Unit
-): RecyclerView.Adapter<SearchHistoryRecyclerViewAdapter.SearchHistoryViewHolder>() {
+    private val searchEditText: EditText
+) : RecyclerView.Adapter<SearchHistoryRecyclerViewAdapter.SearchHistoryViewHolder>() {
 
-    class SearchHistoryViewHolder(view: View): RecyclerView.ViewHolder(view) {
+    private var onClearButtonClicked: ((SearchResult) -> Unit)? = null
+    private var onItemClicked: ((SearchResult) -> Unit)? = null
+
+    class SearchHistoryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val nthSearchHistoryKeyword: TextView = view.findViewById(R.id.nthSearchHistoryKeyword)
         val clearButton: ImageView = view.findViewById(R.id.itemClearButton)
     }
@@ -28,6 +28,14 @@ class SearchHistoryRecyclerViewAdapter(
         notifyDataSetChanged()
     }
 
+    fun setOnClearButtonClickedListener(listener: (SearchResult) -> Unit) {
+        onClearButtonClicked = listener
+    }
+
+    fun setOnItemClickedListener(listener: (SearchResult) -> Unit) {
+        onItemClicked = listener
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchHistoryViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.search_history_item, parent, false)
         return SearchHistoryViewHolder(view)
@@ -35,17 +43,16 @@ class SearchHistoryRecyclerViewAdapter(
 
     override fun getItemCount(): Int = searchHistoryList.size
 
-
     override fun onBindViewHolder(holder: SearchHistoryViewHolder, position: Int) {
         val item = searchHistoryList[position]
         holder.nthSearchHistoryKeyword.text = item.keyword
 
         holder.clearButton.setOnClickListener {
-            OnClearButtonClicked(item)
+            onClearButtonClicked?.invoke(item)
         }
         holder.itemView.setOnClickListener {
             searchEditText.setText(item.keyword)
-            OnItemsClicked(item)
+            onItemClicked?.invoke(item)
         }
     }
 }

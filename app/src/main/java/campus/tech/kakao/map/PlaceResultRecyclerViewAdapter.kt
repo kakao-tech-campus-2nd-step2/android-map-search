@@ -9,9 +9,9 @@ import campus.tech.kakao.map.model.PlaceData
 
 class PlaceResultRecyclerViewAdapter(
     private var placeList: MutableList<PlaceData>
-): RecyclerView.Adapter<PlaceResultRecyclerViewAdapter.PlaceViewHolder>() {
+) : RecyclerView.Adapter<PlaceResultRecyclerViewAdapter.PlaceViewHolder>() {
 
-    class PlaceViewHolder(view: View): RecyclerView.ViewHolder(view) {
+    class PlaceViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val placeName: TextView = view.findViewById(R.id.placeDataName)
         val placeLocation: TextView = view.findViewById(R.id.placeDataLocation)
         val placeCategory: TextView = view.findViewById(R.id.placeDataCategory)
