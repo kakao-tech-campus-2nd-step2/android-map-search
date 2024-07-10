@@ -15,7 +15,7 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
+        buildConfigField("String", "KAKAO_REST_API_KEY", "\"1cc77fe7fb4a4c7747a562f762962ce9\"")
     }
 
     buildTypes {
@@ -37,6 +37,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
