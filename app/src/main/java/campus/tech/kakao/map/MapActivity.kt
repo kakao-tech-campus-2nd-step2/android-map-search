@@ -24,7 +24,7 @@ class MapActivity : AppCompatActivity() {
 		mapView = findViewById(R.id.map_view)
 		mapView.start(object : MapLifeCycleCallback() {
 			override fun onMapDestroy() {
-				TODO("Not yet implemented")
+
 			}
 
 			override fun onMapError(p0: Exception?) {
