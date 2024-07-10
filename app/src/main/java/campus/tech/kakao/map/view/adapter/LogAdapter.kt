@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import campus.tech.kakao.map.DiffUtilCallback
+import campus.tech.kakao.map.util.DiffUtilCallback
 import campus.tech.kakao.map.databinding.LogItemBinding
 import campus.tech.kakao.map.domain.model.Place
 

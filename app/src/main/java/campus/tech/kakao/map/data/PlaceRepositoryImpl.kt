@@ -4,7 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import campus.tech.kakao.map.PlaceContract
+import campus.tech.kakao.map.util.PlaceContract
 import campus.tech.kakao.map.domain.model.Place
 import campus.tech.kakao.map.domain.repository.PlaceRepository
 

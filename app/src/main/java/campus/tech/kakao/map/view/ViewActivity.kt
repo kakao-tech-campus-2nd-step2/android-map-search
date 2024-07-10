@@ -10,12 +10,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.BuildConfig
-import campus.tech.kakao.map.KakaoAPI
+import campus.tech.kakao.map.data.net.KakaoAPI
 import campus.tech.kakao.map.PlaceApplication
 import campus.tech.kakao.map.R
 import campus.tech.kakao.map.domain.model.ResultSearchKeyword
 import campus.tech.kakao.map.databinding.ActivityMainBinding
-import campus.tech.kakao.map.data.PlaceRepositoryImpl
 import campus.tech.kakao.map.view.adapter.SearchedPlaceAdapter
 import campus.tech.kakao.map.view.adapter.LogAdapter
 import retrofit2.Call
@@ -23,6 +22,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import campus.tech.kakao.map.data.net.RetrofitApiClient
+import campus.tech.kakao.map.util.PlaceMapper
 
 class ViewActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -33,31 +34,6 @@ class ViewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         init()
-    }
-    private fun searchKeyword(keyword: String) {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://dapi.kakao.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(KakaoAPI::class.java)
-            .getSearchKeyword(BuildConfig.KAKAO_REST_API_KEY, keyword)
-
-        retrofit.enqueue(object: Callback<ResultSearchKeyword> {
-            override fun onResponse(
-                call: Call<ResultSearchKeyword>,
-                response: Response<ResultSearchKeyword>
-            ) {
-                if (response.isSuccessful) {
-                    response.body()?.let { result ->
-                        viewModel.updatePlaces(result.documents)
-                        updateSearchedPlaceList(keyword)
-                    }
-                }
-            }
-            override fun onFailure(call: Call<ResultSearchKeyword>, t: Throwable) {
-                Log.w("pjh", "통신 실패: ${t.message}")
-            }
-        })
     }
 
     private fun init(){
@@ -123,5 +99,29 @@ class ViewActivity : AppCompatActivity() {
     private fun updateHelpMessageVisibility(){
         binding.tvHelpMessage.visibility =
             if (searchedPlaceAdapter.itemCount > 0) View.GONE else View.VISIBLE
+    }
+
+    private fun searchKeyword(keyword: String) {
+
+        val retrofit =  RetrofitApiClient.api
+            .getSearchKeyword(BuildConfig.KAKAO_REST_API_KEY, keyword)
+
+        retrofit.enqueue(object: Callback<ResultSearchKeyword> {
+            override fun onResponse(
+                call: Call<ResultSearchKeyword>,
+                response: Response<ResultSearchKeyword>
+            ) {
+                if (response.isSuccessful) {
+                    response.body()?.let { result ->
+                        val places = PlaceMapper.mapCategoryNames(result.documents)
+                        viewModel.updatePlaces(places)
+                        updateSearchedPlaceList(keyword)
+                    }
+                }
+            }
+            override fun onFailure(call: Call<ResultSearchKeyword>, t: Throwable) {
+                Log.w("pjh", "통신 실패: ${t.message}")
+            }
+        })
     }
 }

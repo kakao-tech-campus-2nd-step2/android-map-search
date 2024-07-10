@@ -1,4 +1,4 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.map.data.net
 
 import campus.tech.kakao.map.domain.model.ResultSearchKeyword
 import retrofit2.Call

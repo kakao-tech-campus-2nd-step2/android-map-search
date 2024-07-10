@@ -1,4 +1,4 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.map.util
 
 import androidx.recyclerview.widget.DiffUtil
 import campus.tech.kakao.map.domain.model.Place

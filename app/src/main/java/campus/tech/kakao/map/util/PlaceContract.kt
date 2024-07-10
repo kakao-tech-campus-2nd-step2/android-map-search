@@ -1,4 +1,4 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.map.util
 
 object PlaceContract {
     const val DATABASE_NAME = "place.db"

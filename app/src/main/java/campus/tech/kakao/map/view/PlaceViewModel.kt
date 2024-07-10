@@ -61,8 +61,6 @@ class PlaceViewModel(
         _logList.value = getLogs()
     }
 
-
-
     companion object {
         fun provideFactory(application: PlaceApplication): ViewModelProvider.Factory {
             return object : ViewModelProvider.Factory {
