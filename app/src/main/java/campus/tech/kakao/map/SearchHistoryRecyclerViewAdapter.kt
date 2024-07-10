@@ -12,8 +12,9 @@ import campus.tech.kakao.map.viewmodel.SearchViewModel
 
 class SearchHistoryRecyclerViewAdapter(
     private var searchHistoryList: MutableList<SearchResult>,
-    private val searchViewModel: SearchViewModel,
-    private val searchEditText: EditText
+    private val searchEditText: EditText,
+    private val OnClearButtonClicked: (SearchResult) -> Unit,
+    private val OnItemsClicked: (SearchResult) -> Unit
 ): RecyclerView.Adapter<SearchHistoryRecyclerViewAdapter.SearchHistoryViewHolder>() {
 
     class SearchHistoryViewHolder(view: View): RecyclerView.ViewHolder(view) {
@@ -40,12 +41,11 @@ class SearchHistoryRecyclerViewAdapter(
         holder.nthSearchHistoryKeyword.text = item.keyword
 
         holder.clearButton.setOnClickListener {
-            searchViewModel.deleteSearchResult(item.id)
+            OnClearButtonClicked(item)
         }
         holder.itemView.setOnClickListener {
             searchEditText.setText(item.keyword)
-            searchViewModel.addSearchResult(item.keyword)
-            searchViewModel.searchPlaces(item.keyword)
+            OnItemsClicked(item)
         }
     }
 }

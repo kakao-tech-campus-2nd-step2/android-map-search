@@ -10,7 +10,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -48,7 +47,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        searchHistoryAdapter = SearchHistoryRecyclerViewAdapter(mutableListOf(), searchViewModel, searchEditText)
+        searchHistoryAdapter = SearchHistoryRecyclerViewAdapter(
+            mutableListOf(),
+            searchEditText,
+            OnClearButtonClicked = {searchResult ->
+                searchViewModel.deleteSearchResult(searchResult.id)
+            },
+            OnItemsClicked = {searchResult ->
+                handleSearch(searchResult.keyword)
+            }
+        )
         searchHistoryRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         searchHistoryRecyclerView.adapter = searchHistoryAdapter
 
