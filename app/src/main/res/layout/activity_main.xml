@@ -53,4 +53,9 @@
         app:layout_constraintTop_toBottomOf="@id/search_history"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
+    <com.kakao.vectormap.MapView
+        android:id="@+id/kakao_map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,6 +10,11 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.kakao.vectormap.KakaoMap
+import com.kakao.vectormap.KakaoMapReadyCallback
+import com.kakao.vectormap.MapLifeCycleCallback
+import com.kakao.vectormap.MapView
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity(), DatabaseListener {
     private lateinit var viewModel: MapViewModel
@@ -22,6 +27,8 @@ class MainActivity : AppCompatActivity(), DatabaseListener {
     private lateinit var searchResultAdapter: ResultRecyclerAdapter
     private lateinit var searchHistoryAdapter: HistoryRecyclerAdapter
 
+    private lateinit var kakaoMap: MapView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -32,6 +39,7 @@ class MainActivity : AppCompatActivity(), DatabaseListener {
         searchResultView = findViewById(R.id.search_result)
         message = findViewById(R.id.message)
         clear = findViewById(R.id.clear)
+        kakaoMap = findViewById(R.id.kakao_map)
 
         searchBox.doAfterTextChanged { text ->
             text?.let {
@@ -50,6 +58,27 @@ class MainActivity : AppCompatActivity(), DatabaseListener {
         initSearchResultView()
         initSearchHistoryView()
         observeData()
+        kakaoMap.start(object : MapLifeCycleCallback() {
+            override fun onMapDestroy() {
+            }
+
+            override fun onMapError(p0: Exception?) {
+            }
+
+        }, object : KakaoMapReadyCallback(){
+            override fun onMapReady(p0: KakaoMap) {
+            }
+        })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        kakaoMap.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        kakaoMap.pause()
     }
 
     override fun deleteHistory(historyName: String) {
