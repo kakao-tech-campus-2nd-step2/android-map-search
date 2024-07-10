@@ -5,13 +5,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import campus.tech.kakao.map.model.Place
 import campus.tech.kakao.map.model.SavedPlace
+import campus.tech.kakao.map.repository.KakaoLocalRepository
 import campus.tech.kakao.map.repository.PlaceRepository
 import campus.tech.kakao.map.repository.SavedPlaceRepository
-import java.util.Locale.Category
+
 
 class MainActivityViewModel(
     private val placeRepository: PlaceRepository,
-    private val savedPlaceRepository: SavedPlaceRepository
+    private val savedPlaceRepository: SavedPlaceRepository,
+    private val kakaoLocalRepository : KakaoLocalRepository
 ) : ViewModel() {
     private val _place = MutableLiveData<List<Place>>()
     private val _savedPlace = MutableLiveData<List<SavedPlace>>()
@@ -41,6 +43,9 @@ class MainActivityViewModel(
     fun deleteSavedPlace(savedPlace: SavedPlace){
         savedPlaceRepository.deleteSavedPlace(savedPlace)
         getSavedPlace()
+    }
+
+    fun getKakaoLocalData(text:String){
     }
 
 
