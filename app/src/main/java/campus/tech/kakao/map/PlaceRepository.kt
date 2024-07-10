@@ -84,7 +84,7 @@ class PlaceRepository(context: Context) {
         }
     }
 
-    fun insertInitialData() {
+    fun insertInitialData(): MutableList<Place> {
         //kakao에서 데이터 가져와서 place 객체 생성하기
         val apiKey = "KakaoAK " + BuildConfig.KAKAO_REST_API_KEY
         val retrofitService = Retrofit.Builder()
@@ -140,9 +140,8 @@ class PlaceRepository(context: Context) {
                     Log.d("KakaoAPI", "Failure: ${t.message}")
                 }
             })
+        return placeList
     }
-
-    fun returnPlaceList() = placeList
 
     fun hasResearchEntries() : Boolean {
         val db = dbHelper.readableDatabase
@@ -196,7 +195,6 @@ class PlaceRepository(context: Context) {
             db.close()
         }
     }
-
 
     fun deleteResearchEntry(place: Place) {
         val db = dbHelper.writableDatabase

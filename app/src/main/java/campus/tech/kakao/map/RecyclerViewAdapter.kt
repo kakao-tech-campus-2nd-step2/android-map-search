@@ -5,31 +5,38 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
 class RecyclerViewAdapter(
-    var placeList: MutableList<Place>,
     private val onItemClicked: (Place) -> Unit
-) : RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>() {
+) : ListAdapter<Place, RecyclerViewAdapter.ViewHolder>(
+    object : DiffUtil.ItemCallback<Place>(){
+        override fun areItemsTheSame(oldItem: Place, newItem: Place): Boolean {
+            return oldItem.name == newItem.name
+        }
+
+        override fun areContentsTheSame(oldItem: Place, newItem: Place): Boolean {
+            return oldItem == newItem
+        }
+
+    }
+) {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val img: ImageView
-        val name: TextView
-        val location: TextView
-        val category: TextView
-        init {
-            img = itemView.findViewById(R.id.place_img)
-            name = itemView.findViewById(R.id.place_name)
-            location = itemView.findViewById(R.id.place_location)
-            category = itemView.findViewById(R.id.place_category)
+        private val img: ImageView = itemView.findViewById(R.id.place_img)
+        private val name: TextView = itemView.findViewById(R.id.place_name)
+        private val location: TextView = itemView.findViewById(R.id.place_location)
+        private val category: TextView = itemView.findViewById(R.id.place_category)
 
-            itemView.setOnClickListener {
-                val position = bindingAdapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    val place = placeList[position]
-                    onItemClicked(place)
-                }
-            }
+        fun bind(place: Place) {
+            img.setImageResource(place.category.imgId)
+            name.text = place.name
+            location.text = place.location
+            category.text = place.category.category
+
+            itemView.setOnClickListener { onItemClicked(place) }
         }
     }
 
@@ -39,16 +46,8 @@ class RecyclerViewAdapter(
         return ViewHolder(view)
     }
 
-    override fun getItemCount(): Int = placeList.size
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val place: Place = placeList.get(position)
-
-        val img = place.category.imgId
-
-        holder.img.setImageResource(img)
-        holder.name.text = place.name
-        holder.location.text = place.location
-        holder.category.text = place.category.category
+        val place: Place = getItem(position)
+        holder.bind(place)
     }
 }

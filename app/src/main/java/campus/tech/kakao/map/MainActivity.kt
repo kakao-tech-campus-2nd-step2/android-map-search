@@ -37,7 +37,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
         input = findViewById(R.id.input)
         researchCloseButton = findViewById(R.id.close_button)
         noResultTextView = findViewById(R.id.no_result_textview)
@@ -46,16 +45,15 @@ class MainActivity : AppCompatActivity() {
 
         placeRepository = PlaceRepository(this)
         placeRepository.reset()
-        placeRepository.insertInitialData()
-        placeList = placeRepository.returnPlaceList()
+        placeList = placeRepository.insertInitialData()
 
-        //resultAdapter = RecyclerViewAdapter(placeList, placeRepository)
-        resultAdapter = RecyclerViewAdapter(placeList) {
+        resultAdapter = RecyclerViewAdapter {
             placeRepository.insertLog(it)
             addResearchList(it)
         }
         recyclerView.adapter = resultAdapter
         recyclerView.layoutManager = LinearLayoutManager(this)
+        resultAdapter.submitList(placeList)
 
         researchList = placeRepository.getResearchEntries().toMutableList()
         tapAdapter = TapViewAdapter(researchList) {
@@ -92,10 +90,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             noResultTextView.isGone = true
             recyclerView.isVisible = true
-            resultAdapter.placeList = filteredList.toMutableList()
-            resultAdapter.notifyDataSetChanged()
-            //resultAdapter.notifyItemRangeChanged(0, filteredList.size)
-            //resultAdapter.updatePlaceList(filteredList.toMutableList())
+            resultAdapter.submitList(filteredList.toMutableList())
         }
     }
 
