@@ -1,16 +1,11 @@
 package campus.tech.kakao.map
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import campus.tech.kakao.map.RetrofitInstance.retrofitService
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
-class MainViewModel(context: Context) : ViewModel() {
+class SearchViewModel(context: Context) : ViewModel() {
     private val dbHelper: DBHelper = DBHelper(context)
     private val db = dbHelper.writableDatabase
     private val preferenceManager = MapApplication.prefs
