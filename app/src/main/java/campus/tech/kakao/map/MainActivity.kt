@@ -1,16 +1,21 @@
 package campus.tech.kakao.map
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.kakao.sdk.common.util.Utility
 
 class MainActivity : AppCompatActivity(), SearchResultAdapter.OnItemClickListener, KeywordAdapter.OnKeywordRemoveListener {
 
@@ -27,6 +32,10 @@ class MainActivity : AppCompatActivity(), SearchResultAdapter.OnItemClickListene
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        //키 해시 받기
+        //var keyHash = Utility.getKeyHash(this)
+        //Log.d("keyHash", keyHash)
 
         etKeywords = findViewById(R.id.etKeywords)
         rvSearchResult = findViewById(R.id.rvSearchResult)
@@ -73,6 +82,14 @@ class MainActivity : AppCompatActivity(), SearchResultAdapter.OnItemClickListene
         }
 
         loadKeywords()
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val intent = Intent(this@MainActivity, MapActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+        })
     }
 
     override fun onItemClick(item: MapItem) {
