@@ -65,6 +65,8 @@ class MainActivity : AppCompatActivity() {
                     searchResultsAdapter.updateData(emptyList())
                     noResultsTextView.visibility = View.VISIBLE
                 }
+                viewModel.search(query)
+                noResultsTextView.visibility = if (query.isEmpty()) View.VISIBLE else View.GONE
             }
             override fun afterTextChanged(s: Editable?) {}
         })
