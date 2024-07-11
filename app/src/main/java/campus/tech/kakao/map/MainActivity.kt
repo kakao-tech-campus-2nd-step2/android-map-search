@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val BASE_URL = "https://dapi.kakao.com/"
+        const val TAG = "MainActivity"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +47,6 @@ class MainActivity : AppCompatActivity() {
 
         SetupView()
     }
-
 
     fun SetupView() {
         val Search = binding.SearchText
@@ -73,13 +73,11 @@ class MainActivity : AppCompatActivity() {
 
         SubAllHistory()
 
-
         Search.addTextChangedListener {
             val searchText = it.toString().trim()
             if (searchText.isEmpty()) {
                 NoSearchText.visibility = View.VISIBLE
                 RecyclerView.visibility = View.INVISIBLE
-
             } else {
                 NoSearchText.visibility = View.INVISIBLE
                 RecyclerView.visibility = View.VISIBLE
@@ -89,6 +87,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun searchKeyword(keyword: String) {
+        Log.d(TAG, "searchKeyword: $keyword")
+
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -96,36 +96,33 @@ class MainActivity : AppCompatActivity() {
         val api = retrofit.create(KakaoAPI::class.java)
         val call = api.getSearchKeyword("KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}", keyword)
 
-
         call.enqueue(object: Callback<ResultSearch> {
             override fun onResponse(
                 call: Call<ResultSearch>,
                 response: Response<ResultSearch>
             ) {
-                searchPlaceAPI(response.body())
-                adapter.submitList(listItems)
+                if (response.isSuccessful) {
+                    searchPlaceAPI(response.body())
+                    adapter.submitList(listItems)
+                }
             }
 
-            override fun onFailure(p0: Call<ResultSearch>, p1: Throwable) {
+            override fun onFailure(call: Call<ResultSearch>, t: Throwable) {
             }
-
         })
     }
 
-    private fun searchPlaceAPI(searchResult: ResultSearch?){
-        if (!searchResult?.documents.isNullOrEmpty()){
+    private fun searchPlaceAPI(searchResult: ResultSearch?) {
+        if (!searchResult?.documents.isNullOrEmpty()) {
             listItems.clear()
-            for (document in searchResult!!.documents){
-                val item = ListLayout(document.place_name,document.road_address_name,document.category_group_name)
+            for (document in searchResult!!.documents) {
+                val item = ListLayout(document.place_name, document.road_address_name, document.category_group_name)
                 listItems.add(item)
             }
-
         }
     }
 
-
-
-    private fun SearchHistory(name : String): Int {
+    private fun SearchHistory(name: String): Int {
         val selection = "${HistoryEntry.COLUMN_NAME} = ?"
         val selectionArgs = arrayOf(name)
         HistoryDB = HistoryDBHelper.readableDatabase
@@ -138,13 +135,14 @@ class MainActivity : AppCompatActivity() {
             null,
             null
         )
-        if (cursor.moveToFirst()) {
-            return 1
+        return if (cursor.moveToFirst()) {
+            1
+        } else {
+            0
         }
-        return 0
     }
 
-    private fun SubAllHistory(){
+    private fun SubAllHistory() {
         HistoryDB = HistoryDBHelper.readableDatabase
         val cursor = HistoryDB.query(
             HistoryEntry.TABLE_NAME,
@@ -158,15 +156,14 @@ class MainActivity : AppCompatActivity() {
         horadapter.SubmitCursor(cursor)
     }
 
-
-    private fun insertHistory(name : String){
+    private fun insertHistory(name: String) {
         HistoryDB = HistoryDBHelper.writableDatabase
         val values = ContentValues()
-        values.put(HistoryEntry.COLUMN_NAME,name)
-        HistoryDB.insert(HistoryEntry.TABLE_NAME,null,values)
+        values.put(HistoryEntry.COLUMN_NAME, name)
+        HistoryDB.insert(HistoryEntry.TABLE_NAME, null, values)
     }
 
-    private fun DeleteItem(name : String){
+    private fun DeleteItem(name: String) {
         val selection = "${HistoryEntry.COLUMN_NAME} = ?"
         val selectionArgs = arrayOf(name)
 
@@ -178,13 +175,12 @@ class MainActivity : AppCompatActivity() {
             selectionArgs
         )
 
-        if (deleteRows > 0){
+        if (deleteRows > 0) {
             SubAllHistory()
         }
-
     }
 
-    override  fun onDestroy() {
+    override fun onDestroy() {
         super.onDestroy()
     }
 }
