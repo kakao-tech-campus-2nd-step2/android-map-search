@@ -24,15 +24,20 @@ class PlaceRepositoryImpl : PlaceRepository {
             "병원" to "HP8", "약국" to "PM9",
         )
 
-    override suspend fun getPlacesByCategory(categoryInput: String): List<Place> {
+    override suspend fun getPlacesByCategory(
+        categoryInput: String,
+        totalPageCount: Int,
+    ): List<Place> {
         val categoryGroupCode = categoryCodeMap[categoryInput] ?: return emptyList()
-        return fetchPlacesByCategory(categoryGroupCode)
+        return fetchPlacesByCategory(categoryGroupCode, totalPageCount)
     }
 
-    private suspend fun fetchPlacesByCategory(categoryGroupCode: String): List<Place> {
+    private suspend fun fetchPlacesByCategory(
+        categoryGroupCode: String,
+        totalPageCount: Int,
+    ): List<Place> {
         val placeList = mutableListOf<Place>()
         val pageSize = 15
-        val totalPageCount = 3
 
         coroutineScope {
             val deferredResults =

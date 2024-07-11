@@ -19,10 +19,17 @@ class MapActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        KakaoMapSdk.init(this, getString(R.string.kakao_api_key))
 
+        initializeKakaoMapSdk()
         startMapView()
         setSearchBoxClickListener()
+    }
+
+    /**
+     * Kakao Map SDK를 초기화하는 함수.
+     */
+    private fun initializeKakaoMapSdk() {
+        KakaoMapSdk.init(this, getString(R.string.kakao_api_key))
     }
 
     /**
