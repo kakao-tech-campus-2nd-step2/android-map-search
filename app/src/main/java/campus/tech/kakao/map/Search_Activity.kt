@@ -41,6 +41,7 @@ class Search_Activity : AppCompatActivity() {
         initViews()
         databaseHelper = MyDatabaseHelper(this)
         kakaoApiService = createKakaoApiService()
+        MapViewKakao = MapView(this)
         initAdapters()
         setupRecyclerViews()
         setupSearchView()
