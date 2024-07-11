@@ -56,7 +56,6 @@ class MainActivity : AppCompatActivity() {
     private var placeList: List<Place> = emptyList()
 
     private var locationList: List<Document> = emptyList()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainBinding = ActivityMainBinding.inflate(layoutInflater)
