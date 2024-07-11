@@ -8,16 +8,17 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import campus.tech.kakao.map.databinding.ActivityMainBinding
+import campus.tech.kakao.map.databinding.ActivitySearchBinding
 
 class SearchActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivitySearchBinding
     private val viewModel: SearchViewModel by viewModels { SearchViewModelFactory(applicationContext) }
     private lateinit var searchResultsAdapter: SearchResultsAdapter
+    private lateinit var savedKeywordsAdapter: SavedKeywordsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setupRecyclerViews()
@@ -33,7 +34,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setupAdapters() {
-        val savedKeywordsAdapter = SavedKeywordsAdapter(emptyList()) { keyword ->
+        savedKeywordsAdapter = SavedKeywordsAdapter(emptyList()) { keyword ->
             viewModel.deleteKeyword(keyword)
         }
         binding.savedKeywordsRecyclerView.adapter = savedKeywordsAdapter
@@ -51,19 +52,25 @@ class SearchActivity : AppCompatActivity() {
         }
 
         viewModel.savedKeywords.observe(this) { keywords ->
-            (binding.savedKeywordsRecyclerView.adapter as SavedKeywordsAdapter).updateKeywords(keywords)
+            savedKeywordsAdapter.updateKeywords(keywords)
         }
     }
 
     private fun setupListeners() {
         with(binding) {
+            val searchEditText = editSearch
+            val clearButton = clearButton
+            val searchResultsRecyclerView = recyclerView
+            val savedKeywordsRecyclerView = savedKeywordsRecyclerView
+            val noResultsTextView: TextView = noResultsTextView
+
             clearButton.setOnClickListener {
-                editSearch.text.clear()
+                searchEditText.text.clear()
                 searchResultsAdapter.updateData(emptyList())
                 noResultsTextView.visibility = View.VISIBLE
             }
 
-            editSearch.addTextChangedListener(object : TextWatcher {
+            searchEditText.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
