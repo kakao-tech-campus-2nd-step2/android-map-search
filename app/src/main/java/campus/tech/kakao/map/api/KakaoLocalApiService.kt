@@ -11,6 +11,8 @@ interface KakaoLocalApiService {
     fun searchPlaces(
         @Header("Authorization") apiKey: String,
         @Query("query") query: String,
+        @Query("page") page: Int = 1,
+        @Query("size") size: Int = 15
     ): Call<SearchResponse>
 
 }

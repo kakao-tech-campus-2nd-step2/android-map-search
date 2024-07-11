@@ -124,30 +124,42 @@ class SearchRepository(context: Context) {
 
     fun searchPlaces(keyword: String, callback: (List<PlaceData>) -> Unit) {
         val apiKey = "KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}"
+        val maxPages = 3
+        val pageSize = 15
 
-        RetrofitInstance.apiService.searchPlaces(apiKey, keyword).enqueue(object :
-            Callback<SearchResponse> {
-            override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
-                if (response.isSuccessful) {
-                    val places = response.body()?.documents?.map {
-                        PlaceData(it.id, it.place_name, it.address_name, it.category_group_name)
-                    } ?: emptyList()
-                    callback(places)
-                } else {
-                    Log.e("SearchRepository", "API call failed: ${response.errorBody()?.string()}")
-                    callback(emptyList())
+        val allPlaces = mutableListOf<PlaceData>()
+        val apiService = RetrofitInstance.apiService
+
+        fun fetchPage(page: Int) {
+            apiService.searchPlaces(apiKey, keyword, page, pageSize).enqueue(object : Callback<SearchResponse> {
+                override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
+                    if (response.isSuccessful) {
+                        val places = response.body()?.documents?.map {
+                            PlaceData(it.id, it.place_name, it.address_name, it.category_group_name)
+                        } ?: emptyList()
+
+                        allPlaces.addAll(places)
+
+                        if (page < maxPages && places.isNotEmpty()) {
+                            fetchPage(page + 1) // 다음 페이지 요청
+                        } else {
+                            callback(allPlaces)
+                        }
+                    } else {
+                        Log.e("SearchRepository", "API call failed: ${response.errorBody()?.string()}")
+                        callback(allPlaces)
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-                Log.e("SearchRepository", "API call failed: ${t.message}")
-                callback(emptyList())
-            }
-        })
+                override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
+                    Log.e("SearchRepository", "API call failed: ${t.message}")
+                    callback(allPlaces)
+                }
+            })
+        }
+
+        fetchPage(1) // 첫 페이지 요청 시작
     }
-
-
-
 
         /*
     suspend fun searchPlaces(keyword: String): List<PlaceData> {
@@ -180,6 +192,4 @@ class SearchRepository(context: Context) {
     }
 
          */
-
-
 }
