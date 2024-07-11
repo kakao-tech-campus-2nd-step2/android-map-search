@@ -31,18 +31,19 @@ class MainActivity : AppCompatActivity() {
         viewModel =
             ViewModelProvider(this, viewModelProviderFactory)[SearchViewModel::class.java]
 
-        addDelSearchKeywordListener()
-        addDetectSearchWindowChangedListener()
-        getSavedSearchKeyword()
+        delSearchKeywordListener()
+        detectSearchWindowChangedListener()
+        displaySearchResults()
+        displaySavedSearchKeywords()
     }
 
-    private fun addDelSearchKeywordListener() {
+    private fun delSearchKeywordListener() {
         binding.delSearchKeyword.setOnClickListener {
             binding.searchWindow.text = null
         }
     }
 
-    private fun addDetectSearchWindowChangedListener() {
+    private fun detectSearchWindowChangedListener() {
         binding.searchWindow.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
@@ -57,7 +58,9 @@ class MainActivity : AppCompatActivity() {
 
             }
         })
+    }
 
+    private fun displaySearchResults() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.searchResults.collect {
@@ -77,7 +80,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getSavedSearchKeyword() {
+    private fun displaySavedSearchKeywords() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.savedSearchKeywords.collect {
