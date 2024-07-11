@@ -1,106 +1,61 @@
 package campus.tech.kakao.map
 
+import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.widget.EditText
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.kakao.vectormap.KakaoMap
+import com.kakao.vectormap.KakaoMapReadyCallback
+import com.kakao.vectormap.KakaoMapSdk
+import com.kakao.vectormap.MapLifeCycleCallback
+import com.kakao.vectormap.MapView
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var placeAdapter: PlaceAdapter
-    private lateinit var savedSearchAdapter: SavedSearchAdapter
-
+    var mapView: MapView? = null
+    var kakaoMap: KakaoMap? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        val search = findViewById<EditText>(R.id.search)
-        val closeIcon = findViewById<ImageView>(R.id.close_icon)
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-        val savedSearch = findViewById<RecyclerView>(R.id.saved_search)
-
-        val dbManager = DatabaseManager(context = this)
-
-        placeAdapter = PlaceAdapter(emptyList()){ place ->
-            dbManager.insertSavedPlace(place.id, place.name)
-            updateSavedSearch(dbManager)
-        }
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = placeAdapter
-
-        //저장된 검색어 adapter, recyclerView
-        savedSearchAdapter = SavedSearchAdapter(emptyList()){ savedSearch ->
-            dbManager.deleteSavedPlace(savedSearch.id)
-            updateSavedSearch(dbManager)
-        }
-        savedSearch.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)    //마지막 인자는 역순으로 배치 여부
-        savedSearch.adapter = savedSearchAdapter
-
-        //검색어 지우기
-        closeIcon.setOnClickListener {
-            search.text.clear()
-        }
-
-        //검색창에 텍스트가 바뀔 때마다 감지해서 검색
-        search.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                // 텍스트 변경 후 호출
-                val query = s.toString()
-                searchPlaces(query)
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
-        })
-
-
-        updateSavedSearch(dbManager)
-
-
-    } //onCreate
-
-    private fun searchPlaces(query: String) {
-        val call = RetrofitInstance.api.searchKeyword(query) //API 요청
-
-        call.enqueue(object : Callback<KakaoSearchResponse> { //비동기 API 요청
-
-            override fun onResponse(call: Call<KakaoSearchResponse>, response: Response<KakaoSearchResponse>) {
-
-                if (response.isSuccessful) {    //성공했을 때
-                    val places = response.body()?.documents?.map { document ->
-                        Place(
-                            id = document.id.toInt(),
-                            name = document.place_name,
-                            address = document.address_name,
-                            kind = document.category_name
-                        )
-                    } ?: emptyList()
-                    placeAdapter.updateData(places)
-                }
-                else {  //실패했을 때
-                    Log.e("API_ERROR", "Error: ${response.errorBody()?.string()}")
+        val search = findViewById<EditText>(R.id.main_search)
+        val appKey = BuildConfig.KAKAO_API_KEY
+        KakaoMapSdk.init(this,appKey)
+        mapView = findViewById(R.id.map_view)
+        mapView?.start(
+            object : MapLifeCycleCallback() {
+                override fun onMapDestroy() {
+                    // 지도 API가 정상적으로 종료될 때 호출
+                    Log.d("KakaoMap", "onMapDestroy: ")
                 }
 
-            }
+                override fun onMapError(error: Exception) {
+                    // 인증 실패 및 지도 사용 중 에러가 발생할 때 호출
+                    Log.e("KakaoMap", "onMapError: ", error)
+                }
+            },
+            object : KakaoMapReadyCallback() {
+                override fun onMapReady(map: KakaoMap) {
+                    // 정상적으로 인증이 완료되었을 때 호출
+                    // KakaoMap 객체를 얻어 옵니다.
+                    kakaoMap = map
+                }
+            })  //mapView.start
 
-            override fun onFailure(call: Call<KakaoSearchResponse>, t: Throwable) { //실패 했을 때
-                Log.e("API_ERROR", "Failure: ${t.message}")
-            }
-        })
+        search.setOnClickListener{
+            val intent = Intent(this,SearchPlaceActivity::class.java)
+            startActivity(intent)
+        }
+
+    }   //onCreate
+
+    override fun onResume() {
+        super.onResume()
+        mapView?.resume()
     }
 
-
-    //저장된 검색어 업데이트
-    private fun updateSavedSearch(dbManager: DatabaseManager) {
-        val savedSearches = dbManager.getSavedSearches()
-        savedSearchAdapter.updateData(savedSearches)
+    override fun onPause() {
+        super.onPause()
+        mapView?.pause()
     }
+
 }
