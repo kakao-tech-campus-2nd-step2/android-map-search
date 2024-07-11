@@ -20,54 +20,65 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val searchEditText = binding.editSearch
-        val clearButton = binding.clearButton
-        val searchResultsRecyclerView = binding.recyclerView
-        val savedKeywordsRecyclerView = binding.savedKeywordsRecyclerView
-        val noResultsTextView: TextView = binding.noResultsTextView
+        with(binding) {
+            val searchEditText = editSearch
+            val clearButton = clearButton
+            val searchResultsRecyclerView = recyclerView
+            val savedKeywordsRecyclerView = savedKeywordsRecyclerView
+            val noResultsTextView: TextView = noResultsTextView
 
-        searchResultsRecyclerView.layoutManager = LinearLayoutManager(this)
-        savedKeywordsRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+            searchResultsRecyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
+            savedKeywordsRecyclerView.layoutManager =
+                LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
 
-        val savedKeywordsAdapter = SavedKeywordsAdapter(emptyList()) { keyword ->
-            viewModel.deleteKeyword(keyword)
-        }
-        savedKeywordsRecyclerView.adapter = savedKeywordsAdapter
-
-        searchResultsAdapter = SearchResultsAdapter(emptyList()) { keyword ->
-            viewModel.saveKeyword(keyword)
-        }
-        searchResultsRecyclerView.adapter = searchResultsAdapter
-
-        viewModel.searchResults.observe(this) { results ->
-            searchResultsAdapter.updateData(results)
-            noResultsTextView.visibility = if (results.isEmpty()) View.VISIBLE else View.GONE
-        }
-
-        viewModel.savedKeywords.observe(this) { keywords ->
-            savedKeywordsAdapter.updateKeywords(keywords)
-        }
-
-        clearButton.setOnClickListener {
-            searchEditText.text.clear()
-            searchResultsAdapter.updateData(emptyList())
-            noResultsTextView.visibility = View.VISIBLE
-        }
-
-        searchEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val query = s.toString()
-                if (query.isNotEmpty()) {
-                    viewModel.search(query)
-                    noResultsTextView.visibility = View.GONE
-                } else {
-                    searchResultsAdapter.updateData(emptyList())
-                    noResultsTextView.visibility = View.VISIBLE
-                }
+            val savedKeywordsAdapter = SavedKeywordsAdapter(emptyList()) { keyword ->
+                viewModel.deleteKeyword(keyword)
             }
-            override fun afterTextChanged(s: Editable?) {}
-        })
+            savedKeywordsRecyclerView.adapter = savedKeywordsAdapter
+
+            searchResultsAdapter = SearchResultsAdapter(emptyList()) { keyword ->
+                viewModel.saveKeyword(keyword)
+            }
+            searchResultsRecyclerView.adapter = searchResultsAdapter
+
+            viewModel.searchResults.observe(this@MainActivity) { results ->
+                searchResultsAdapter.updateData(results)
+                noResultsTextView.visibility = if (results.isEmpty()) View.VISIBLE else View.GONE
+            }
+
+            viewModel.savedKeywords.observe(this@MainActivity) { keywords ->
+                savedKeywordsAdapter.updateKeywords(keywords)
+            }
+
+            clearButton.setOnClickListener {
+                searchEditText.text.clear()
+                searchResultsAdapter.updateData(emptyList())
+                noResultsTextView.visibility = View.VISIBLE
+            }
+
+            searchEditText.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    val query = s.toString()
+                    if (query.isNotEmpty()) {
+                        viewModel.search(query)
+                        noResultsTextView.visibility = View.GONE
+                    } else {
+                        searchResultsAdapter.updateData(emptyList())
+                        noResultsTextView.visibility = View.VISIBLE
+                    }
+                }
+
+                override fun afterTextChanged(s: Editable?) {}
+            })
+        }
 
         initializeDatabase()
     }
