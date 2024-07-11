@@ -7,34 +7,23 @@
     android:layout_height="match_parent"
     tools:context=".MapActivity">
 
-    <EditText
+    <com.kakao.vectormap.MapView
+        android:id="@+id/map_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
         android:id="@+id/inputSearchMap"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/input_query"
+        android:background="@drawable/map_input_search"
+        android:drawableRight="@drawable/drawable_resize"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/buttonX"
+        android:gravity="center_vertical"
         android:padding="15dp"
-        android:layout_margin="10dp"
-        tools:ignore="NotSibling" />
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="20dp"/>
 
-    <Button
-        android:id="@+id/buttonX"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginStart="10dp"
-        android:background="@drawable/x"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/inputSearchMap"/>
-
-    <com.kakao.vectormap.MapView
-        android:id="@+id/map_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

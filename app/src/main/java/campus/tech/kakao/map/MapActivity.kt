@@ -2,7 +2,7 @@ package campus.tech.kakao.map
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
@@ -12,12 +12,14 @@ import java.lang.Exception
 
 class MapActivity : AppCompatActivity() {
 
+    private lateinit var mapView: MapView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
 
-        val mapView = findViewById<MapView>(R.id.map_view)
-        val inputMap = findViewById<EditText>(R.id.inputSearchMap)
+        mapView = findViewById<MapView>(R.id.map_view)
+        val inputMap = findViewById<TextView>(R.id.inputSearchMap)
 
         mapView.start(object: MapLifeCycleCallback() {
             override fun onMapDestroy() {
@@ -37,5 +39,15 @@ class MapActivity : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mapView.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView.pause()
     }
 }
