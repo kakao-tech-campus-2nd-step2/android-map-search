@@ -48,15 +48,15 @@ class KakaoMapItemDbHelper(context: Context) : SQLiteOpenHelper(context, "mapIte
     suspend fun searchKakaoMapItem(category: String): MutableList<KakaoMapItem> {
         val mapItemList = mutableListOf<KakaoMapItem>()
 
-        val response = withContext(Dispatchers.Default) {
+        val response = withContext(Dispatchers.IO) {
             retrofitService.requsetKakaoMap(query = category).execute()
         }
         if(response.isSuccessful) {
             val body = response.body()
             //val maxPage = body?.meta?.pageable_count ?: 1
-            val maxPage = 2
+            val maxPage = 3
             for(i in 1..maxPage) {
-                val responseEachPage = withContext(Dispatchers.Default) {
+                val responseEachPage = withContext(Dispatchers.IO) {
                     retrofitService.requsetKakaoMap(query = category, page = i).execute()
                 }
                 responseEachPage.body()?.documents?.forEach {

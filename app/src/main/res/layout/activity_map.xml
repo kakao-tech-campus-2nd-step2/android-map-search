@@ -5,6 +5,28 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".KakaoMapActivity">
+    tools:context=".MapActivity">
+
+    <TextView
+        android:id="@+id/inputSpace"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_margin="20dp"
+        android:gravity="center_vertical"
+        android:hint="@string/search_hint"
+        android:paddingStart="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/cancelBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="15dp"
+        android:src="@drawable/baseline_search_24"
+        app:layout_constraintBottom_toBottomOf="@+id/inputSpace"
+        app:layout_constraintEnd_toEndOf="@+id/inputSpace"
+        app:layout_constraintTop_toTopOf="@+id/inputSpace" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
