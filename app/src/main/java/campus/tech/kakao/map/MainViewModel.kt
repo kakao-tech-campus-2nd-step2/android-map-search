@@ -14,6 +14,8 @@ class MainViewModel(context: Context) : ViewModel() {
     private val dbHelper: DBHelper = DBHelper(context)
     private val db = dbHelper.writableDatabase
     private val preferenceManager = MapApplication.prefs
+    private val repository = RetrofitRepository()
+
 
     private var _placeList = MutableLiveData<List<Place>>()
     private val _searchHistoryList = MutableLiveData<List<SearchHistory>>()
@@ -85,32 +87,7 @@ class MainViewModel(context: Context) : ViewModel() {
         getSearchHistoryList()
     }
 
-    fun getPlace(query: String) {
-        if (query.isEmpty()) {
-            _locationList.value = emptyList()
-        } else {
-            retrofitService.getPlaces("KakaoAK "+BuildConfig.KAKAO_REST_API_KEY, query).enqueue(object : Callback<Location> {
-                override fun onResponse(
-                    call: Call<Location>,
-                    response: Response<Location>
-                ) {
-                    if (response.isSuccessful) {
-                        val body = response.body()
-                        if (body != null) {
-                            _locationList.postValue(body.documents)
-                            Log.d("성공", ""+ body.documents)
-                        } else {
-                            _locationList.postValue(emptyList())
-                        }
-                    } else {
-                        Log.d("태그",response.code().toString())
-                    }
-                }
-
-                override fun onFailure(call: Call<Location>, t: Throwable) {
-                    Log.d("error", ""+ t)
-                }
-            })
-        }
+    fun getPlace(query: String): LiveData<List<Document>> {
+        return repository.getPlace(query)
     }
 }
