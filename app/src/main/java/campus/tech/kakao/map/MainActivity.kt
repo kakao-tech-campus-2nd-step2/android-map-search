@@ -1,84 +1,84 @@
 package campus.tech.kakao.map
 
+import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.View
-import android.widget.TextView
-import androidx.activity.viewModels
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
+import campus.tech.kakao.map.R
+import campus.tech.kakao.map.SearchActivity
 import campus.tech.kakao.map.databinding.ActivityMainBinding
+import com.kakao.vectormap.KakaoMap
+import com.kakao.vectormap.KakaoMapReadyCallback
+import com.kakao.vectormap.KakaoMapSdk
+import com.kakao.vectormap.LatLng
+import com.kakao.vectormap.MapLifeCycleCallback
+import com.kakao.vectormap.camera.CameraUpdateFactory
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val viewModel: SearchViewModel by viewModels { SearchViewModelFactory(applicationContext) }
-    private lateinit var searchResultsAdapter: SearchResultsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        with(binding) {
-            val searchEditText = editSearch
-            val clearButton = clearButton
-            val searchResultsRecyclerView = recyclerView
-            val savedKeywordsRecyclerView = savedKeywordsRecyclerView
-            val noResultsTextView: TextView = noResultsTextView
+        Log.d("MainActivity", "onCreate called")
 
-            searchResultsRecyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
-            savedKeywordsRecyclerView.layoutManager =
-                LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
+        initializeKakaoSdk()
+        initializeMapView()
+        setSearchBoxClickListener()
+    }
 
-            val savedKeywordsAdapter = SavedKeywordsAdapter(emptyList()) { keyword ->
-                viewModel.deleteKeyword(keyword)
-            }
-            savedKeywordsRecyclerView.adapter = savedKeywordsAdapter
+    private fun initializeKakaoSdk() {
+        val apiKey = getString(R.string.kakao_api_key)
+        KakaoMapSdk.init(this, apiKey)
+        Log.d("MainActivity", "Kakao API Key: $apiKey")
+        Log.d("MainActivity", "KakaoMapSdk initialized")
+    }
 
-            searchResultsAdapter = SearchResultsAdapter(emptyList()) { keyword ->
-                viewModel.saveKeyword(keyword)
-            }
-            searchResultsRecyclerView.adapter = searchResultsAdapter
+    private fun initializeMapView() {
 
-            viewModel.searchResults.observe(this@MainActivity) { results ->
-                searchResultsAdapter.updateData(results)
-                noResultsTextView.visibility = if (results.isEmpty()) View.VISIBLE else View.GONE
+        val mapLifeCycleCallback = object : MapLifeCycleCallback() {
+            override fun onMapDestroy() {
+                Log.d("MainActivity", "onMapDestroy called")
             }
 
-            viewModel.savedKeywords.observe(this@MainActivity) { keywords ->
-                savedKeywordsAdapter.updateKeywords(keywords)
+            override fun onMapError(error: Exception) {
+                Log.e("MainActivity", "onMapError: ${error.message}")
+            }
+        }
+
+        val kakaoMapReadyCallback = object : KakaoMapReadyCallback() {
+            override fun onMapReady(kakaoMap: KakaoMap) {
+                Log.d("MainActivity", "Map is ready")
             }
 
-            clearButton.setOnClickListener {
-                searchEditText.text.clear()
-                searchResultsAdapter.updateData(emptyList())
-                noResultsTextView.visibility = View.VISIBLE
+            override fun getPosition(): LatLng {
+                Log.d("MainActivity", "getPosition called")
+                return LatLng.from(36.37591485731178, 127.34381616478682)
             }
+        }
 
-            searchEditText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
-                }
+        binding.mapView.start(mapLifeCycleCallback, kakaoMapReadyCallback)
+    }
 
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    val query = s.toString()
-                    if (query.isNotEmpty()) {
-                        viewModel.search(query)
-                        noResultsTextView.visibility = View.GONE
-                    } else {
-                        searchResultsAdapter.updateData(emptyList())
-                        noResultsTextView.visibility = View.VISIBLE
-                    }
-                }
-
-                override fun afterTextChanged(s: Editable?) {}
-            })
+    private fun setSearchBoxClickListener() {
+        binding.searchBar.setOnClickListener {
+            Log.d("MainActivity", "Search box clicked")
+            val intent = Intent(this, SearchActivity::class.java)
+            startActivity(intent)
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        Log.d("MainActivity", "onResume called")
+        binding.mapView.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("MainActivity", "onPause called")
+        binding.mapView.pause()
+    }
 }
