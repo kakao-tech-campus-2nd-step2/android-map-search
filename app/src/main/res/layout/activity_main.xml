@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:hint="검색어를 입력해 주세요."
+        android:hint="@string/hint_search"
         android:padding="10dp"
         android:background="@drawable/search_background"
         android:drawableEnd="@android:drawable/ic_menu_search"
