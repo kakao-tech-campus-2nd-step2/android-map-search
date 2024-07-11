@@ -28,16 +28,14 @@
         app:layout_constraintStart_toStartOf="@+id/search_text"
         app:layout_constraintTop_toBottomOf="@+id/search_text" />
 
-    <TextView
+    <com.kakao.vectormap.MapView
         android:id="@+id/nosearch"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="검색 결과가 없습니다."
+        android:layout_height="650dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerHor" />
+        app:layout_constraintTop_toBottomOf="@+id/search_text" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/RecyclerVer"

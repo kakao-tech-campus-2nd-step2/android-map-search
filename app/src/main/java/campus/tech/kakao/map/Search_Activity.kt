@@ -2,6 +2,7 @@ package campus.tech.kakao.map
 
 import android.content.ContentValues
 import android.os.Bundle
+import android.provider.SettingsSlicesContract
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,8 @@ import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.kakao.sdk.common.KakaoSdk
+import com.kakao.vectormap.MapView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
@@ -27,11 +30,12 @@ class Search_Activity : AppCompatActivity() {
     private lateinit var searchResultAdapter: PlaceAdapter
     private lateinit var savedSearchAdapter: SavedSearchAdapter
     private lateinit var databaseHelper: MyDatabaseHelper
-    private lateinit var noResultTextView: TextView
+    private lateinit var MapViewKakao: MapView
     private lateinit var kakaoApiService: KakaoApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        KakaoSdk.init(this, "e6a7c826ae7a55df129b8be2c636e213")
         setContentView(R.layout.activity_search)
 
         initViews()
@@ -47,7 +51,7 @@ class Search_Activity : AppCompatActivity() {
         searchView = findViewById(R.id.search_text)
         searchRecyclerView = findViewById(R.id.RecyclerVer)
         savedSearchRecyclerView = findViewById(R.id.recyclerHor)
-        noResultTextView = findViewById(R.id.nosearch)
+        MapViewKakao = findViewById(R.id.nosearch)
     }
 
     private fun createKakaoApiService(): KakaoApiService {
@@ -115,7 +119,7 @@ class Search_Activity : AppCompatActivity() {
     private fun searchAndDisplayResults(searchText: String) {
         if (searchText.isBlank()) {
             searchRecyclerView.visibility = RecyclerView.GONE
-            noResultTextView.visibility = RecyclerView.VISIBLE
+            MapViewKakao.visibility = RecyclerView.VISIBLE
             return
         }
 
@@ -134,11 +138,11 @@ class Search_Activity : AppCompatActivity() {
 
                 if (places.isEmpty()) {
                     searchRecyclerView.visibility = RecyclerView.GONE
-                    noResultTextView.visibility = RecyclerView.VISIBLE
+                    MapViewKakao.visibility = RecyclerView.VISIBLE
                 } else {
                     searchResultAdapter.updateData(places)
                     searchRecyclerView.visibility = RecyclerView.VISIBLE
-                    noResultTextView.visibility = RecyclerView.GONE
+                    MapViewKakao.visibility = RecyclerView.GONE
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
