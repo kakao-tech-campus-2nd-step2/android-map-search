@@ -19,6 +19,9 @@ android {
             abiFilters.add("x86")
             abiFilters.add("x86_64")
         }
+        dataBinding {
+            enable = true
+        }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
