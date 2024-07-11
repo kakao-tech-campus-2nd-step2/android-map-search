@@ -44,6 +44,7 @@ class Repository(context: Context) {
         }
         db.setTransactionSuccessful()
         db.endTransaction()
+        db.close()
     }
 
     private fun isDataExist(name: String): Boolean {
@@ -74,4 +75,6 @@ class Repository(context: Context) {
         val type = object : TypeToken<List<Keyword>>() {}.type
         return Gson().fromJson(savedKeywordsJson, type)
     }
+
+
 }
