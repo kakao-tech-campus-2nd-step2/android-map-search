@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import campus.tech.kakao.map.R
@@ -21,7 +22,6 @@ class MapFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d("MapFragment", "onCreateView called")
         return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
@@ -29,6 +29,11 @@ class MapFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         mapView = view.findViewById(R.id.KakaoMapView)
         searchView = view.findViewById(R.id.searchView)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                requireActivity().finish()
+            }
+        })
 
         mapView.start(object : MapLifeCycleCallback() {
             override fun onMapDestroy() {
