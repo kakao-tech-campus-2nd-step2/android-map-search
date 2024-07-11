@@ -58,6 +58,4 @@ class PlaceRepository (val dbHelper: PlaceDBHelper){
         cursor.close()
         return placeList
     }
-
-
 }

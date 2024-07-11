@@ -11,4 +11,3 @@ data class Place(
     @SerializedName("road_address_name") val location : String,
     @SerializedName("category_group_name") val category : String
 )
-

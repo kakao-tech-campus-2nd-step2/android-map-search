@@ -52,6 +52,4 @@ class MainActivityViewModel(
         }
         else _place.value = listOf<Place>()
     }
-
-
 }

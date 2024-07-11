@@ -116,7 +116,6 @@ class MainActivity : AppCompatActivity(), OnClickPlaceListener, OnClickSavedPlac
                 val text = searchText.toString()
                 Log.d("inputField", "text : ${text}")
                 viewModel.getKakaoLocalData(text)
-
             }
         })
     }
