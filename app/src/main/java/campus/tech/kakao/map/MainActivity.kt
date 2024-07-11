@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import campus.tech.kakao.map.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    private val viewModel: MainViewModel by viewModels {
+    private val viewModel: SearchViewModel by viewModels {
         ViewModelFactory(applicationContext)
     }
 
