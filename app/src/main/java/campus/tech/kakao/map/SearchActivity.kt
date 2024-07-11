@@ -20,50 +20,51 @@ class SearchActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupRecyclerViews()
+        setupAdapters()
+        setupObservers()
+        setupListeners()
+    }
+
+    private fun setupRecyclerViews() {
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.savedKeywordsRecyclerView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+    }
+
+    private fun setupAdapters() {
+        val savedKeywordsAdapter = SavedKeywordsAdapter(emptyList()) { keyword ->
+            viewModel.deleteKeyword(keyword)
+        }
+        binding.savedKeywordsRecyclerView.adapter = savedKeywordsAdapter
+
+        searchResultsAdapter = SearchResultsAdapter(emptyList()) { keyword ->
+            viewModel.saveKeyword(keyword)
+        }
+        binding.recyclerView.adapter = searchResultsAdapter
+    }
+
+    private fun setupObservers() {
+        viewModel.searchResults.observe(this) { results ->
+            searchResultsAdapter.updateData(results)
+            binding.noResultsTextView.visibility = if (results.isEmpty()) View.VISIBLE else View.GONE
+        }
+
+        viewModel.savedKeywords.observe(this) { keywords ->
+            (binding.savedKeywordsRecyclerView.adapter as SavedKeywordsAdapter).updateKeywords(keywords)
+        }
+    }
+
+    private fun setupListeners() {
         with(binding) {
-            val searchEditText = editSearch
-            val clearButton = clearButton
-            val searchResultsRecyclerView = recyclerView
-            val savedKeywordsRecyclerView = savedKeywordsRecyclerView
-            val noResultsTextView: TextView = noResultsTextView
-
-            searchResultsRecyclerView.layoutManager = LinearLayoutManager(this@SearchActivity)
-            savedKeywordsRecyclerView.layoutManager =
-                LinearLayoutManager(this@SearchActivity, LinearLayoutManager.HORIZONTAL, false)
-
-            val savedKeywordsAdapter = SavedKeywordsAdapter(emptyList()) { keyword ->
-                viewModel.deleteKeyword(keyword)
-            }
-            savedKeywordsRecyclerView.adapter = savedKeywordsAdapter
-
-            searchResultsAdapter = SearchResultsAdapter(emptyList()) { keyword ->
-                viewModel.saveKeyword(keyword)
-            }
-            searchResultsRecyclerView.adapter = searchResultsAdapter
-
-            viewModel.searchResults.observe(this@SearchActivity) { results ->
-                searchResultsAdapter.updateData(results)
-                noResultsTextView.visibility = if (results.isEmpty()) View.VISIBLE else View.GONE
-            }
-
-            viewModel.savedKeywords.observe(this@SearchActivity) { keywords ->
-                savedKeywordsAdapter.updateKeywords(keywords)
-            }
-
             clearButton.setOnClickListener {
-                searchEditText.text.clear()
+                editSearch.text.clear()
                 searchResultsAdapter.updateData(emptyList())
                 noResultsTextView.visibility = View.VISIBLE
             }
 
-            searchEditText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
-                }
+            editSearch.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     val query = s.toString()
@@ -80,5 +81,4 @@ class SearchActivity : AppCompatActivity() {
             })
         }
     }
-
 }
