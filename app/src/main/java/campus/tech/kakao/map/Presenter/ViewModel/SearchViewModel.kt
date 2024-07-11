@@ -23,7 +23,7 @@ class SearchViewModel(private val repository: PlaceRepository) : ViewModel() {
     }
 
     suspend fun searchPlaceRemote(name : String){
-        _currentResult.postValue(repository.searchPlaceRemote(name))
+        _currentResult.postValue(repository.getPlaceByNameHTTP(name))
     }
 
     fun addFavorite(name: String) {

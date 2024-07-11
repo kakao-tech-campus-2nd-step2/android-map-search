@@ -9,4 +9,5 @@ interface PlaceRepository {
     fun getPlaceByName(name: String): Place
     fun deleteFavorite(name: String)
     suspend fun searchPlaceRemote(name : String) : List<Place>
+    fun getPlaceByNameHTTP(name : String) : List<Place>
 }
