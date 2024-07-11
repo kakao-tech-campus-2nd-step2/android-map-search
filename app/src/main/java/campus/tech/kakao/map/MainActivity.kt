@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
@@ -17,9 +18,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val search = findViewById<EditText>(R.id.main_search)
+        val search = findViewById<TextView>(R.id.main_search)
         val appKey = BuildConfig.KAKAO_API_KEY
-        KakaoMapSdk.init(this,appKey)
+        KakaoMapSdk.init(this, appKey)
         mapView = findViewById(R.id.map_view)
         mapView?.start(
             object : MapLifeCycleCallback() {
@@ -41,8 +42,9 @@ class MainActivity : AppCompatActivity() {
                 }
             })  //mapView.start
 
-        search.setOnClickListener{
-            val intent = Intent(this,SearchPlaceActivity::class.java)
+        search.setOnClickListener {
+            it.playSoundEffect(android.view.SoundEffectConstants.CLICK) //클릭 시 소리
+            val intent = Intent(this, SearchPlaceActivity::class.java)
             startActivity(intent)
         }
 

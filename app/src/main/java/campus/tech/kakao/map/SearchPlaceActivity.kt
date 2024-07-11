@@ -46,7 +46,9 @@ class SearchPlaceActivity : AppCompatActivity() {
 
         //검색어 지우기
         closeIcon.setOnClickListener {
+            it.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY)  //가벼운 진동
             search.text.clear()
+            searchPlaces(" ")    //close 누르고 recyclerView도 비우기
         }
 
         //검색창에 텍스트가 바뀔 때마다 감지해서 검색
@@ -74,6 +76,7 @@ class SearchPlaceActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call<KakaoSearchResponse>, response: Response<KakaoSearchResponse>) {
 
+                Log.d("seyoung","query : $query")
                 if (response.isSuccessful) {    //성공했을 때
                     val places = response.body()?.documents?.map { document ->
                         Place(
@@ -86,13 +89,13 @@ class SearchPlaceActivity : AppCompatActivity() {
                     placeAdapter.updateData(places)
                 }
                 else {  //실패했을 때
-                    Log.e("API_ERROR", "Error: ${response.errorBody()?.string()}")
+                    Log.d("seyoung", "Error: ${response.errorBody()?.string()}")
                 }
 
             }
 
             override fun onFailure(call: Call<KakaoSearchResponse>, t: Throwable) { //실패 했을 때
-                Log.e("API_ERROR", "Failure: ${t.message}")
+                Log.d("seyoung", "Failure: ${t.message}")
             }
         })
     }
