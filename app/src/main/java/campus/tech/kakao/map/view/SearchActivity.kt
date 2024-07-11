@@ -33,44 +33,30 @@ class SearchActivity : AppCompatActivity() {
             ViewModelProvider.AndroidViewModelFactory.getInstance(application)
         )[SearchViewModel::class.java]
 
-        findViews()
-        setCancelBtnClickListener()
-        editTextWatcher()
-        viewModel.showSavePlace()
-
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        viewModel.places.observe(this) { places ->
-            searchAdapter = SearchAdapter(places) {
-                viewModel.savePlaces(it.name)
-                viewModel.showSavePlace()
-            }
-            recyclerView.adapter = searchAdapter
-            updateViewVisibility(places.isNotEmpty())
-        }
-
-        saveRecyclerView.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        viewModel.savePlaces.observe(this) { savePlaces ->
-            savePlaceAdapter = SavePlaceAdapter(savePlaces) {
-                viewModel.deleteSavedPlace(it.savePlace)
-                viewModel.showSavePlace()
-            }
-            saveRecyclerView.adapter = savePlaceAdapter
-        }
-
-        viewModel.insertDummyData("카페", "대전 유성구 궁동", "카페")
-        viewModel.insertDummyData("약국", "대전 유성구 봉명동", "약국")
+        initView()
+        setListeners()
+        setAdapters()
+        observeViewModel()
     }
 
-    private fun findViews() {
-        editText = findViewById<EditText>(R.id.searchText)
-        cancelBtn = findViewById<ImageView>(R.id.cancelBtn)
+    private fun initView() {
+        editText = findViewById(R.id.searchText)
+        cancelBtn = findViewById(R.id.cancelBtn)
         recyclerView = findViewById(R.id.searchPlaceView)
         noSearchLayout = findViewById(R.id.noSearch)
         saveRecyclerView = findViewById(R.id.savePlaceView)
+
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        saveRecyclerView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
     }
 
-    private fun editTextWatcher() {
+    private fun setListeners() {
+        cancelBtn.setOnClickListener {
+            editText.setText("")
+            updateViewVisibility(false)
+        }
+
         editText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
@@ -86,10 +72,26 @@ class SearchActivity : AppCompatActivity() {
         })
     }
 
-    private fun setCancelBtnClickListener() {
-        cancelBtn.setOnClickListener {
-            editText.setText("")
-            updateViewVisibility(false)
+    private fun setAdapters() {
+        searchAdapter = SearchAdapter(emptyList()) {
+            viewModel.savePlaces(it.name)
+        }
+        recyclerView.adapter = searchAdapter
+
+        savePlaceAdapter = SavePlaceAdapter(emptyList()) {
+            viewModel.deleteSavedPlace(it.savePlace)
+        }
+        saveRecyclerView.adapter = savePlaceAdapter
+    }
+
+    private fun observeViewModel() {
+        viewModel.places.observe(this) { places ->
+            searchAdapter.updateData(places)
+            updateViewVisibility(places.isNotEmpty())
+        }
+
+        viewModel.savePlaces.observe(this) { savePlaces ->
+            savePlaceAdapter.updateData(savePlaces)
         }
     }
 
@@ -102,7 +104,6 @@ class SearchActivity : AppCompatActivity() {
             noSearchLayout.visibility = View.VISIBLE
         }
     }
-
 
 
 }

@@ -17,8 +17,13 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
     val places: LiveData<List<Place>> get() = _places
     val savePlaces: LiveData<List<SavePlace>> get() = _savePlaces
 
+    init {
+        insertDummyData("카페", "대전 유성구 궁동", "카페")
+        insertDummyData("약국", "대전 유성구 봉명동", "약국")
+        _savePlaces.value = searchRepo.showSavePlace()
+    }
 
-    fun insertDummyData(name: String, address: String, category: String) {
+    private fun insertDummyData(name: String, address: String, category: String) {
         searchRepo.insertPlaceDummyData(name, address, category)
     }
 
@@ -27,14 +32,11 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun savePlaces(placeName: String) {
-        searchRepo.savePlaces(placeName)
-    }
-
-    fun showSavePlace() {
-        _savePlaces.value = searchRepo.showSavePlace()
+        _savePlaces.value = searchRepo.savePlacesAndUpdate(placeName)
     }
 
     fun deleteSavedPlace(savedPlaceName: String) {
-        searchRepo.deleteSavedPlace(savedPlaceName)
+        _savePlaces.value = searchRepo.deleteSavedPlacesAndUpdate(savedPlaceName)
     }
+
 }

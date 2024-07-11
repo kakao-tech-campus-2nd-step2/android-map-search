@@ -9,7 +9,7 @@ import campus.tech.kakao.map.R
 import campus.tech.kakao.map.model.Place
 
 class SearchAdapter(
-    private val places: List<Place>,
+    private var places: List<Place>,
     private val onItemClickListener: (Place) -> Unit
 ) :
     RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
@@ -49,5 +49,9 @@ class SearchAdapter(
         return places.size
     }
 
+    fun updateData(newPlaces: List<Place>) {
+        places = newPlaces
+        notifyDataSetChanged()
+    }
 
 }
