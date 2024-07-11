@@ -13,18 +13,19 @@ android {
     compileSdk = 34
 
     defaultConfig {
+        ndk {
+            abiFilters.add("arm64-v8a")
+            abiFilters.add("armeabi-v7a")
+            abiFilters.add("x86")
+            abiFilters.add("x86_64")
+        }
         applicationId = "campus.tech.kakao.map"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-        val properties = Properties()
-        val localPropertiesFile = rootProject.file("local.properties")
-        if (localPropertiesFile.exists()) {
-            properties.load(FileInputStream(localPropertiesFile))
-        }
-        val kakaoApiKey = properties.getProperty("KAKAO_API_KEY")
-        buildConfigField("String", "KAKAO_API_KEY", "\"$kakaoApiKey\"")
+        resValue("string", "kakao_api_key", getApiKey("KAKAO_API_KEY"))
+        buildConfigField("String", "KAKAO_REST_API_KEY", getApiKey("KAKAO_REST_API_KEY"))
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

@@ -4,4 +4,5 @@
     <string name="searchButton">검색</string>
     <string name="noSearch">검색 결과가 없습니다</string>
     <string name="x">X</string>
+    <string name="kakao_api_key">23f7816cce557c3510b52b6418462b31</string>
 </resources>
