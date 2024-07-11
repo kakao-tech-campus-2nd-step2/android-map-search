@@ -1,6 +1,6 @@
 package campus.tech.kakao.map.domain.model
 
-data class Place(
+data class PlaceVO(
     val placeName: String,
     val addressName: String,
     val categoryName: String,

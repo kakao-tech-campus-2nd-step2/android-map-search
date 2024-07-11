@@ -2,7 +2,7 @@ package campus.tech.kakao.map.data.model
 
 import com.google.gson.annotations.SerializedName
 
-data class Meta(
+data class MetaEntity(
     @SerializedName("total_count")
     val totalCount: Int,
     @SerializedName("pageable_count")

@@ -10,7 +10,7 @@ import campus.tech.kakao.map.R
 import campus.tech.kakao.map.databinding.SearchHistoryItemBinding
 
 class SearchHistoryAdapter(
-    private var historyList: List<String>,
+    private var historyList: MutableList<String>,
     private val onDeleteClick: (String) -> Unit,
     private val onItemClick: (String) -> Unit,
 ) : RecyclerView.Adapter<SearchHistoryAdapter.HistoryViewHolder>() {
@@ -46,7 +46,8 @@ class SearchHistoryAdapter(
     }
 
     fun updateData(newHistoryList: List<String>) {
-        historyList = newHistoryList
+        historyList.clear()
+        historyList.addAll(newHistoryList)
         notifyDataSetChanged()
     }
 }

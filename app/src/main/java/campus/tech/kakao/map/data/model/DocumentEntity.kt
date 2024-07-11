@@ -2,7 +2,7 @@ package campus.tech.kakao.map.data.model
 
 import com.google.gson.annotations.SerializedName
 
-data class Document(
+data class DocumentEntity(
     val id: String,
     @SerializedName("place_name")
     val placeName: String,

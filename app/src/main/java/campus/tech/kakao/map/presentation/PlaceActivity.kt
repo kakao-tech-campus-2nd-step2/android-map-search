@@ -3,20 +3,15 @@ package campus.tech.kakao.map.presentation
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
-import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import campus.tech.kakao.map.R
-import campus.tech.kakao.map.data.network.RetrofitObject
 import campus.tech.kakao.map.data.repository.PlaceRepositoryImpl
+import campus.tech.kakao.map.data.usecase.*;
 import campus.tech.kakao.map.databinding.ActivityPlaceBinding
-import campus.tech.kakao.map.domain.model.Place
-import campus.tech.kakao.map.domain.repository.PlaceRepository
+import campus.tech.kakao.map.domain.model.PlaceVO
 
 class PlaceActivity : AppCompatActivity() {
     private lateinit var placeViewModel: PlaceViewModel
@@ -47,7 +42,7 @@ class PlaceActivity : AppCompatActivity() {
         binding.searchEditText.text.clear()
     }
 
-    private fun showRecyclerView(places: List<Place>) {
+    private fun showRecyclerView(places: List<PlaceVO>) {
         binding.emptyMessage.visibility = TextView.GONE
         binding.placeRecyclerView.visibility = RecyclerView.VISIBLE
         placeAdapter.updateData(places)
@@ -59,7 +54,12 @@ class PlaceActivity : AppCompatActivity() {
 
         placeViewModel = ViewModelProvider(
             this,
-            PlaceViewModelFactory(placeRepository)
+            PlaceViewModelFactory(
+                getSearchPlacesUseCase = GetSearchPlacesUseCaseImpl(placeRepository),
+                saveSearchQueryUseCase = SaveSearchQueryUseCaseImpl(placeRepository),
+                getSearchHistoryUseCase = GetSearchHistoryUseCaseImpl(placeRepository),
+                removeSearchQueryUseCase = RemoveSearchQueryUseCaseImpl(placeRepository),
+            )
         )[PlaceViewModel::class.java]
 
         placeViewModel.places.observe(this) { places ->
@@ -72,7 +72,7 @@ class PlaceActivity : AppCompatActivity() {
         placeViewModel.loadSearchHistory()
     }
 
-    private fun updateUI(places: List<Place>) {
+    private fun updateUI(places: List<PlaceVO>) {
         if (places.isEmpty()) {
             showEmptyMessage()
         } else {
@@ -95,7 +95,7 @@ class PlaceActivity : AppCompatActivity() {
         }
 
         historyAdapter = SearchHistoryAdapter(
-            historyList = emptyList(),
+            historyList = mutableListOf(),
             onDeleteClick = { query ->
                 placeViewModel.removeSearchQuery(query)
             },
@@ -109,7 +109,9 @@ class PlaceActivity : AppCompatActivity() {
     private fun setUpSearchEditText() {
         binding.searchEditText.addTextChangedListener(
             object : TextWatcher {
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                //no-op}
+                }
 
                 override fun onTextChanged(
                     p0: CharSequence?, p1: Int, p2: Int, p3: Int,
@@ -121,7 +123,9 @@ class PlaceActivity : AppCompatActivity() {
                     placeViewModel.searchPlaces(query = p0.toString())
                 }
 
-                override fun afterTextChanged(p0: Editable?) {}
+                override fun afterTextChanged(p0: Editable?) {
+                //no-op
+                }
             },
         )
     }
