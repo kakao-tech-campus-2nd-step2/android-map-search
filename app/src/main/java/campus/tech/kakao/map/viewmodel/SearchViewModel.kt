@@ -4,7 +4,10 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import campus.tech.kakao.map.api.KakaoLocalApiService
+import campus.tech.kakao.map.api.RetrofitInstance
 import campus.tech.kakao.map.model.PlaceData
+import campus.tech.kakao.map.model.SearchResponse
 import campus.tech.kakao.map.model.SearchResult
 import campus.tech.kakao.map.repository.SearchRepository
 import kotlinx.coroutines.Dispatchers
@@ -12,6 +15,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class SearchViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -69,11 +75,11 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
+
     fun searchPlaces(keyword: String) {
-        viewModelScope.launch {
-            val results = repository.searchPlaces(keyword)
-            _places.value = results
-            Log.d("SearchViewModel", "Places searched with keyword: $keyword, results: $results")
+        repository.searchPlaces(keyword) { places ->
+            _places.value = places
+            Log.d("SearchViewModel", "Places searched with keyword: $keyword, results: $places")
         }
     }
 
