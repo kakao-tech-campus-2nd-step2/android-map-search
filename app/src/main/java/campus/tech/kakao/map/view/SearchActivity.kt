@@ -1,10 +1,12 @@
 package campus.tech.kakao.map.view
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -26,7 +28,7 @@ import campus.tech.kakao.map.viewmodel.MainActivityViewModel
 import campus.tech.kakao.map.viewmodel.ViewModelFactory
 
 
-class MainActivity : AppCompatActivity(), OnClickPlaceListener, OnClickSavedPlaceListener {
+class SearchActivity : AppCompatActivity(), OnClickPlaceListener, OnClickSavedPlaceListener {
     lateinit var noResultText: TextView
     lateinit var inputSearchField: EditText
     lateinit var viewModel: MainActivityViewModel
@@ -42,10 +44,14 @@ class MainActivity : AppCompatActivity(), OnClickPlaceListener, OnClickSavedPlac
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_search)
         initVar()
         initListeners()
         initRecyclerViews()
+
+        inputSearchField.requestFocus()
+
+
 
         viewModel.place.observe(this, Observer {
             Log.d("readData", "검색창 결과 변경 감지")
@@ -101,6 +107,9 @@ class MainActivity : AppCompatActivity(), OnClickPlaceListener, OnClickSavedPlac
         searchDeleteButton.setOnClickListener {
             inputSearchField.setText("")
             inputSearchField.clearFocus()
+            inputSearchField.parent.clearChildFocus(inputSearchField)
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(window.decorView.applicationWindowToken, 0)
         }
     }
 
