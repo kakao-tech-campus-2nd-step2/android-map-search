@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import campus.tech.kakao.map.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: SearchViewModel by viewModels { SearchViewModelFactory(applicationContext) }
     private lateinit var searchResultsAdapter: SearchResultsAdapter
@@ -27,9 +27,9 @@ class MainActivity : AppCompatActivity() {
             val savedKeywordsRecyclerView = savedKeywordsRecyclerView
             val noResultsTextView: TextView = noResultsTextView
 
-            searchResultsRecyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
+            searchResultsRecyclerView.layoutManager = LinearLayoutManager(this@SearchActivity)
             savedKeywordsRecyclerView.layoutManager =
-                LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
+                LinearLayoutManager(this@SearchActivity, LinearLayoutManager.HORIZONTAL, false)
 
             val savedKeywordsAdapter = SavedKeywordsAdapter(emptyList()) { keyword ->
                 viewModel.deleteKeyword(keyword)
@@ -41,12 +41,12 @@ class MainActivity : AppCompatActivity() {
             }
             searchResultsRecyclerView.adapter = searchResultsAdapter
 
-            viewModel.searchResults.observe(this@MainActivity) { results ->
+            viewModel.searchResults.observe(this@SearchActivity) { results ->
                 searchResultsAdapter.updateData(results)
                 noResultsTextView.visibility = if (results.isEmpty()) View.VISIBLE else View.GONE
             }
 
-            viewModel.savedKeywords.observe(this@MainActivity) { keywords ->
+            viewModel.savedKeywords.observe(this@SearchActivity) { keywords ->
                 savedKeywordsAdapter.updateKeywords(keywords)
             }
 
