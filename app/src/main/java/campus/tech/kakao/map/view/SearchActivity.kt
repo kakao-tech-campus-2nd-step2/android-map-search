@@ -64,17 +64,16 @@ class SearchActivity : AppCompatActivity() {
                 if (s.isNullOrEmpty()) {
                     updateViewVisibility(false)
                 } else {
-                    viewModel.searchPlaces(s.toString())
+                    viewModel.getPlaceList(s.toString())
                 }
             }
-
             override fun afterTextChanged(s: Editable?) {}
         })
     }
 
     private fun setAdapters() {
         searchAdapter = SearchAdapter(emptyList()) {
-            viewModel.savePlaces(it.name)
+            viewModel.savePlaces(it.place_name)
         }
         recyclerView.adapter = searchAdapter
 

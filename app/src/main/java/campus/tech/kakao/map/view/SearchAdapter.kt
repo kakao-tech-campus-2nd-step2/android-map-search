@@ -6,26 +6,26 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.R
-import campus.tech.kakao.map.model.Place
+import campus.tech.kakao.map.model.PlaceInfo
 
 class SearchAdapter(
-    private var places: List<Place>,
-    private val onItemClickListener: (Place) -> Unit
+    private var places: List<PlaceInfo>,
+    private val onItemClickListener: (PlaceInfo) -> Unit
 ) :
     RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
 
     class SearchViewHolder(
         itemView: View,
-        private val onItemClickListener: (Place) -> Unit
+        private val onItemClickListener: (PlaceInfo) -> Unit
     ) : RecyclerView.ViewHolder(itemView) {
         private val nameTextView: TextView = itemView.findViewById(R.id.placeName)
         private val addressTextView: TextView = itemView.findViewById(R.id.placeAddress)
         private val categoryTextView: TextView = itemView.findViewById(R.id.placeCategory)
 
-        fun bind(place: Place) {
-            nameTextView.text = place.name
-            addressTextView.text = place.address
-            categoryTextView.text = place.category
+        fun bind(place: PlaceInfo) {
+            nameTextView.text = place.place_name
+            addressTextView.text = place.road_address_name
+            categoryTextView.text = place.category_group_name
             itemView.setOnClickListener {
                 onItemClickListener(place)
             }
@@ -49,7 +49,7 @@ class SearchAdapter(
         return places.size
     }
 
-    fun updateData(newPlaces: List<Place>) {
+    fun updateData(newPlaces: List<PlaceInfo>) {
         places = newPlaces
         notifyDataSetChanged()
     }

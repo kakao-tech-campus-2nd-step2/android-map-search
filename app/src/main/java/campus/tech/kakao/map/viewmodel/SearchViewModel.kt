@@ -2,33 +2,31 @@ package campus.tech.kakao.map.viewmodel
 
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import campus.tech.kakao.map.model.Place
+import campus.tech.kakao.map.BuildConfig
+import campus.tech.kakao.map.model.KakaoLocalObject
+import campus.tech.kakao.map.model.PlaceInfo
 import campus.tech.kakao.map.model.SavePlace
+import campus.tech.kakao.map.model.SearchPlace
 import campus.tech.kakao.map.repository.SearchRepository
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class SearchViewModel(application: Application) : AndroidViewModel(application) {
     private val searchRepo: SearchRepository = SearchRepository(application)
-    private val _places: MutableLiveData<List<Place>> = MutableLiveData()
+    private val _places: MutableLiveData<List<PlaceInfo>> = MutableLiveData()
     private val _savePlaces: MutableLiveData<List<SavePlace>> = MutableLiveData()
+    private val KAKAO_API_KEY = "KakaoAK ${BuildConfig.KAKAO_API_KEY}"
 
-    val places: LiveData<List<Place>> get() = _places
+    val places: LiveData<List<PlaceInfo>> get() = _places
     val savePlaces: LiveData<List<SavePlace>> get() = _savePlaces
 
     init {
-        insertDummyData("카페", "대전 유성구 궁동", "카페")
-        insertDummyData("약국", "대전 유성구 봉명동", "약국")
         _savePlaces.value = searchRepo.showSavePlace()
-    }
-
-    private fun insertDummyData(name: String, address: String, category: String) {
-        searchRepo.insertPlaceDummyData(name, address, category)
-    }
-
-    fun searchPlaces(placeCategory: String) {
-        _places.value = searchRepo.getSearchPlaces(placeCategory)
     }
 
     fun savePlaces(placeName: String) {
@@ -38,5 +36,20 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
     fun deleteSavedPlace(savedPlaceName: String) {
         _savePlaces.value = searchRepo.deleteSavedPlacesAndUpdate(savedPlaceName)
     }
+
+    fun getPlaceList(categoryGroupName: String) {
+        KakaoLocalObject.retrofit.getPlaceList(KAKAO_API_KEY, categoryGroupName).enqueue(object :
+            Callback<SearchPlace> {
+            override fun onResponse(call: Call<SearchPlace>, response: Response<SearchPlace>) {
+                val placeList = response.body()?.documents
+                _places.value = placeList
+            }
+
+            override fun onFailure(call: Call<SearchPlace>, t: Throwable) {
+                Log.d("kiju", "Request failed: ${t.message}")
+            }
+        })
+    }
+
 
 }

@@ -1,6 +1,5 @@
 package campus.tech.kakao.map.model
 
-
 data class SearchPlace(
     var documents: List<PlaceInfo>
 )
