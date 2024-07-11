@@ -48,7 +48,6 @@ class SearchFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        // 히스토리 데이터 업데이트
         updateHistoryData()
     }
 
