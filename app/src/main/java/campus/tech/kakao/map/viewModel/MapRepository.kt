@@ -41,7 +41,7 @@ class MapRepository(private val context: Context) {
      * 카카오 REST API 관련
      */
     fun searchPlaces(search: String) {
-        if (search == "") {
+        if (search.isEmpty()) {
             _places.value = mutableListOf()
             return
         }
@@ -67,7 +67,6 @@ class MapRepository(private val context: Context) {
             }
         })
     }
-
 
 
     /**
@@ -99,15 +98,15 @@ class MapRepository(private val context: Context) {
     }
 
     fun searchDBPlaces(search: String) {
-            val allPlaces = getAllLocalPlaces()
-            val filtered = if (search.isEmpty()) {
-                emptyList()
-            } else {
-                allPlaces.filter { it.name.contains(search, ignoreCase = true) }
-            }
-            _places.postValue(filtered)
+        val allPlaces = getAllLocalPlaces()
+        val filtered = if (search.isEmpty()) {
+            emptyList()
+        } else {
+            allPlaces.filter { it.name.contains(search, ignoreCase = true) }
+        }
+        Log.d("Thread", "${Thread.currentThread().name}")   // main 스레드
+        _places.value = filtered
     }
-
 
 
     /**
