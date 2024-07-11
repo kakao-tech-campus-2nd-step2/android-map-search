@@ -179,7 +179,7 @@ class Search_Activity : AppCompatActivity() {
 
         fun updateData(newData: List<Map<String, String>>) {
             data = newData
-            notifyDataSetChanged()
+            notifyDataSetChanged() //성능 안좋음 고칠 필요가 있음
         }
 
         inner class PlaceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
