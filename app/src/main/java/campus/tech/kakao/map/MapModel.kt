@@ -10,8 +10,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MapModel(mContext: Context) {
-    private val helper: MapDbHelper = MapDbHelper(mContext)
+class MapModel(dbHelper: MapDbHelper) {
+    private val helper: MapDbHelper = dbHelper
     private val retrofit: RetrofitService = RetrofitServiceClient.getRetrofit("https://dapi.kakao.com/")
 
     private val _searchResult = MutableLiveData(getAllLocation())

@@ -6,8 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 
-class MapViewModel(mContext: Context, val databaseListener: DatabaseListener) : ViewModel() {
-    private val model = MapModel(mContext)
+class MapViewModel(dbHelper: MapDbHelper) : ViewModel() {
+    private val model: MapModel = MapModel(dbHelper)
     private val _searchResult = MutableLiveData<List<Location>>()
     val searchResult: LiveData<List<Location>> = _searchResult
     private val _searchHistory = MutableLiveData<List<String>>()

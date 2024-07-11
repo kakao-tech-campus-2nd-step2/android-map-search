@@ -10,14 +10,10 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.kakao.vectormap.KakaoMap
-import com.kakao.vectormap.KakaoMapReadyCallback
-import com.kakao.vectormap.MapLifeCycleCallback
-import com.kakao.vectormap.MapView
-import java.lang.Exception
 
-class MainActivity : AppCompatActivity(), DatabaseListener {
+class SearchActivity : AppCompatActivity(), DatabaseListener {
     private lateinit var viewModel: MapViewModel
+
     private lateinit var searchBox: EditText
     private lateinit var searchHistoryView: RecyclerView
     private lateinit var searchResultView: RecyclerView
@@ -30,9 +26,10 @@ class MainActivity : AppCompatActivity(), DatabaseListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_search)
 
-        viewModel = MapViewModel(this, this)
+        val dbHelper = MapDbHelper(this)
+        viewModel = MapViewModel(dbHelper)
         searchBox = findViewById(R.id.search_box)
         searchHistoryView = findViewById(R.id.search_history)
         searchResultView = findViewById(R.id.search_result)
@@ -40,12 +37,10 @@ class MainActivity : AppCompatActivity(), DatabaseListener {
         clear = findViewById(R.id.clear)
 
         searchBox.doAfterTextChanged { text ->
-            text?.let {
-                if (text.toString() == "") {
-                    hideResult()
-                } else {
-                    search(text.toString(), false)
-                }
+            if (text.isNullOrEmpty()) {
+                hideResult()
+            } else {
+                search(text.toString(), false)
             }
         }
 
@@ -83,7 +78,7 @@ class MainActivity : AppCompatActivity(), DatabaseListener {
             ResultRecyclerAdapter(viewModel.searchResult.value!!, layoutInflater, this)
         searchResultView.adapter = searchResultAdapter
         searchResultView.layoutManager =
-            LinearLayoutManager(this@MainActivity, LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(this@SearchActivity, LinearLayoutManager.VERTICAL, false)
     }
 
     private fun initSearchHistoryView() {
@@ -91,7 +86,7 @@ class MainActivity : AppCompatActivity(), DatabaseListener {
             HistoryRecyclerAdapter(viewModel.getAllHistory(), layoutInflater, this)
         searchHistoryView.adapter = searchHistoryAdapter
         searchHistoryView.layoutManager =
-            LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
+            LinearLayoutManager(this@SearchActivity, LinearLayoutManager.HORIZONTAL, false)
     }
 
     private fun observeData() {
