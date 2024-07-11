@@ -16,6 +16,7 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.kakao.sdk.common.util.Utility
 import org.json.JSONArray
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
@@ -33,6 +34,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+//        키 해시 받기
+//        var keyHash = Utility.getKeyHash(this)
+//        Log.d("keyHash", keyHash)
 
         val etSearch = findViewById<EditText>(R.id.etSearch)
         tvNoResult = findViewById(R.id.tvNoResult)
