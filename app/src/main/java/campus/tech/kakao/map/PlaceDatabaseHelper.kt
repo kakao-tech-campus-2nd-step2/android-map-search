@@ -23,7 +23,7 @@ private const val SQL_CREATE_TRIGGER =
 
 private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS ${PlaceContract.Place.TABLE_NAME}"
 
-class PlaceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, 1) {
+class PlaceDatabaseHelper(context: Context, databaseName: String) : SQLiteOpenHelper(context, databaseName, null, DATABASE_VERSION) {
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(SQL_CREATE_ENTRIES)
         db.execSQL(SQL_CREATE_TRIGGER)
@@ -37,6 +37,5 @@ class PlaceDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE
     }
     companion object {
         const val DATABASE_VERSION = 1
-        const val DATABASE_NAME = "Place.db"
     }
 }

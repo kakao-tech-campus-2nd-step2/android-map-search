@@ -4,6 +4,7 @@
     android:layout_height="50dp"
     android:layout_marginHorizontal="15dp"
     android:background="@color/white"
+    android:visibility="visible"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -16,12 +17,12 @@
         android:scaleType="centerInside"
         android:src="@drawable/close"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/tvPlaceName"
+        app:layout_constraintEnd_toStartOf="@id/tvSearchName"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <TextView
-        android:id="@+id/tvPlaceName"
+        android:id="@+id/tvSearchName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="10dp"

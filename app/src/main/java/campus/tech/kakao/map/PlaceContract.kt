@@ -9,11 +9,4 @@ class PlaceContract {
         const val COLUMN_ADDRESS = "address"
         const val COLUMN_CATEGORY = "category"
     }
-
-    object Search : BaseColumns {
-        const val TABLE_NAME = "search"
-        const val COLUMN_NAME = "name"
-        const val COLUMN_ADDRESS = "address"
-        const val COLUMN_CATEGORY = "category"
-    }
 }

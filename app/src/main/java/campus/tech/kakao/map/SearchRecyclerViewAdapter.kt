@@ -1,61 +1,59 @@
 package campus.tech.kakao.map
 
-import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
 class SearchRecyclerViewAdapter(
-    var searchList: List<PlaceDataModel>,
-    private var inflater: LayoutInflater,
-    private var context: Context
-): RecyclerView.Adapter<SearchRecyclerViewAdapter.ViewHolder>() {
+    private val places: MutableList<PlaceDataModel>,
+    private val onItemClick: (PlaceDataModel) -> Unit
+) : ListAdapter<PlaceDataModel, SearchRecyclerViewAdapter.SearchViewHolder>(
+    object : DiffUtil.ItemCallback<PlaceDataModel>() {
+        override fun areItemsTheSame(oldItem: PlaceDataModel, newItem: PlaceDataModel): Boolean {
+            return oldItem.name == newItem.name
+        }
 
-    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        val nthBtnClose: ImageButton
-        val nthPlaceName: TextView
+        override fun areContentsTheSame(oldItem: PlaceDataModel, newItem: PlaceDataModel): Boolean {
+            return oldItem == newItem
+        }
+    }
+) {
+
+    inner class SearchViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val placeName: TextView = itemView.findViewById(R.id.tvSearchName)
+        val btnClose: ImageButton = itemView.findViewById(R.id.btnClose)
+
         init {
-            nthBtnClose = itemView.findViewById(R.id.btnClose)
-            nthPlaceName = itemView.findViewById(R.id.tvPlaceName)
-            nthBtnClose.setOnClickListener {
+            btnClose.setOnClickListener {
                 val position: Int = bindingAdapterPosition
-                val search = searchList.get(position)
-                val searchDatabaseAccess = SearchDatabaseAccess(context)
-                searchDatabaseAccess.deleteSearch(search.name)
-                updateSearchHistory()
+                val place = places[position]
+                onItemClick(place)
             }
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = inflater.inflate(R.layout.search_item, parent, false)
-        return ViewHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.search_item, parent, false)
+        return SearchViewHolder(view)
     }
 
     override fun getItemCount(): Int {
-        return searchList.size
+        return places.size
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.nthPlaceName.text = searchList.get(position).name
+    override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
+        val place = places[position]
+        holder.placeName.text = place.name
     }
 
-    fun updateSearch(newPlaceList: List<PlaceDataModel>) {
-        val diffCallback = SearchDiffCallback(searchList, newPlaceList)
-        val diffResult = DiffUtil.calculateDiff(diffCallback)
-        searchList = newPlaceList
-        diffResult.dispatchUpdatesTo(this)
+    override fun submitList(list: MutableList<PlaceDataModel>?) {
+        super.submitList(list)
     }
 
-    fun updateSearchHistory() {
-        val searchDatabaseAccess = SearchDatabaseAccess(context)
-        val updatedSearchHistory = searchDatabaseAccess.getAllSearch()
-        updateSearch(updatedSearchHistory)
-    }
 }

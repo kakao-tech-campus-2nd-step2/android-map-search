@@ -6,11 +6,9 @@ import retrofit2.http.Header
 import retrofit2.http.Query
 
 interface RetrofitLocalService {
-    @GET("/v2/local/search/keyword.json")
-    fun requestPlace(
+    @GET("/v2/local/search/category.json")
+    fun searchPlaceByCategory(
         @Header("Authorization") key: String,
-        @Query("query") query: String,
-        @Query("page") page: Int,
-        @Query("size") size: Int
+        @Query("category_group_code") category_group_code: String
     ): Call<SearchResult>
 }

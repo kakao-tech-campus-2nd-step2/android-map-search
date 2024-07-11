@@ -32,3 +32,8 @@ data class PlaceDocument(
     val place_url: String,
     val distance: String
 )
+
+data class CategoryGroupCode(
+    val code: String,
+    val name: String
+)
