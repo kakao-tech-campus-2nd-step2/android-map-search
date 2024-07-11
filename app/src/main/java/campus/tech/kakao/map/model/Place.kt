@@ -1,7 +1,13 @@
 package campus.tech.kakao.map.model
 
+import com.google.gson.annotations.SerializedName
+
+data class ResultSearch(
+    val documents: List<Place>
+)
+
 data class Place(
-    val name : String,
-    val location : String,
-    val category : String
+    @SerializedName("place_name") val name : String,
+    @SerializedName("road_address_name") val location : String,
+    @SerializedName("category_group_name") val category : String
 )

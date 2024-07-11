@@ -19,6 +19,7 @@ import campus.tech.kakao.map.adapter.SavedPlaceViewAdapter
 import campus.tech.kakao.map.db.PlaceDBHelper
 import campus.tech.kakao.map.model.Place
 import campus.tech.kakao.map.model.SavedPlace
+import campus.tech.kakao.map.repository.KakaoLocalRepository
 import campus.tech.kakao.map.repository.PlaceRepository
 import campus.tech.kakao.map.repository.SavedPlaceRepository
 import campus.tech.kakao.map.viewmodel.MainActivityViewModel
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity(), OnClickPlaceListener, OnClickSavedPlac
     lateinit var dbHelper: PlaceDBHelper
     lateinit var placeRepository: PlaceRepository
     lateinit var savedPlaceRepository: SavedPlaceRepository
+    lateinit var kakaoLocalRepository: KakaoLocalRepository
     lateinit var searchDeleteButton: ImageView
     lateinit var savedPlaceRecyclerViewAdapter: SavedPlaceViewAdapter
     lateinit var searchRecyclerViewAdapter: PlaceViewAdapter
@@ -81,11 +83,12 @@ class MainActivity : AppCompatActivity(), OnClickPlaceListener, OnClickSavedPlac
         dbHelper = PlaceDBHelper(this)
         placeRepository = PlaceRepository(dbHelper)
         savedPlaceRepository = SavedPlaceRepository(dbHelper)
+        kakaoLocalRepository = KakaoLocalRepository()
         searchDeleteButton = findViewById<ImageView>(R.id.button_X)
         viewModel =
             ViewModelProvider(
                 this,
-                ViewModelFactory(placeRepository, savedPlaceRepository)
+                ViewModelFactory(placeRepository, savedPlaceRepository, kakaoLocalRepository)
             )[MainActivityViewModel::class.java]
     }
 
@@ -111,8 +114,8 @@ class MainActivity : AppCompatActivity(), OnClickPlaceListener, OnClickSavedPlac
 
             override fun afterTextChanged(searchText: Editable?) {
                 val text = searchText.toString()
-                // 검색어를 입력할 때마다 place의 값이 바뀌어 notify가 계속 호출되는 문제?
-                viewModel.getPlaceWithCategory(text)
+                Log.d("inputField", "text : ${text}")
+                viewModel.getKakaoLocalData(text)
             }
         })
     }

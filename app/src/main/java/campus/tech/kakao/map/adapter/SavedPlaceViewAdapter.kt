@@ -34,12 +34,10 @@ class SavedPlaceViewAdapter(
 }
 
 class SavedPlaceDiffCallBack : DiffUtil.ItemCallback<SavedPlace>() {
-    // 같은 Item인지
     override fun areItemsTheSame(oldItem: SavedPlace, newItem: SavedPlace): Boolean {
         return oldItem === newItem
     }
 
-    // 같은 내용물을 가지고 있는지. 여기서는 name
     override fun areContentsTheSame(oldItem: SavedPlace, newItem: SavedPlace): Boolean {
         return oldItem.name == newItem.name
     }

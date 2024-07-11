@@ -5,13 +5,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import campus.tech.kakao.map.model.Place
 import campus.tech.kakao.map.model.SavedPlace
+import campus.tech.kakao.map.repository.KakaoLocalRepository
 import campus.tech.kakao.map.repository.PlaceRepository
 import campus.tech.kakao.map.repository.SavedPlaceRepository
-import java.util.Locale.Category
+
 
 class MainActivityViewModel(
     private val placeRepository: PlaceRepository,
-    private val savedPlaceRepository: SavedPlaceRepository
+    private val savedPlaceRepository: SavedPlaceRepository,
+    private val kakaoLocalRepository : KakaoLocalRepository
 ) : ViewModel() {
     private val _place = MutableLiveData<List<Place>>()
     private val _savedPlace = MutableLiveData<List<SavedPlace>>()
@@ -22,15 +24,15 @@ class MainActivityViewModel(
         getPlaceWithCategory("")
     }
     fun getPlace() {
-        _place.postValue(placeRepository.getAllPlace())
+        _place.value = (placeRepository.getAllPlace())
     }
 
     fun getPlaceWithCategory(category: String) {
-        _place.postValue(placeRepository.getPlaceWithCategory(category))
+        _place.value = (placeRepository.getPlaceWithCategory(category))
     }
 
     fun getSavedPlace() {
-        _savedPlace.postValue(savedPlaceRepository.getAllSavedPlace())
+        _savedPlace.value = (savedPlaceRepository.getAllSavedPlace())
     }
 
     fun savePlace(place: Place) {
@@ -43,5 +45,11 @@ class MainActivityViewModel(
         getSavedPlace()
     }
 
-
+    fun getKakaoLocalData(text:String){
+        if (text.isNotEmpty())
+        kakaoLocalRepository.getPlaceData(text) { placeList ->
+            _place.value = (placeList)
+        }
+        else _place.value = listOf<Place>()
+    }
 }
