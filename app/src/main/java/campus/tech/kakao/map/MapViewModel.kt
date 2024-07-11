@@ -13,8 +13,21 @@ class MapViewModel(dbHelper: MapDbHelper) : ViewModel() {
     private val _searchHistory = MutableLiveData<List<String>>()
     val searchHistory: LiveData<List<String>> = _searchHistory
 
+    private val resultObserver = Observer<List<Location>> {
+        _searchResult.value = it
+    }
+    private val historyObserver = Observer<List<String>> {
+        _searchHistory.value = it
+    }
+
     init {
         observeData()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        model.searchResult.removeObserver(resultObserver)
+        model.searchHistory.removeObserver(historyObserver)
     }
 
     fun insertLocation(location: Location) {
@@ -48,11 +61,7 @@ class MapViewModel(dbHelper: MapDbHelper) : ViewModel() {
     }
 
     private fun observeData() {
-        model.searchResult.observeForever(Observer {
-            _searchResult.value = it
-        })
-        model.searchHistory.observeForever(Observer {
-            _searchHistory.value = it
-        })
+        model.searchResult.observeForever(resultObserver)
+        model.searchHistory.observeForever(historyObserver)
     }
 }
