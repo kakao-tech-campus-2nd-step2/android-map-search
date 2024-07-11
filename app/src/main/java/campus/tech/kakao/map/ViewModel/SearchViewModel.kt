@@ -13,26 +13,30 @@ class SearchViewModel(private val repository: PlaceRepository) : ViewModel() {
     private val _favoritePlace: MutableLiveData<MutableList<Place>> = MutableLiveData()
     val favoritePlace : LiveData<MutableList<Place>> = _favoritePlace
 
-
-    init {
-        repository.favoritePlace.observeForever{
-            _favoritePlace.value = it
-        }
-        repository.currentResult.observeForever{
-            _currentResult.value = it
-        }
+    init{
+        _currentResult.value = listOf<Place>()
+        _favoritePlace.value = repository.getCurrentFavorite().toMutableList()
     }
 
     fun searchPlace(string: String) {
-        repository.getSimilarPlacesByName(string)
+        _currentResult.value = repository.getSimilarPlacesByName(string)
     }
 
     suspend fun searchPlaceRemote(name : String){
-        repository.searchPlaceRemote(name)
+        _currentResult.postValue(repository.searchPlaceRemote(name))
     }
 
     fun addFavorite(name: String) {
-        repository.addFavorite(name)
+        val place = _currentResult.value?.find {
+            it.name == name
+        }
+
+        if(isPlaceInFavorite(name)) return
+
+        place?.apply {
+            repository.addFavorite(this)
+            _favoritePlace.value?.add(this)
+        }
     }
 
     fun deleteFromFavorite(name: String) {

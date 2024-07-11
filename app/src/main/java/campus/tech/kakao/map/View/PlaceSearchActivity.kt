@@ -119,7 +119,7 @@ class PlaceSearchActivity : AppCompatActivity() {
             LayoutInflater.from(this),
             onClickAdd = {
                 viewModel.addFavorite(it)
-                favorite.scrollToPosition((viewModel.favoritePlace.value!!.size - 1))
+                favorite.scrollToPosition((viewModel.favoritePlace.value?.size?.minus(1) ?: 0))
             })
         viewModel.currentResult.observe(this) {
             adapter.updateData(it)

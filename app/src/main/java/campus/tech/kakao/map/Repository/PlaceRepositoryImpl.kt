@@ -18,36 +18,21 @@ class PlaceRepositoryImpl(
     private val retrofitService: RetrofitService,
     private val docToPlaceMapper: EntityToModelMapper<Document, Place>
 ) : PlaceRepository {
-    private val _currentResult: MutableLiveData<List<Place>> = MutableLiveData()
-    override val currentResult: LiveData<List<Place>> = _currentResult
-    private val _favoritePlace: MutableLiveData<MutableList<Place>> = MutableLiveData()
-    override val favoritePlace: LiveData<MutableList<Place>> = _favoritePlace
 
-    init {
-        getCurrentFavorite()
+    override fun getCurrentFavorite() : List<Place>{
+        return favoriteDao.getCurrentFavorite()
     }
 
-    override fun getCurrentFavorite() {
-        _favoritePlace.value = favoriteDao.getCurrentFavorite()
-    }
-
-    override fun getSimilarPlacesByName(name: String) {
-        _currentResult.value = placeDao.getSimilarPlacesByName(name)
+    override fun getSimilarPlacesByName(name: String) : List<Place> {
+        return placeDao.getSimilarPlacesByName(name)
     }
 
     override fun getPlaceByName(name: String): Place {
         return placeDao.getPlaceByName(name)
     }
 
-    override fun addFavorite(name: String) {
-        val place = currentResult.value?.find {
-            it.name == name
-        } ?: Place("Error")
+    override fun addFavorite(place : Place) {
         favoriteDao.addFavorite(place)
-
-        val favorites = _favoritePlace.value ?: mutableListOf<Place>()
-        favorites.add(place)
-        _favoritePlace.value = favorites
     }
 
     override fun deleteFavorite(name: String) {
@@ -55,8 +40,8 @@ class PlaceRepositoryImpl(
         getCurrentFavorite()
     }
 
-    override suspend fun searchPlaceRemote(name: String) {
-        _currentResult.postValue(getPlaceByNameRemote(name))
+    override suspend fun searchPlaceRemote(name: String) : List<Place>{
+        return getPlaceByNameRemote(name)
     }
 
     private suspend fun getPlaceByNameRemote(name: String): List<Place> =
@@ -77,7 +62,7 @@ class PlaceRepositoryImpl(
                 }
 
             }
-            return@withContext placeList
+            placeList
         }
 
     private fun getPageCount(name: String): Int {
