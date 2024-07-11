@@ -9,6 +9,6 @@ interface RetrofitLocalService {
     @GET("/v2/local/search/category.json")
     fun searchPlaceByCategory(
         @Header("Authorization") key: String,
-        @Query("category_group_code") category_group_code: String
+        @Query("category_group_code") categoryGroupCode: String
     ): Call<SearchResult>
 }
