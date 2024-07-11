@@ -20,6 +20,8 @@
         android:layout_height="50dp"
         android:layout_margin="15dp"
         android:hint="검색어를 입력해 주세요."
+        android:background="@color/white"
+        android:focusable = "false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
