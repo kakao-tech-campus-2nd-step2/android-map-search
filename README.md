@@ -24,7 +24,7 @@
 - 이미 저장된 목록 선택 시 가장 오른쪽에 위치
 
 ## 실행
-- MainActivity.kt 에서 시작
+- MapActivity.kt 에서 시작
 
 ## 환경
 - Kotlin
