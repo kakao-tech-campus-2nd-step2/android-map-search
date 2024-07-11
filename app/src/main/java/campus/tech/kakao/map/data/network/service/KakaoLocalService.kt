@@ -13,7 +13,6 @@ interface KakaoLocalService {
     suspend fun getPlacesByCategory(
         @Query("category_group_code") categoryGroupCode: String,
         @Query("page") page: Int,
-        @Query("size") size: Int,
     ): Response<PlaceResponse>
 
     companion object {

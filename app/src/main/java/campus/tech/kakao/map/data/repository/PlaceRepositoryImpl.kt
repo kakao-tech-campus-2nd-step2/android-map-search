@@ -5,8 +5,10 @@ import campus.tech.kakao.map.data.network.KaKaoLocalApiClient
 import campus.tech.kakao.map.data.network.PlaceResponse
 import campus.tech.kakao.map.data.network.service.KakaoLocalService
 import campus.tech.kakao.map.model.Place
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.supervisorScope
 import retrofit2.Response
 
 class PlaceRepositoryImpl : PlaceRepository {
@@ -37,49 +39,63 @@ class PlaceRepositoryImpl : PlaceRepository {
         totalPageCount: Int,
     ): List<Place> {
         val placeList = mutableListOf<Place>()
-        val pageSize = 15
 
-        coroutineScope {
+        supervisorScope {
             val deferredResults =
-                (1..totalPageCount).map { page ->
-                    async {
-                        try {
-                            kakaoLocalService.getPlacesByCategory(categoryGroupCode, page, pageSize)
-                        } catch (e: Exception) {
-                            null
-                        }
-                    }
-                }
+                createDeferredResults(this, categoryGroupCode, totalPageCount)
 
-            deferredResults.forEach { deferred ->
-                val response = deferred.await()
-                response?.let {
-                    if (it.isSuccessful) {
-                        handleSuccessfulResponse(it, placeList)
-                    } else {
-                        handleErrorResponse(it)
-                    }
-                }
-            }
+            processDeferredResults(deferredResults, placeList)
         }
 
         return placeList
+    }
+
+    private fun createDeferredResults(
+        scope: CoroutineScope,
+        categoryGroupCode: String,
+        totalPageCount: Int,
+    ): List<Deferred<Response<PlaceResponse>?>> {
+        return (1..totalPageCount).map { page ->
+            scope.async {
+                try {
+                    kakaoLocalService.getPlacesByCategory(categoryGroupCode, page)
+                } catch (e: Exception) {
+                    null
+                }
+            }
+        }
+    }
+
+    private suspend fun processDeferredResults(
+        deferredResults: List<Deferred<Response<PlaceResponse>?>>,
+        placeList: MutableList<Place>,
+    ) {
+        deferredResults.forEach { deferred ->
+            val response = deferred.await()
+            if (response != null) {
+                if (response.isSuccessful) {
+                    handleSuccessfulResponse(response, placeList)
+                } else {
+                    handleErrorResponse(response)
+                }
+            } else {
+                Log.e("CoroutineException", "Exception occurred in coroutine")
+            }
+        }
     }
 
     private fun handleSuccessfulResponse(
         response: Response<PlaceResponse>,
         allPlaces: MutableList<Place>,
     ) {
-        val places =
-            response.body()?.documents?.map { dto ->
-                Place(
-                    id = dto.placeId,
-                    name = dto.placeName,
-                    address = dto.address,
-                    category = dto.category,
-                )
-            } ?: emptyList()
-        allPlaces.addAll(places)
+        response.body()?.documents?.mapTo(allPlaces) { dto ->
+            Place(
+                id = dto.placeId,
+                name = dto.placeName,
+                address = dto.address,
+                category = dto.category,
+            )
+        }
     }
 
     private fun handleErrorResponse(response: Response<PlaceResponse>?) {

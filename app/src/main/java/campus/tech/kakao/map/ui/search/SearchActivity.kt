@@ -1,4 +1,4 @@
-package campus.tech.kakao.map.ui.view
+package campus.tech.kakao.map.ui.search
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,9 +21,7 @@ import campus.tech.kakao.map.data.repository.SavedSearchWordRepositoryImpl
 import campus.tech.kakao.map.databinding.ActivitySearchBinding
 import campus.tech.kakao.map.model.Place
 import campus.tech.kakao.map.model.SavedSearchWord
-import campus.tech.kakao.map.ui.viewmodel.PlaceViewModel
-import campus.tech.kakao.map.ui.viewmodel.SavedSearchWordViewModel
-import campus.tech.kakao.map.ui.viewmodel.ViewModelFactory
+import campus.tech.kakao.map.ui.ViewModelFactory
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
