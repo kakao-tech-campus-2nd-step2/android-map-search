@@ -1,4 +1,4 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.View
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -8,6 +8,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import campus.tech.kakao.map.BuildConfig
+import campus.tech.kakao.map.R
+import campus.tech.kakao.Model.ResultSearchKeyword
+import campus.tech.kakao.Model.RetrofitClient
+import campus.tech.kakao.Model.SQLiteDb
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.MapLifeCycleCallback

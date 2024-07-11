@@ -1,11 +1,11 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.Model
 
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import campus.tech.kakao.map.SQLiteHelper.Companion.COL_ID_2
-import campus.tech.kakao.map.SQLiteHelper.Companion.COL_NAME_2
+import campus.tech.kakao.Model.SQLiteHelper.Companion.COL_ID_2
+import campus.tech.kakao.Model.SQLiteHelper.Companion.COL_NAME_2
 
 class SQLiteDb(context: Context) {
     private val dbHelper: SQLiteHelper = SQLiteHelper.getInstance(context)

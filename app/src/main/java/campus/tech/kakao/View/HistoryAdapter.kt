@@ -1,12 +1,12 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.View
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import campus.tech.kakao.map.R
 
 class HistoryAdapter(private var historyList: MutableList<Pair<Int, String>>, private val itemClickListener: (Int) -> Unit) :
     RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder>() {
