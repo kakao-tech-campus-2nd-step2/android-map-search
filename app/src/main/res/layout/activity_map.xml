@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/map"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".MapActivity">
 
     <EditText
-        android:id="@+id/inputSearch"
+        android:id="@+id/inputSearchMap"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/input_query"
@@ -29,7 +30,7 @@
         android:background="@drawable/x"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/inputSearch"/>
+        app:layout_constraintBottom_toBottomOf="@id/inputSearchMap"/>
 
     <com.kakao.vectormap.MapView
         android:id="@+id/map_view"
