@@ -22,28 +22,37 @@ class PlaceViewModel(
     private val updatePlacesUseCase: UpdatePlacesUseCase,
     private val addLogUseCase: AddLogUseCase,
     private val removeLogUseCase: RemoveLogUseCase
-): ViewModel(){
+) : ViewModel() {
     private val _logList = MutableLiveData<List<Place>>()
     val logList: LiveData<List<Place>> get() = _logList
 
+    private val _places = MutableLiveData<List<Place>>()
+    val places: LiveData<List<Place>> get() = _places
+
     val searchText = MutableLiveData<String>()
+
+    init {
+        _logList.value = getLogs()
+    }
 
     fun clearSearch() {
         searchText.value = ""
     }
-    fun getPlaces(placeName: String): List<Place>{
+
+    fun getPlaces(placeName: String): List<Place> {
         return getPlacesUseCase.invoke(placeName)
     }
 
-    fun updatePlaces(places: List<Place>){
+    fun updatePlaces(places: List<Place>) {
         updatePlacesUseCase.invoke(places)
+        _places.value = places
     }
 
-    fun getLogs(): List<Place>{
+    fun getLogs(): List<Place> {
         return getLogsUseCase.invoke()
     }
 
-    fun addLog(place: Place){
+    fun addLog(place: Place) {
         val updatedList = _logList.value?.toMutableList() ?: mutableListOf()
         val existingLog = updatedList.find { it.id == place.id }
         if (existingLog != null) {
@@ -56,7 +65,7 @@ class PlaceViewModel(
         _logList.value = updatedList
     }
 
-    fun removeLog(id: String){
+    fun removeLog(id: String) {
         removeLogUseCase.invoke(id)
         _logList.value = getLogs()
     }
