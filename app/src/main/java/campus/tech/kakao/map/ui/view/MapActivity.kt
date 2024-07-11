@@ -113,4 +113,16 @@ class MapActivity : AppCompatActivity() {
     private fun logMapReady() {
         Log.d("MapActivity", "onMapReady called")
     }
+
+    @Override
+    public override fun onResume() {
+        super.onResume()
+        binding.mapView.resume()
+    }
+
+    @Override
+    public override fun onPause() {
+        super.onPause()
+        binding.mapView.pause()
+    }
 }
