@@ -7,7 +7,7 @@ data class SearchResponse(
 
 data class SameName(
     val keyword: String,
-    val region: List<Any>,
+    val region: Any,
     val selected_region: String
 )
 
