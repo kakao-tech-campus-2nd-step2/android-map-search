@@ -120,7 +120,7 @@ class Search_Activity : AppCompatActivity() {
     private fun searchAndDisplayResults(searchText: String) {
         if (searchText.isBlank()) {
             searchRecyclerView.visibility = RecyclerView.GONE
-            MapViewKakao.visibility = RecyclerView.VISIBLE
+            MapViewKakao.visibility = MapView.VISIBLE
             return
         }
 
@@ -139,11 +139,11 @@ class Search_Activity : AppCompatActivity() {
 
                 if (places.isEmpty()) {
                     searchRecyclerView.visibility = RecyclerView.GONE
-                    MapViewKakao.visibility = RecyclerView.VISIBLE
+                    MapViewKakao.visibility = MapView.VISIBLE
                 } else {
                     searchResultAdapter.updateData(places)
                     searchRecyclerView.visibility = RecyclerView.VISIBLE
-                    MapViewKakao.visibility = RecyclerView.GONE
+                    MapViewKakao.visibility = MapView.GONE
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
