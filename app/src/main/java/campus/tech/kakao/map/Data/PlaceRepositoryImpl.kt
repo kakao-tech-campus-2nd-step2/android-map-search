@@ -3,6 +3,7 @@ package campus.tech.kakao.map.Data
 import campus.tech.kakao.map.Data.Datasource.Local.Dao.FavoriteDao
 import campus.tech.kakao.map.Data.Datasource.Local.Dao.PlaceDao
 import campus.tech.kakao.map.Data.Datasource.Remote.HttpUrlConnect
+import campus.tech.kakao.map.Data.Datasource.Remote.RemoteService
 import campus.tech.kakao.map.Data.Datasource.Remote.Response.Document
 import campus.tech.kakao.map.Data.Datasource.Remote.RetrofitService
 import campus.tech.kakao.map.Data.Mapper.EntityToModelMapper
@@ -16,7 +17,7 @@ class PlaceRepositoryImpl(
     private val favoriteDao: FavoriteDao,
     private val retrofitService: RetrofitService,
     private val docToPlaceMapper: EntityToModelMapper<Document, Place>,
-    private val httpUrlConnect: HttpUrlConnect
+    private val httpUrlConnect: RemoteService
 ) : PlaceRepository {
 
     override fun getCurrentFavorite() : List<Place>{
@@ -46,7 +47,7 @@ class PlaceRepositoryImpl(
 
     override fun getPlaceByNameHTTP(name : String) : List<Place>{
         val places = mutableListOf<Place>()
-        httpUrlConnect.getResponse(name).forEach{
+        httpUrlConnect.getPlaceResponse(name).forEach{
             places.add(docToPlaceMapper.map(it))
         }
         return places

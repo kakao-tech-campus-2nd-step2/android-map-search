@@ -16,9 +16,9 @@ import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
 
-class HttpUrlConnect {
+class HttpUrlConnect : RemoteService{
 
-    fun getResponse(query: String): List<Document> {
+    override fun getPlaceResponse(query: String): List<Document> {
         val result = mutableListOf<Document>()
         var response: SearchResponse? = null
 
@@ -53,7 +53,7 @@ class HttpUrlConnect {
     }
 
 
-    fun request(query: String, page: Int): SearchResponse? {
+    private fun request(query: String, page: Int): SearchResponse? {
         val url = URL(BASE + URL)
         val conn = url.openConnection() as HttpsURLConnection
 
