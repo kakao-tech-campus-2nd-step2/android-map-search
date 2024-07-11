@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.databinding.ActivityMainBinding
 import android.util.Log
+import com.kakao.sdk.common.util.Utility
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,6 +24,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d("MainActivity", "onCreate called")
+
+        //키 해시 값 로그로 출력
+        val keyHash = Utility.getKeyHash(this)
+        Log.d("KeyHash:", keyHash)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

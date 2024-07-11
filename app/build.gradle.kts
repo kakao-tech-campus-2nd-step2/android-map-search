@@ -59,6 +59,7 @@ dependencies {
     //implementation("androidx.activity:activity:1.8.0")
     implementation("androidx.activity:activity-ktx:1.8.0")  //수정
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")  //추가
+    implementation("com.kakao.sdk:v2-all:2.20.3")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
