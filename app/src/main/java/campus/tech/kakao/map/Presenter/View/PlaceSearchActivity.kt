@@ -1,7 +1,8 @@
 package campus.tech.kakao.map.Presenter.View
 
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout.VERTICAL
@@ -13,17 +14,14 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.Data.Datasource.Local.SqliteDB
-import campus.tech.kakao.map.Domain.Model.Place
 import campus.tech.kakao.map.R
 import campus.tech.kakao.map.Base.ViewModelFactory
+import campus.tech.kakao.map.Domain.Model.Place
 import campus.tech.kakao.map.MyApplication
 import campus.tech.kakao.map.Presenter.View.Adapter.FavoriteAdapter
 import campus.tech.kakao.map.Presenter.View.Adapter.SearchResultAdapter
 import campus.tech.kakao.map.Presenter.View.Observer.EmptyPlaceObserver
 import campus.tech.kakao.map.ViewModel.SearchViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class PlaceSearchActivity : AppCompatActivity() {
     private lateinit var viewModel: SearchViewModel
@@ -79,7 +77,6 @@ class PlaceSearchActivity : AppCompatActivity() {
 
         favorite.adapter = adapter
         viewModel.favoritePlace.observe(this) {
-            adapter.updateData(it)
             adapter.submitList(it)
             favorite.smoothScrollToPosition(maxOf(it.size-1,0))
         }
@@ -101,6 +98,7 @@ class PlaceSearchActivity : AppCompatActivity() {
     }
 
     private fun setSearchAdapter() {
+        val adapter = SearchResultAdapter(
             onClickAdd = {
                 viewModel.addFavorite(it)
             })
@@ -108,8 +106,17 @@ class PlaceSearchActivity : AppCompatActivity() {
             adapter.submitList(it)
             handleVisibility(it)
         }
-        adapter.registerAdapterDataObserver(EmptyPlaceObserver(searchResult, noItem))
         searchResult.adapter = adapter
+    }
+
+    private fun handleVisibility(places : List<Place>){
+        if(places.isEmpty()){
+            searchResult.visibility = GONE
+            noItem.visibility = VISIBLE
+        } else {
+            searchResult.visibility = VISIBLE
+            noItem.visibility = GONE
+        }
     }
 
 }
