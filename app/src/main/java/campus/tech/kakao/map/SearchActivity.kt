@@ -11,7 +11,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import campus.tech.kakao.map.databinding.ActivityMainBinding
+import campus.tech.kakao.map.databinding.ActivitySearchBinding
 
 class SearchActivity : AppCompatActivity() {
     private val viewModel: SearchViewModel by viewModels {
@@ -19,7 +19,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private val placeAdapter: PlaceAdapter by lazy {
-        PlaceAdapter(locationList,
+        PlaceAdapter(viewModel.locationList.value ?: emptyList(),
             LayoutInflater.from(this@SearchActivity),
             object :
                 PlaceAdapter.OnItemClickListener {
@@ -40,7 +40,7 @@ class SearchActivity : AppCompatActivity() {
                 override fun onItemClick(position: Int) {
                     val item = viewModel.searchHistoryList.value?.get(position)
                     if (item != null) {
-                        mainBinding.search.setText(item.searchHistory)
+                        searchViewBinding.search.setText(item.searchHistory)
                     }
                 }
                 override fun onXMarkClick(position: Int) {
@@ -50,34 +50,23 @@ class SearchActivity : AppCompatActivity() {
         )
     }
 
-    private lateinit var mainBinding: ActivityMainBinding
-
-
-    private var placeList: List<Place> = emptyList()
-
-    private var locationList: List<Document> = emptyList()
+    private lateinit var searchViewBinding: ActivitySearchBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mainBinding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(mainBinding.root)
+        searchViewBinding = ActivitySearchBinding.inflate(layoutInflater)
+        setContentView(searchViewBinding.root)
 
-        if (placeList.isNullOrEmpty()) {
-            mainBinding.emptyMainText.visibility = View.VISIBLE
-        } else {
-            mainBinding.emptyMainText.visibility = View.GONE
-        }
+        setupRecyclerViews(searchViewBinding)
+        setupSearchEditText(searchViewBinding)
+        observeViewModel(searchViewBinding)
 
-        setupRecyclerViews(mainBinding)
-        setupSearchEditText(mainBinding)
-        observeViewModel(mainBinding)
-
-        mainBinding.xmark.setOnClickListener {
-            mainBinding.search.setText("")
+        searchViewBinding.xmark.setOnClickListener {
+            searchViewBinding.search.setText("")
         }
     }
 
-    private fun setupRecyclerViews(mainBinding: ActivityMainBinding) {
+    private fun setupRecyclerViews(mainBinding: ActivitySearchBinding) {
         mainBinding.placeResult.apply {
             layoutManager = LinearLayoutManager(this@SearchActivity, LinearLayoutManager.VERTICAL, false)
             adapter = placeAdapter
@@ -89,7 +78,7 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupSearchEditText(mainBinding: ActivityMainBinding) {
+    private fun setupSearchEditText(mainBinding: ActivitySearchBinding) {
         val searchEditText = mainBinding.search
         val handler = Handler(Looper.getMainLooper())
         val delayMillis = 800L
@@ -110,7 +99,7 @@ class SearchActivity : AppCompatActivity() {
         })
     }
 
-    private fun observeViewModel(mainBinding: ActivityMainBinding) {
+    private fun observeViewModel(mainBinding: ActivitySearchBinding) {
         viewModel.searchHistoryList.observe(this@SearchActivity, Observer {
             historyAdapter.setData(it)
         })
