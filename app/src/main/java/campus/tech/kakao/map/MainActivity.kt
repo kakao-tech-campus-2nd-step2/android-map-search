@@ -54,12 +54,12 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         locationDbAccessor = LocationLocalRepository(locationDbHelper)
         locationRemoteRepository = LocationRemoteRepository()
 
-        locationViewModel = ViewModelProvider(this, LocationViewModelFactory(locationDbAccessor, locationRemoteRepository)
-        ).get(LocationViewModel::class.java)
+        locationViewModel = ViewModelProvider(this, LocationViewModelFactory(locationDbAccessor, locationRemoteRepository))
+            .get(LocationViewModel::class.java)
         locationRecyclerView = findViewById(R.id.locationRecyclerView)
 
-        savedLocationViewModel = ViewModelProvider(this, SavedLocationViewModelFactory(locationDbAccessor)
-        ).get(SavedLocationViewModel::class.java)
+        savedLocationViewModel = ViewModelProvider(this, SavedLocationViewModelFactory(locationDbAccessor))
+            .get(SavedLocationViewModel::class.java)
         savedLocationRecyclerView = findViewById(R.id.savedLocationRecyclerView)
 
         clearButton = findViewById(R.id.clearButton)
