@@ -3,6 +3,7 @@ package campus.tech.kakao.map
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
@@ -14,6 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.ViewModelFactory.LocationViewModelFactory
 import campus.tech.kakao.map.ViewModelFactory.SavedLocationViewModelFactory
+import com.kakao.sdk.common.util.Utility
+import com.kakao.sdk.v2.common.BuildConfig
 
 class MainActivity : AppCompatActivity(), OnItemSelectedListener {
 
@@ -35,6 +38,11 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val key = getString(R.string.KAKAO_API_KEY)
+        val restApiKey = getString(R.string.KAKAO_REST_API_KEY)
+        Log.d("jieun", "key: " + key)
+        Log.d("jieun", "key: " + restApiKey)
 
         initViews()
         locationViewModel.insertLocation()
