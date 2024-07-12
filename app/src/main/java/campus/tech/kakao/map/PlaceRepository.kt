@@ -88,13 +88,7 @@ class PlaceRepository(context: Context) {
     fun insertInitialData(): MutableList<Place> {
         //kakao에서 데이터 가져와서 place 객체 생성하기
         val apiKey = "KakaoAK " + BuildConfig.KAKAO_REST_API_KEY
-        val retrofitService = Retrofit.Builder()
-            .baseUrl("https://dapi.kakao.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(KakaoApiService::class.java)
-
-        retrofitService.getPlace(apiKey, "CE7")
+        RetrofitObject.retrofitService.getPlace(apiKey, "CE7")
             .enqueue(object : Callback<KakaoResponse> {
                 override fun onResponse(
                     call: Call<KakaoResponse>,
@@ -118,7 +112,7 @@ class PlaceRepository(context: Context) {
                 }
             })
 
-        retrofitService.getPlace(apiKey, "PM9")
+        RetrofitObject.retrofitService.getPlace(apiKey, "PM9")
             .enqueue(object : Callback<KakaoResponse> {
                 override fun onResponse(
                     call: Call<KakaoResponse>,
@@ -213,4 +207,12 @@ class PlaceRepository(context: Context) {
         }
     }
 
+    object RetrofitObject {
+        val retrofitService: KakaoApiService by lazy { Retrofit.Builder()
+            .baseUrl("https://dapi.kakao.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(KakaoApiService::class.java)
+        }
+    }
 }
