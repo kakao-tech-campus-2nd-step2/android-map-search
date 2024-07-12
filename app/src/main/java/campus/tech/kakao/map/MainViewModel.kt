@@ -20,7 +20,7 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
 	}
 
 	private fun wordfromDocument(document: Document): SearchWord {
-		return SearchWord(document.place_name, document.category_group_name, document.address_name)
+		return SearchWord(document.placeName, document.categoryGroupName, document.addressName)
 	}
 	fun deleteWord(word: SearchWord){
 		wordDbHelper.deleteWord(word)

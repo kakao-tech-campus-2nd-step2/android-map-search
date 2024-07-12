@@ -29,7 +29,7 @@ class RetrofitData {
 					val documentList = mutableListOf<Document>()
 					val body = response.body()
 					body?.documents?.forEach {
-						documentList.add(Document(it.place_name, it.category_group_name, it.address_name))
+						documentList.add(Document(it.placeName, it.categoryGroupName, it.addressName))
 					}
 					_documents.value = documentList
 				}

@@ -47,9 +47,9 @@ class DocumentAdapter(
 
 	override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 		val document: Document = getItem(position)
-		holder.name.text = document.place_name
-		holder.address.text = document.address_name
-		holder.type.text = document.category_group_name
+		holder.name.text = document.placeName
+		holder.address.text = document.addressName
+		holder.type.text = document.categoryGroupName
 	}
 }
 
