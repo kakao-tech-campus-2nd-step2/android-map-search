@@ -15,3 +15,4 @@ subprojects {
 allprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 }
+

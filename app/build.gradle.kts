@@ -25,6 +25,8 @@ android {
         // Load the API key from local.properties
         val kakaoRestApiKey = localProperties.getProperty("KAKAO_REST_API_KEY")
         buildConfigField("String", "KAKAO_REST_API_KEY", "\"${kakaoRestApiKey}\"")
+        val kakaoNativeApiKey = localProperties.getProperty("KAKAO_NATIVE_API_KEY")
+        buildConfigField("String", "KAKAO_NATIVE_API_KEY", "\"${kakaoNativeApiKey}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -56,6 +58,7 @@ android {
 }
 
 dependencies {
+    implementation("com.kakao.maps.open:android:2.9.5")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
@@ -72,4 +75,8 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation("androidx.activity:activity-ktx:1.8.0")
+
+    val fragment_version = "1.8.1"
+    implementation("androidx.fragment:fragment-ktx:$fragment_version")
+
 }
