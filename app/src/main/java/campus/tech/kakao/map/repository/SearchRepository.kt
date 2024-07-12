@@ -17,6 +17,7 @@ import retrofit2.Callback
 import retrofit2.Call
 import retrofit2.Response
 
+
 class SearchRepository(context: Context) {
     private val dbHelper = DatabaseHelper(context)
 
@@ -122,6 +123,7 @@ class SearchRepository(context: Context) {
         }
     }
 
+
     fun searchPlaces(keyword: String, callback: (List<PlaceData>) -> Unit) {
         val apiKey = "KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}"
         val maxPages = 3
@@ -150,19 +152,17 @@ class SearchRepository(context: Context) {
                         callback(allPlaces)
                     }
                 }
-
                 override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
                     Log.e("SearchRepository", "API call failed: ${t.message}")
                     callback(allPlaces)
                 }
             })
         }
-
-        fetchPage(1) // 첫 페이지 요청 시작
+        fetchPage(1)
     }
 
-        /*
-    suspend fun searchPlaces(keyword: String): List<PlaceData> {
+
+    suspend fun searchPlacesFromDB(keyword: String): List<PlaceData> {
         return withContext(Dispatchers.IO) {
             val db = dbHelper.readableDatabase
             val cursor = db.query(
@@ -191,5 +191,4 @@ class SearchRepository(context: Context) {
         }
     }
 
-         */
 }
