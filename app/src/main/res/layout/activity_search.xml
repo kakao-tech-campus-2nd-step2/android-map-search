@@ -35,12 +35,22 @@
         android:layout_marginEnd="10dp"
         android:src="@android:drawable/ic_menu_close_clear_cancel"/>
 
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:transitionName="inputFieldTransition"
+        app:layout_constraintTop_toTopOf="@id/search_result_recyclerView"
+        app:layout_constraintBottom_toBottomOf="@id/search_result_recyclerView"
+        app:layout_constraintStart_toStartOf="@id/search_result_recyclerView"
+        app:layout_constraintEnd_toEndOf="@id/search_result_recyclerView"
+        android:background="@color/white"
+        />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/saved_search_recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:transitionName="inputFieldTransition"
         app:layout_constraintTop_toBottomOf="@+id/input_search_field"
         app:layout_constraintBottom_toTopOf="@id/search_result_recyclerView"
         app:layout_constraintStart_toStartOf="parent"
@@ -54,7 +64,6 @@
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
         android:background="@color/white"
-        android:transitionName="inputFieldTransition"
         app:layout_constraintTop_toBottomOf="@+id/saved_search_recyclerView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -73,5 +82,8 @@
         android:textSize="18sp"
         android:textColor="#737373"
         />
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,6 +4,8 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -17,13 +19,35 @@ import com.kakao.vectormap.MapView
 
 
 class MapActivity : AppCompatActivity() {
+
+    lateinit var map : MapView
+    lateinit var inputField : EditText
+    lateinit var searchIcon : ImageView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
 
-        KakaoMapSdk.init(this, BuildConfig.KAKAO_NATIVE_APP_KEY)
+        initVar()
+        initSDK()
+        initMapView()
+        initClickListener()
+        inputField.isFocusable = true
+        inputField.requestFocus()
+    }
 
-        val map = findViewById<MapView>(R.id.map_view)
+    private fun initVar(){
+        inputField = findViewById<EditText>(R.id.input_search_field)
+        searchIcon = findViewById<ImageView>(R.id.search_icon)
+        bringFrontSearchField()
+    }
+
+    private fun initSDK(){
+        KakaoMapSdk.init(this, BuildConfig.KAKAO_NATIVE_APP_KEY)
+    }
+
+    private fun initMapView(){
+        map = findViewById<MapView>(R.id.map_view)
         map.start(object : MapLifeCycleCallback() {
             override fun onMapDestroy() {
                 Log.d("testt", "MapDestroy")
@@ -37,20 +61,24 @@ class MapActivity : AppCompatActivity() {
                 Log.d("testt", "MapReady")
             }
         })
-        val inputField = findViewById<TextView>(R.id.input_search_field)
-        val searchIcon = findViewById<ImageView>(R.id.search_icon)
 
+    }
 
+    private fun bringFrontSearchField(){
         inputField.bringToFront()
         searchIcon.bringToFront()
+    }
 
+    private fun initClickListener(){
         inputField.setOnClickListener{
-            val intent = Intent(this, SearchActivity::class.java)
-            val options = ActivityOptions.makeSceneTransitionAnimation(
-                this, it, "inputFieldTransition")
-            startActivity(intent, options.toBundle())
+            moveSearchPage(it)
         }
+    }
 
-
+    private fun moveSearchPage(view : View){
+        val intent = Intent(this, SearchActivity::class.java)
+        val options = ActivityOptions.makeSceneTransitionAnimation(
+            this, view, "inputFieldTransition")
+        startActivity(intent, options.toBundle())
     }
 }

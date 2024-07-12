@@ -48,27 +48,8 @@ class SearchActivity : AppCompatActivity(), OnClickPlaceListener, OnClickSavedPl
         initVar()
         initListeners()
         initRecyclerViews()
-
+        initObserver()
         inputSearchField.requestFocus()
-
-
-
-        viewModel.place.observe(this, Observer {
-            Log.d("readData", "검색창 결과 변경 감지")
-            val placeList = viewModel.place.value
-            Log.d("testt", "${placeList}")
-            searchRecyclerViewAdapter.submitList(placeList)
-            if (placeList?.isEmpty() == true) noResultText.visibility = View.VISIBLE
-            else noResultText.visibility = View.INVISIBLE
-        })
-
-        viewModel.savedPlace.observe(this, Observer {
-            Log.d("readData", "저장된 장소들 변경 감지")
-            val savedPlace = viewModel.savedPlace.value
-            savedPlaceRecyclerViewAdapter.submitList(savedPlace)
-            if (savedPlace?.isEmpty() == true) savedPlaceRecyclerView.visibility = View.GONE
-            else savedPlaceRecyclerView.visibility = View.VISIBLE
-        })
     }
 
     override fun deleteSavedPlace(savedPlace: SavedPlace, position: Int) {
@@ -108,8 +89,8 @@ class SearchActivity : AppCompatActivity(), OnClickPlaceListener, OnClickSavedPl
             inputSearchField.setText("")
             inputSearchField.clearFocus()
             inputSearchField.parent.clearChildFocus(inputSearchField)
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(window.decorView.applicationWindowToken, 0)
+            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(window.decorView.applicationWindowToken, 0)
         }
     }
 
@@ -146,6 +127,32 @@ class SearchActivity : AppCompatActivity(), OnClickPlaceListener, OnClickSavedPl
         savedPlaceRecyclerView.layoutManager =
             LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
         savedPlaceRecyclerView.adapter = savedPlaceRecyclerViewAdapter
+    }
+
+    fun initObserver(){
+        initPlaceObserver()
+        initSavedPlaceObserver()
+    }
+
+    fun initPlaceObserver(){
+        viewModel.place.observe(this, Observer {
+            Log.d("readData", "검색창 결과 변경 감지")
+            val placeList = viewModel.place.value
+            Log.d("testt", "${placeList}")
+            searchRecyclerViewAdapter.submitList(placeList)
+            if (placeList?.isEmpty() == true) noResultText.visibility = View.VISIBLE
+            else noResultText.visibility = View.INVISIBLE
+        })
+    }
+
+    fun initSavedPlaceObserver(){
+        viewModel.savedPlace.observe(this, Observer {
+            Log.d("readData", "저장된 장소들 변경 감지")
+            val savedPlace = viewModel.savedPlace.value
+            savedPlaceRecyclerViewAdapter.submitList(savedPlace)
+            if (savedPlace?.isEmpty() == true) savedPlaceRecyclerView.visibility = View.GONE
+            else savedPlaceRecyclerView.visibility = View.VISIBLE
+        })
     }
 
     override fun onDestroy() {
