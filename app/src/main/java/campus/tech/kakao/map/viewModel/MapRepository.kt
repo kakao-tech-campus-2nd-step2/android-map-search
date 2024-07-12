@@ -69,6 +69,7 @@ class MapRepository(private val context: Context) {
     }
 
 
+
     /**
      * Local DB 관련
      */
@@ -109,6 +110,7 @@ class MapRepository(private val context: Context) {
     }
 
 
+    
     /**
      * Search History 관련
      */
