@@ -18,7 +18,7 @@ class MapActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
 
-        mapView = findViewById<MapView>(R.id.map_view)
+        mapView = findViewById(R.id.map_view)
         val inputMap = findViewById<TextView>(R.id.inputSearchMap)
 
         mapView.start(object: MapLifeCycleCallback() {
