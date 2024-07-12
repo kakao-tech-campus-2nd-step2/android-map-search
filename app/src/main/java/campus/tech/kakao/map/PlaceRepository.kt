@@ -11,6 +11,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+
 class PlaceRepository(context: Context) {
     private val dbHelper = PlaceDbHelper(context)
     private var placeList = mutableListOf<Place>()
@@ -102,7 +103,7 @@ class PlaceRepository(context: Context) {
                     if (response.isSuccessful) {
                         val documentList = response.body()?.documents
                         documentList?.forEach {
-                            val place = Place(R.drawable.cafe, it.placeName, it.addressName, PlaceCategory.CAFE)
+                            val place = Place(img = R.drawable.cafe, name = it.placeName, location = it.addressName, category = PlaceCategory.CAFE)
                             placeList.add(place)
                             insertPlace(place)
                         }
@@ -126,7 +127,7 @@ class PlaceRepository(context: Context) {
                     if (response.isSuccessful) {
                         val documentList = response.body()?.documents
                         documentList?.forEach {
-                            val place = Place(R.drawable.hospital, it.placeName, it.addressName, PlaceCategory.PHARMACY)
+                            val place = Place(img = R.drawable.hospital, name = it.placeName, location = it.addressName, category = PlaceCategory.PHARMACY)
                             placeList.add(place)
                             insertPlace(place)
                         }
@@ -184,7 +185,7 @@ class PlaceRepository(context: Context) {
                     val location = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_LOCATION))
                     val categoryDisplayName = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_CATEGORY))
                     val category = PlaceCategory.fromCategory(categoryDisplayName)
-                    val place = Place(img, name, location, category)
+                    val place = Place(img = img, name = name, location = location, category = category)
                     researchList.add(place)
                 }
             } finally {

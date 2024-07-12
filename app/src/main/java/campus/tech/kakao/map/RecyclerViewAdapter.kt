@@ -14,7 +14,7 @@ class RecyclerViewAdapter(
 ) : ListAdapter<Place, RecyclerViewAdapter.ViewHolder>(
     object : DiffUtil.ItemCallback<Place>(){
         override fun areItemsTheSame(oldItem: Place, newItem: Place): Boolean {
-            return oldItem.name == newItem.name
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(oldItem: Place, newItem: Place): Boolean {
