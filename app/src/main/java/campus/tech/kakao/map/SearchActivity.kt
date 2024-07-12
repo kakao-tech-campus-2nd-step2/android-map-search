@@ -29,7 +29,12 @@ class SearchActivity : AppCompatActivity() {
         setupUI()
         searchResult.layoutManager = LinearLayoutManager(this)
         searchWordResult.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        
+        documentAdapter = DocumentAdapter(){ Document ->
+            model.addWord(Document)
+        }
+        wordAdapter = WordAdapter() { SearchWord ->
+            model.deleteWord(SearchWord)
+        }
         search.doOnTextChanged { text, start, before, count ->
             val query = text.toString()
             if (query.isEmpty()){
@@ -42,33 +47,25 @@ class SearchActivity : AppCompatActivity() {
             }
         }
         model = ViewModelProvider(this)[MainViewModel::class.java]
-        model.documentList.observe(this, Observer {
-            if (it.isNullOrEmpty()){
+        model.documentList.observe(this, Observer {documents ->
+            if (documents.isNullOrEmpty()){
                 noResult.visibility = View.VISIBLE
                 searchResult.visibility = View.GONE
             }else{
                 noResult.visibility = View.GONE
                 searchResult.visibility = View.VISIBLE
-                documentAdapter = DocumentAdapter(){ Document ->
-                    model.addWord(Document)
-                }
-                documentAdapter.submitList(it)
+                documentAdapter.submitList(documents)
                 searchResult.adapter = documentAdapter
             }
         })
         model.loadWord()
-        model.wordList.observe(this, Observer {
-            if (it.isNullOrEmpty()){
+        model.wordList.observe(this, Observer {searchWords ->
+            if (searchWords.isNullOrEmpty()){
                 searchWordResult.visibility = View.GONE
             }
             else{
                 searchWordResult.visibility = View.VISIBLE
-                wordAdapter = WordAdapter() { SearchWord ->
-                    model.deleteWord(
-                        SearchWord
-                    )
-                }
-                wordAdapter.submitList(it)
+                wordAdapter.submitList(searchWords)
                 searchWordResult.adapter = wordAdapter
             }
         })
