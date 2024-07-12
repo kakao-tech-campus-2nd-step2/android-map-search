@@ -1,18 +1,14 @@
 package campus.tech.kakao.map.view
 
-import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import campus.tech.kakao.map.PlaceApplication
 import campus.tech.kakao.map.domain.model.Place
 import campus.tech.kakao.map.domain.use_case.GetLogsUseCase
 import campus.tech.kakao.map.domain.use_case.GetPlacesUseCase
-import campus.tech.kakao.map.domain.use_case.AddLogUseCase
+import campus.tech.kakao.map.domain.use_case.UpdateLogsUseCase
 import campus.tech.kakao.map.domain.use_case.RemoveLogUseCase
 import campus.tech.kakao.map.domain.use_case.UpdatePlacesUseCase
 
@@ -20,7 +16,7 @@ class PlaceViewModel(
     private val getPlacesUseCase: GetPlacesUseCase,
     private val getLogsUseCase: GetLogsUseCase,
     private val updatePlacesUseCase: UpdatePlacesUseCase,
-    private val addLogUseCase: AddLogUseCase,
+    private val updateLogsUseCase: UpdateLogsUseCase,
     private val removeLogUseCase: RemoveLogUseCase
 ) : ViewModel() {
     private val _logList = MutableLiveData<List<Place>>()
@@ -52,17 +48,17 @@ class PlaceViewModel(
         return getLogsUseCase.invoke()
     }
 
-    fun addLog(place: Place) {
+    fun updateLogs(place: Place) {
         val updatedList = _logList.value?.toMutableList() ?: mutableListOf()
         val existingLog = updatedList.find { it.id == place.id }
         if (existingLog != null) {
             updatedList.remove(existingLog)
             updatedList.add(0, existingLog)
         } else {
-            addLogUseCase(place)
             updatedList.add(0, place)
         }
         _logList.value = updatedList
+        updateLogsUseCase.invoke(updatedList)
     }
 
     fun removeLog(id: String) {
@@ -80,7 +76,7 @@ class PlaceViewModel(
                             application.getPlacesUseCase,
                             application.getLogsUseCase,
                             application.updatePlacesUseCase,
-                            application.addLogUseCase,
+                            application.updateLogsUseCase,
                             application.removeLogUseCase
                         ) as T
                     }

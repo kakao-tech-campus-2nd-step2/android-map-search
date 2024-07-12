@@ -55,26 +55,16 @@ class PlaceRepositoryImpl(context: Context):
         }
     }
 
-    override fun addLog(placeLog: Place) {
+    override fun updateLogs(logs: List<Place>) {
         val db = writableDatabase
-        val cursor = db.query(
-            PlaceContract.TABLE_LOG_NAME,
-            arrayOf(PlaceContract.COLUMN_LOG_ID),
-            "${PlaceContract.COLUMN_LOG_ID} = ?",
-            arrayOf(placeLog.id),
-            null,
-            null,
-            null
-        )
-
-        if (cursor.count == NO_LOGS_FOUND) {
+        db.execSQL(PlaceContract.DELETE_LOG_QUERY)
+        logs.forEach { placeLog ->
             val values = ContentValues().apply {
                 put(PlaceContract.COLUMN_LOG_ID, placeLog.id)
                 put(PlaceContract.COLUMN_LOG_NAME, placeLog.place_name)
             }
             db.insert(PlaceContract.TABLE_LOG_NAME, null, values)
         }
-        cursor.close()
     }
 
     override fun removeLog(id: String) {

@@ -65,7 +65,7 @@ class ViewActivity : AppCompatActivity() {
 
     private fun setupSearchedPlaceRecyclerView() {
         val searchedPlaceRecyclerView = binding.recyclerPlace
-        searchedPlaceAdapter = SearchedPlaceAdapter { place -> viewModel.addLog(place) }
+        searchedPlaceAdapter = SearchedPlaceAdapter { place -> viewModel.updateLogs(place) }
 
         searchedPlaceRecyclerView.apply {
             layoutManager = LinearLayoutManager(this@ViewActivity)
@@ -106,15 +106,11 @@ class ViewActivity : AppCompatActivity() {
 
     private fun setEventListener() {
         binding.edtSearch.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 viewModel.searchText.value = s.toString()
             }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
+            override fun afterTextChanged(s: Editable?) {}
         })
     }
 
@@ -144,7 +140,4 @@ class ViewActivity : AppCompatActivity() {
     private fun updateSearchedPlaceList(places: List<Place>) {
         searchedPlaceAdapter.submitList(places)
     }
-
-
-
 }

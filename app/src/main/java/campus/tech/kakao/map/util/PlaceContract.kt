@@ -28,5 +28,6 @@ object PlaceContract {
             "$COLUMN_LOG_NAME TEXT NOT NULL" +
             ");"
 
+    const val DELETE_LOG_QUERY = "DELETE FROM $TABLE_LOG_NAME"
     const val DROP_LOG_QUERY = "DROP TABLE IF EXISTS $TABLE_LOG_NAME"
 }
