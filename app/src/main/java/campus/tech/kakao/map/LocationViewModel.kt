@@ -6,9 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class LocationViewModel(
     private val locationLocalRepository: LocationLocalRepository,
@@ -55,12 +52,11 @@ class LocationViewModel(
         return result
     }
 
-    fun searchLocationsFromKakaoAPI(restApiKey: String, query: String, callback: (Int) -> Unit) {
+    fun searchLocationsFromKakaoAPI(restApiKey: String, query: String, deleteNoResultMessageCallback: (Int) -> Unit) {
         viewModelScope.launch {
-            val results: List<Location> = locationRemoteRepository.getSearchKeyword(restApiKey, query)
+            val results: List<Location> = locationRemoteRepository.getLocations(restApiKey, query)
             _searchedLocations.value = results
-            Log.d("jieun", "results: "+results)
-            callback(results.size)
+            deleteNoResultMessageCallback(results.size)
         }
     }
 }

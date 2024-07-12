@@ -1,6 +1,6 @@
 package campus.tech.kakao.map
 
-data class SearchKeywordResponse(
+data class SearchFromKeywordResponse(
     val documents: List<LocationDto>
 )
 

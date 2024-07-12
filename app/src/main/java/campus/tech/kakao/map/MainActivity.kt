@@ -39,8 +39,6 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         setContentView(R.layout.activity_main)
 
         initViews()
-//        locationViewModel.insertLocation()
-
         setupSearchEditText()
         setupClearButton()
         setupViewModels()
