@@ -35,6 +35,9 @@ class KakaoLocalRepository {
                         placeList = body?.documents ?: listOf<Place>()
                         Log.d("inputField", "placeList : ${placeList} ")
                         callback(placeList)
+                    } else {
+                        Log.d("testt", "errorCode : ${response.code()}")
+                        Log.d("testt", "errorBody : ${response.errorBody()?.string()}")
                     }
                 }
 
