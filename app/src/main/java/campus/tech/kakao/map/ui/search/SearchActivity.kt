@@ -1,61 +1,36 @@
 package campus.tech.kakao.map.ui.search
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
-import campus.tech.kakao.map.R
-import campus.tech.kakao.map.data.SavedSearchWordDBHelper
-import campus.tech.kakao.map.data.repository.PlaceRepositoryImpl
-import campus.tech.kakao.map.data.repository.SavedSearchWordRepositoryImpl
 import campus.tech.kakao.map.databinding.ActivitySearchBinding
+import campus.tech.kakao.map.di.SearchActivityContainer
 import campus.tech.kakao.map.model.Place
 import campus.tech.kakao.map.model.SavedSearchWord
-import campus.tech.kakao.map.ui.ViewModelFactory
+import campus.tech.kakao.map.ui.search.adapters.ResultRecyclerViewAdapter
+import campus.tech.kakao.map.ui.search.adapters.SavedSearchWordRecyclerViewAdapter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
-    private lateinit var placeViewModel: PlaceViewModel
-    private lateinit var savedSearchWordViewModel: SavedSearchWordViewModel
+    private val container: SearchActivityContainer by lazy {
+        SearchActivityContainer(this)
+    }
+    private val placeViewModel: PlaceViewModel by viewModels { container.provideViewModelFactory() }
+    private val savedSearchWordViewModel: SavedSearchWordViewModel by viewModels { container.provideViewModelFactory() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupViewModels()
         setupViews()
         setupObservers()
-    }
-
-    /**
-     * 사용할 ViewModel을 설정하는 함수
-     *
-     * - `placeRepository` : 장소 데이터를 제공 Repository
-     * - `dbHelper` : 저장된 검색어 데이터베이스를 관리하는 Helper
-     * - `savedSearchWordRepository` : 저장된 검색어 데이터를 제공 Repository
-     * - `viewModelFactory` : ViewModel 인스턴스를 생성하고 제공하는 Factory
-     */
-    private fun setupViewModels() {
-        val placeRepository = PlaceRepositoryImpl()
-        val dbHelper = SavedSearchWordDBHelper(applicationContext)
-        val savedSearchWordRepository = SavedSearchWordRepositoryImpl(dbHelper)
-        val viewModelFactory = ViewModelFactory(placeRepository, savedSearchWordRepository)
-
-        placeViewModel = ViewModelProvider(this, viewModelFactory)[PlaceViewModel::class.java]
-        savedSearchWordViewModel = ViewModelProvider(this, viewModelFactory)[SavedSearchWordViewModel::class.java]
     }
 
     /**
@@ -121,53 +96,6 @@ class SearchActivity : AppCompatActivity() {
         binding.searchResultRecyclerView.layoutManager = LinearLayoutManager(this)
     }
 
-    class ResultRecyclerViewAdapter(private val clickListener: OnPlaceItemClickListener) :
-        ListAdapter<Place, ResultRecyclerViewAdapter.PlaceViewHolder>(PlaceDiffCallback()) {
-        override fun onCreateViewHolder(
-            parent: ViewGroup,
-            viewType: Int,
-        ): PlaceViewHolder {
-            val itemView =
-                LayoutInflater.from(parent.context).inflate(R.layout.item_place, parent, false)
-            return PlaceViewHolder(itemView)
-        }
-
-        override fun onBindViewHolder(
-            holder: PlaceViewHolder,
-            position: Int,
-        ) {
-            val place = getItem(position)
-            holder.bind(place)
-            holder.itemView.setOnClickListener {
-                clickListener.onPlaceItemClicked(place)
-            }
-        }
-
-        class PlaceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            fun bind(place: Place) {
-                itemView.findViewById<TextView>(R.id.place_name_text_view).text = place.name
-                itemView.findViewById<TextView>(R.id.place_category_text_view).text = place.category
-                itemView.findViewById<TextView>(R.id.place_address_text_view).text = place.address
-            }
-        }
-
-        private class PlaceDiffCallback : DiffUtil.ItemCallback<Place>() {
-            override fun areItemsTheSame(
-                oldItem: Place,
-                newItem: Place,
-            ): Boolean {
-                return oldItem.id == newItem.id
-            }
-
-            override fun areContentsTheSame(
-                oldItem: Place,
-                newItem: Place,
-            ): Boolean {
-                return oldItem == newItem
-            }
-        }
-    }
-
     interface OnSavedSearchWordClearImageViewClickListener {
         fun onSavedSearchWordClearImageViewClicked(savedSearchWord: SavedSearchWord)
     }
@@ -188,55 +116,6 @@ class SearchActivity : AppCompatActivity() {
             SavedSearchWordRecyclerViewAdapter(savedSearchWordClearImageViewClickListener)
         binding.savedSearchWordRecyclerView.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-    }
-
-    class SavedSearchWordRecyclerViewAdapter(private val clickListener: OnSavedSearchWordClearImageViewClickListener) :
-        ListAdapter<SavedSearchWord, SavedSearchWordRecyclerViewAdapter.SavedSearchWordViewHolder>(
-            SavedSearchWordDiffCallback(),
-        ) {
-        override fun onCreateViewHolder(
-            parent: ViewGroup,
-            viewType: Int,
-        ): SavedSearchWordViewHolder {
-            val itemView =
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_saved_search_word, parent, false)
-            return SavedSearchWordViewHolder(itemView)
-        }
-
-        override fun onBindViewHolder(
-            holder: SavedSearchWordViewHolder,
-            position: Int,
-        ) {
-            val savedSearchWord = getItem(position)
-            holder.bind(savedSearchWord)
-            holder.itemView.findViewById<ImageView>(R.id.saved_search_word_clear_image_view).setOnClickListener {
-                clickListener.onSavedSearchWordClearImageViewClicked(savedSearchWord)
-            }
-        }
-
-        class SavedSearchWordViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            fun bind(savedSearchWord: SavedSearchWord) {
-                itemView.findViewById<TextView>(R.id.saved_search_word_text_view).text =
-                    savedSearchWord.name
-            }
-        }
-
-        private class SavedSearchWordDiffCallback : DiffUtil.ItemCallback<SavedSearchWord>() {
-            override fun areItemsTheSame(
-                oldItem: SavedSearchWord,
-                newItem: SavedSearchWord,
-            ): Boolean {
-                return oldItem.id == newItem.id
-            }
-
-            override fun areContentsTheSame(
-                oldItem: SavedSearchWord,
-                newItem: SavedSearchWord,
-            ): Boolean {
-                return oldItem == newItem
-            }
-        }
     }
 
     /**
