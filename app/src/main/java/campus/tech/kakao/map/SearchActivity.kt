@@ -1,12 +1,15 @@
 package campus.tech.kakao.map
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import campus.tech.kakao.map.dto.Place
+import campus.tech.kakao.map.repository.KakaoRepository
 
 class SearchActivity : AppCompatActivity() {
 
@@ -18,19 +21,25 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchHistoryRecyclerViewAdapter: SearchHistoryRecyclerViewAdapter
     private lateinit var placeList: List<Place>
     private lateinit var searchHistoryList: MutableList<Place>
+    private lateinit var kakaoRepository: KakaoRepository
+    private lateinit var backButton: ImageButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+
         searchView = findViewById(R.id.search_view)
         resultRecyclerView = findViewById(R.id.recycler_view)
         searchHistoryRecyclerView = findViewById(R.id.horizontal_recycler_view)
         noResults = findViewById(R.id.no_results)
+        backButton = findViewById(R.id.back_button)
 
-        val placeDB = PlaceDBHelper(this)
+        placeList = emptyList()
+        kakaoRepository = (application as KyleMaps).kakaoRepository
+
         val searchHistoryDB = SearchHistoryDBHelper(this)
-
-        placeList = placeDB.getAllPlaces()
         searchHistoryList = searchHistoryDB.getAllSearchHistory()
+
         resultRecyclerViewAdapter = ResultRecyclerViewAdapter(
             places = emptyList(),
             onItemClick = { place ->
@@ -40,17 +49,17 @@ class SearchActivity : AppCompatActivity() {
         )
         resultRecyclerView.adapter = resultRecyclerViewAdapter
         resultRecyclerView.layoutManager = LinearLayoutManager(this)
+
         searchHistoryRecyclerViewAdapter = SearchHistoryRecyclerViewAdapter(
             searchHistory = searchHistoryList,
             onItemClick = { index ->
-                searchView.setQuery(searchHistoryList[index].name, true)
+                searchView.setQuery(searchHistoryList[index].placeName, true)
                 searchView.clearFocus()
-
                 searchView.isIconified = false
             },
             onItemDelete = { index ->
                 if (index >= 0 && index < searchHistoryList.size) {
-                    val deletedItemName = searchHistoryList[index].name
+                    val deletedItemName = searchHistoryList[index].placeName
                     searchHistoryList.removeAt(index)
                     searchHistoryDB.deleteSearchHistoryByName(deletedItemName)
                     searchHistoryRecyclerViewAdapter.notifyItemRemoved(index)
@@ -59,29 +68,32 @@ class SearchActivity : AppCompatActivity() {
         )
         searchHistoryRecyclerView.adapter = searchHistoryRecyclerViewAdapter
         searchHistoryRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                filterPlaces(newText)
+                newText?.let { searchPlaces(it) }
                 return true
             }
         })
+
+        backButton.setOnClickListener {
+            goBackToMap()
+        }
     }
 
-    private fun filterPlaces(query: String?) {
-        val filteredList = if (query.isNullOrBlank()) emptyList() else placeList.filter { place -> matchesQuery(place, query) }
-        resultRecyclerViewAdapter.setPlaces(filteredList)
-        showNoResultsMessage(filteredList.isEmpty())
-    }
+    private fun searchPlaces(query: String) {
 
-    private fun matchesQuery(place: Place, searchQuery: String): Boolean {
-        val queryLowercase = searchQuery.lowercase()
-        return place.name.lowercase().contains(queryLowercase) ||
-                place.category.lowercase().contains(queryLowercase) ||
-                place.address.lowercase().contains(queryLowercase)
+        kakaoRepository.searchPlaces(query) { places ->
+            runOnUiThread {
+                placeList = places
+                resultRecyclerViewAdapter.setPlaces(places)
+                showNoResultsMessage(places.isEmpty())
+            }
+        }
     }
 
 
@@ -99,5 +111,9 @@ class SearchActivity : AppCompatActivity() {
         searchHistoryList.add(place)
         searchHistoryRecyclerViewAdapter.notifyDataSetChanged()
     }
-}
 
+    private fun goBackToMap() {
+        val intent = Intent(this, MapActivity::class.java)
+        startActivity(intent)
+    }
+}
