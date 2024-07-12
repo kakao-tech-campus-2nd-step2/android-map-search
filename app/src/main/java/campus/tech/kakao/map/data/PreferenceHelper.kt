@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
+
 object PreferenceHelper {
     private const val PREF_NAME = "kakao_map"
     private const val PREF_KEY_SEARCH_QUERY = "search_query"
