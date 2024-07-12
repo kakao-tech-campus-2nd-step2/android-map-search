@@ -13,12 +13,15 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:hint="검색어를 입력해주세요."
-        app:layout_constraintHeight_percent="0.1"
+        app:layout_constraintHeight_percent="0.08"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:textColor="@color/black"
-        android:inputType="text" />
+        android:inputType="text"
+        android:layout_margin="10dp"
+        android:paddingLeft="15dp"
+        android:background="@drawable/edittext_shadow"/>
 
     <ImageView
         android:id="@+id/clearButton"
@@ -26,7 +29,7 @@
         android:layout_height="30dp"
         android:src="@drawable/x_mark"
         app:layout_constraintBottom_toBottomOf="@+id/SearchEditTextInMain"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/SearchEditTextInMain"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginRight="10dp"/>
 
@@ -44,7 +47,7 @@
         android:id="@+id/locationRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.9"
+        app:layout_constraintHeight_percent="0.92"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
