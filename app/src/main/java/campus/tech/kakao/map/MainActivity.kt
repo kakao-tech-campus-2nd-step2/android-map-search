@@ -113,11 +113,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateTabRecyclerViewVisibility() {
-        if (placeRepository.hasResearchEntries()) {
-            tabRecyclerView.isVisible = true
-        } else {
-            tabRecyclerView.isGone = true
-        }
+        tabRecyclerView.isVisible = placeRepository.hasResearchEntries()
     }
 
     override fun onDestroy() {

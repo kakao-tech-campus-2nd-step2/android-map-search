@@ -1,28 +1,30 @@
 package campus.tech.kakao.map
 
+import com.google.gson.annotations.SerializedName
+
 data class KakaoResponse(
     val meta: Meta,
     val documents: List<Document>
 )
 
 data class Meta(
-    val same_name: Any?,
-    val pageable_count: Int,
-    val total_count: Int,
-    val is_end: Boolean
+    @SerializedName("same_name") val sameName: Any?,
+    @SerializedName("pageable_count") val pageableCount: Int,
+    @SerializedName("total_count") val totalCount: Int,
+    @SerializedName("is_end") val isEnd: Boolean
 )
 
 data class Document(
-    val place_name: String,
+    @SerializedName("place_name") val placeName: String,
     val distance: String?,
-    val place_url: String,
-    val category_name: String,
-    val address_name: String,
-    val road_address_name: String,
+    @SerializedName("place_url") val placeUrl: String,
+    @SerializedName("category_name") val categoryName: String,
+    @SerializedName("address_name") val addressName: String,
+    @SerializedName("road_address_name") val roadAddressName: String,
     val id: String,
     val phone: String?,
-    val category_group_code: String,
-    val category_group_name: String,
+    @SerializedName("category_group_code") val categoryGroupCode: String,
+    @SerializedName("category_group_name") val categoryGroupName: String,
     val x: String,
     val y: String
 )

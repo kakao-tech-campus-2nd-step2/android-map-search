@@ -102,7 +102,7 @@ class PlaceRepository(context: Context) {
                     if (response.isSuccessful) {
                         val documentList = response.body()?.documents
                         documentList?.forEach {
-                            val place = Place(R.drawable.cafe, it.place_name, it.address_name, PlaceCategory.CAFE)
+                            val place = Place(R.drawable.cafe, it.placeName, it.addressName, PlaceCategory.CAFE)
                             placeList.add(place)
                             insertPlace(place)
                         }
@@ -126,7 +126,7 @@ class PlaceRepository(context: Context) {
                     if (response.isSuccessful) {
                         val documentList = response.body()?.documents
                         documentList?.forEach {
-                            val place = Place(R.drawable.hospital, it.place_name, it.address_name, PlaceCategory.PHARMACY)
+                            val place = Place(R.drawable.hospital, it.placeName, it.addressName, PlaceCategory.PHARMACY)
                             placeList.add(place)
                             insertPlace(place)
                         }
