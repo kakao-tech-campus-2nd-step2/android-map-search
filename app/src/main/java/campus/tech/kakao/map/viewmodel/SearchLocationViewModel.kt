@@ -28,7 +28,7 @@ class SearchLocationViewModel : ViewModel() {
             }
 
             override fun onFailure(e: Exception) {
-                Log.e("SearchLocationViewModel", "searchLocation failed", e)
+                Log.e("SearchLocationViewModel", "searchLocation failed (${e.message})", e)
             }
         })
     }
