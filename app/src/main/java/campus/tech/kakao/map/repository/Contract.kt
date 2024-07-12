@@ -1,4 +1,4 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.map.repository
 
 import android.provider.BaseColumns
 

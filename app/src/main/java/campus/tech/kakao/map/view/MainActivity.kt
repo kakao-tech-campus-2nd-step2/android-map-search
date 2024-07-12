@@ -1,4 +1,4 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.map.view
 
 import android.os.Bundle
 import android.text.Editable
@@ -12,8 +12,15 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import campus.tech.kakao.map.ViewModelFactory.LocationViewModelFactory
-import campus.tech.kakao.map.ViewModelFactory.SavedLocationViewModelFactory
+import campus.tech.kakao.map.repository.LocationLocalRepository
+import campus.tech.kakao.map.repository.LocationRemoteRepository
+import campus.tech.kakao.map.R
+import campus.tech.kakao.map.model.SavedLocation
+import campus.tech.kakao.map.repository.LocationDbHelper
+import campus.tech.kakao.map.viewmodel.ViewModelFactory.LocationViewModelFactory
+import campus.tech.kakao.map.viewmodel.ViewModelFactory.SavedLocationViewModelFactory
+import campus.tech.kakao.map.viewmodel.LocationViewModel
+import campus.tech.kakao.map.viewmodel.SavedLocationViewModel
 
 class MainActivity : AppCompatActivity(), OnItemSelectedListener {
 

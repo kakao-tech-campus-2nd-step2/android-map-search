@@ -1,6 +1,6 @@
 package campus.tech.kakao.map.retrofit
 
-import campus.tech.kakao.map.SearchFromKeywordResponse
+import campus.tech.kakao.map.model.SearchFromKeywordResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header

@@ -1,4 +1,4 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.map.view
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +8,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import campus.tech.kakao.map.SavedLocationAdapter.SavedLocationHolder
+import campus.tech.kakao.map.R
+import campus.tech.kakao.map.view.SavedLocationAdapter.SavedLocationHolder
+import campus.tech.kakao.map.model.SavedLocation
 
 class SavedLocationAdapter(
         private val itemSelectedListener: OnItemSelectedListener

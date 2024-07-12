@@ -1,10 +1,13 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.map.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import campus.tech.kakao.map.repository.LocationLocalRepository
+import campus.tech.kakao.map.repository.LocationRemoteRepository
+import campus.tech.kakao.map.model.Location
 import kotlinx.coroutines.launch
 
 class LocationViewModel(

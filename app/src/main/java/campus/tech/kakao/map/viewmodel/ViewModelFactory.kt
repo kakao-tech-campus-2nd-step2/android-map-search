@@ -1,8 +1,10 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.map.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
+import campus.tech.kakao.map.repository.LocationLocalRepository
+import campus.tech.kakao.map.repository.LocationRemoteRepository
 
 class ViewModelFactory {
     class LocationViewModelFactory(

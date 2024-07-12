@@ -1,6 +1,8 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.map.repository
 
 import android.util.Log
+import campus.tech.kakao.map.model.LocationDto
+import campus.tech.kakao.map.model.Location
 import campus.tech.kakao.map.retrofit.KakaoAPI
 import campus.tech.kakao.map.retrofit.RetrofitInstance
 

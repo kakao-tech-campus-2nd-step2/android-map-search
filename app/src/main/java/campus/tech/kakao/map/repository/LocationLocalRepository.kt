@@ -1,9 +1,11 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.map.repository
 
 import android.content.ContentValues
 import android.util.Log
-import campus.tech.kakao.map.Contract.LocationEntry
-import campus.tech.kakao.map.Contract.SavedLocationEntry
+import campus.tech.kakao.map.repository.Contract.LocationEntry
+import campus.tech.kakao.map.repository.Contract.SavedLocationEntry
+import campus.tech.kakao.map.model.Location
+import campus.tech.kakao.map.model.SavedLocation
 
 class LocationLocalRepository(private val dbHelper : LocationDbHelper) {
 
