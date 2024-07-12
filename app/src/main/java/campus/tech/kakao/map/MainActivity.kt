@@ -3,7 +3,6 @@ package campus.tech.kakao.map
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
@@ -64,7 +63,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         savedLocationRecyclerView = findViewById(R.id.savedLocationRecyclerView)
 
         clearButton = findViewById(R.id.clearButton)
-        searchEditText = findViewById(R.id.searchEditText)
+        searchEditText = findViewById(R.id.SearchEditTextInMain)
         noResultTextView = findViewById(R.id.NoResultTextView)
     }
 
@@ -85,6 +84,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
 
             override fun afterTextChanged(s: Editable?) {}
         })
+        searchEditText.requestFocus()
     }
 
     private fun setupClearButton() {
