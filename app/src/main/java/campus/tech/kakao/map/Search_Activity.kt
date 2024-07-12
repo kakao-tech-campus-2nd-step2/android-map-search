@@ -2,8 +2,6 @@ package campus.tech.kakao.map
 
 import android.content.ContentValues
 import android.os.Bundle
-import android.provider.SettingsSlicesContract
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +11,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import campus.tech.kakao.map.databinding.ActivitySearchBinding
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.vectormap.MapView
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +22,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class Search_Activity : AppCompatActivity() {
     //Binding만 추가하면 됨
-    private lateinit var binding: ActivitySearchBinding
     private lateinit var searchView: SearchView
     private lateinit var searchRecyclerView: RecyclerView
     private lateinit var savedSearchRecyclerView: RecyclerView
