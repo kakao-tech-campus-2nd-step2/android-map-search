@@ -38,10 +38,12 @@ class MapActivity : AppCompatActivity() {
     private val lifeCycleCallback: MapLifeCycleCallback = object : MapLifeCycleCallback() {
         override fun onMapResumed() {
             super.onMapResumed()
+            mapView.resume()
         }
 
         override fun onMapPaused() {
             super.onMapPaused()
+            mapView.pause()
         }
 
         override fun onMapDestroy() {
