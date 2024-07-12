@@ -29,8 +29,8 @@ class MapActivity : AppCompatActivity() {
 			}
 
 		}, object: KakaoMapReadyCallback() {
-			override fun onMapReady(p0: KakaoMap) {
-				map = p0
+			override fun onMapReady(kakaoMap: KakaoMap) {
+				map = kakaoMap
 			}
 
 		})
