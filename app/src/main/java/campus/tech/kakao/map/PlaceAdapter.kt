@@ -64,5 +64,4 @@ class PlaceAdapter(var items: List<Document>, val inflater: LayoutInflater, var 
             }
         }
     }
-
 }

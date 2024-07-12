@@ -15,6 +15,5 @@ class MapApplication: Application() {
         prefs = PreferenceManager(applicationContext)
         super.onCreate()
         KakaoMapSdk.init(this, apiKey)
-        Log.d("왜", ""+ R.string.kakao_api_key.toString())
     }
 }
