@@ -18,6 +18,10 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+        ndk {
+            abiFilters.add("arm64-v8a")
+            abiFilters.add("armeabi-v7a")}
+
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -47,6 +51,8 @@ android {
 }
 
 dependencies {
+    implementation("com.kakao.sdk:v2-all:2.20.3")
+    implementation("com.kakao.maps.open:android:2.9.5")
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("androidx.core:core-ktx:1.12.0")

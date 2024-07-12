@@ -10,6 +10,7 @@ import campus.tech.kakao.map.domain.use_case.RemoveLogUseCase
 import campus.tech.kakao.map.domain.use_case.UpdatePlacesUseCase
 
 class PlaceApplication: Application() {
+
     private val placeRepository: PlaceRepository by lazy { PlaceRepositoryImpl.getInstance(this) }
 
     val getLogsUseCase by lazy { GetLogsUseCase(placeRepository) }

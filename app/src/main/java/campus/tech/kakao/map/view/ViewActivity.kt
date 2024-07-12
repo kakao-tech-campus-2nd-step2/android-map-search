@@ -1,5 +1,6 @@
 package campus.tech.kakao.map.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -24,6 +25,7 @@ import retrofit2.Response
 import campus.tech.kakao.map.data.net.RetrofitApiClient
 import campus.tech.kakao.map.domain.model.Place
 import campus.tech.kakao.map.util.PlaceMapper
+import com.kakao.sdk.common.util.Utility
 
 class ViewActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -33,6 +35,7 @@ class ViewActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("ViewActivity", "onCreate 호출됨")
         init()
     }
 
@@ -141,6 +144,7 @@ class ViewActivity : AppCompatActivity() {
     private fun updateSearchedPlaceList(places: List<Place>) {
         searchedPlaceAdapter.submitList(places)
     }
+
 
 
 }
