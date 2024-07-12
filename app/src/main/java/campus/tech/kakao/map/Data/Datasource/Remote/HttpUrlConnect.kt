@@ -30,9 +30,9 @@ class HttpUrlConnect : RemoteService{
 
         response?.apply {
             result.addAll(this.documents)
-            val pageCount = this.meta?.pageable_count ?: 0
+            val pageCount : Int = this.meta.pageable_count ?: 0
 
-            if (pageCount >= MAX_PAGE) {
+            if (pageCount > MAX_PAGE) {
                 val threads = mutableListOf<Thread>()
 
                 for (i in START_PAGE + 1..MAX_PAGE) {
