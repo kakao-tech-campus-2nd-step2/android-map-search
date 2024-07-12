@@ -10,6 +10,8 @@ interface KakaoAPI {
     @GET("v2/local/search/keyword.json")
     fun getSearchKeyword(
         @Header("Authorization") key: String,
-        @Query("query") query: String
+        @Query("query") query: String,
+        @Query("size") size: Int = 15,
+        @Query("page") page: Int = 1
     ): Call<ResultSearchKeyword>
 }

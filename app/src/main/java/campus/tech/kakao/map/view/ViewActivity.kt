@@ -114,9 +114,18 @@ class ViewActivity : AppCompatActivity() {
         })
     }
 
-    private fun searchKeyword(keyword: String) {
+    fun searchKeyword(keyword: String) {
+        val places = mutableListOf<Place>()
+        searchKeyword(keyword, places, 1)
+    }
+    private fun searchKeyword(keyword: String, places: MutableList<Place>, page: Int) {
+        if (page > 5) {
+            viewModel.updatePlaces(places)
+            return
+        }
+
         val retrofit = RetrofitApiClient.api
-            .getSearchKeyword(BuildConfig.KAKAO_REST_API_KEY, keyword)
+            .getSearchKeyword(BuildConfig.KAKAO_REST_API_KEY, keyword, 15, page)
 
         retrofit.enqueue(object : Callback<ResultSearchKeyword> {
             override fun onResponse(
@@ -125,9 +134,16 @@ class ViewActivity : AppCompatActivity() {
             ) {
                 if (response.isSuccessful) {
                     response.body()?.let { result ->
-                        val places = PlaceMapper.mapPlaces(result.documents)
-                        viewModel.updatePlaces(places)
+                        val mappedplaces = PlaceMapper.mapPlaces(result.documents)
+                        places.addAll(mappedplaces)
+                        if (!result.meta.is_end) {
+                            searchKeyword(keyword, places, page + 1)
+                        } else {
+                            viewModel.updatePlaces(places)
+                        }
                     }
+                } else {
+                    viewModel.updatePlaces(places)
                 }
             }
 
