@@ -52,8 +52,6 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
-    implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-android:2.8.3")
     implementation("com.kakao.sdk:v2-all:2.20.3")
     implementation("com.kakao.maps.open:android:2.11.1")

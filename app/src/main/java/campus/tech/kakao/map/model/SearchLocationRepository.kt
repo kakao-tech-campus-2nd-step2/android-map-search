@@ -2,26 +2,12 @@ package campus.tech.kakao.map.model
 
 import android.content.ContentValues
 import android.content.Context
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchLocationRepository(context: Context) {
     private val historyDbHelper: HistoryDbHelper = HistoryDbHelper(context)
-    private val localSearchService = Retrofit.Builder()
-        .baseUrl("https://dapi.kakao.com/v2/local/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-        .create(LocalSearchService::class.java)
 
-    suspend fun searchLocation(category: String): List<Location> {
-        val response = localSearchService.requestLocalSearch(query = category)
-        return response.body()?.documents?.map {
-            Location(
-                name = it.place_name,
-                address = it.address_name,
-                category = it.category_group_name
-            )
-        } ?: emptyList()
+    fun searchLocation(category: String): List<Location> {
+        return emptyList()
     }
 
     fun addHistory(locationName: String) {
