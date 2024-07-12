@@ -12,11 +12,13 @@ import com.kakao.vectormap.MapView
 
 class MapActivity : AppCompatActivity() {
 
+    private lateinit var mapView: MapView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
 
-        val mapView = findViewById<MapView>(R.id.mapView)
+        mapView = findViewById<MapView>(R.id.mapView)
 
         mapView.start(object : MapLifeCycleCallback() {
             override fun onMapDestroy() {
@@ -39,4 +41,15 @@ class MapActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
+
+    public override fun onResume() {
+        super.onResume()
+        mapView.resume()
+    }
+
+    public override fun onPause() {
+        super.onPause()
+        mapView.pause()
+    }
+
 }
