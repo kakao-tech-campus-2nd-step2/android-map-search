@@ -45,7 +45,7 @@ class PlaceRepositoryImpl(private val context: Context) : PlaceRepository {
         PreferenceHelper.saveSearchQuery(context, place.placeName)
     }
 
-    override fun getSearchHistory(): Set<String> {
+    override fun getSearchHistory(): List<String> {
         return PreferenceHelper.getSearchHistory(context)
     }
 

@@ -6,7 +6,7 @@ import campus.tech.kakao.map.domain.usecase.GetSearchPlacesUseCase
 
 class GetSearchHistoryUseCaseImpl(private val placeRepository: PlaceRepository) :
     GetSearchHistoryUseCase {
-    override fun invoke(): Set<String> {
+    override fun invoke(): List<String> {
         return placeRepository.getSearchHistory()
     }
 }

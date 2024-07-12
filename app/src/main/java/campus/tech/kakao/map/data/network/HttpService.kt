@@ -15,16 +15,17 @@ object HttpService {
             val url = "${BASE_URL}v2/local/search/keyword.json?query=$query"
             val connection = URL(url).openConnection() as HttpURLConnection
             try {
-                Log.d("testt", "URL: $url")
                 connection.requestMethod = "GET"
                 connection.setRequestProperty("Authorization", ApiKeyProvider.KAKAO_REST_API_KEY)
                 val responseCode = connection.responseCode
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     val response = connection.inputStream.bufferedReader().readText()
-                    Log.d("testt", "Response: $response")
                     callback(Gson().fromJson(response, SearchResponse::class.java))
                 } else {
-                    Log.d("testt", "Response failed: ${connection.errorStream.bufferedReader().readText()}")
+                    Log.d(
+                        "testt",
+                        "Response failed: ${connection.errorStream.bufferedReader().readText()}"
+                    )
                     callback(null)
                 }
             } finally {
