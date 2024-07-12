@@ -1,9 +1,11 @@
 package campus.tech.kakao.map.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import campus.tech.kakao.map.model.Location
+import campus.tech.kakao.map.model.LocationCallBack
 import campus.tech.kakao.map.model.SearchLocationRepository
 
 class SearchLocationViewModel : ViewModel() {
@@ -20,7 +22,15 @@ class SearchLocationViewModel : ViewModel() {
     val history: LiveData<List<String>> = _history
 
     fun searchLocation(category: String) {
-        _location.value = repository.searchLocation(category)
+        repository.searchLocation(category, object : LocationCallBack {
+            override fun onSuccess(data: List<Location>) {
+                _location.postValue(data)
+            }
+
+            override fun onFailure(e: Exception) {
+                Log.e("SearchLocationViewModel", "searchLocation failed", e)
+            }
+        })
     }
 
     fun addHistory(locationName: String) {
