@@ -3,7 +3,6 @@ package campus.tech.kakao.map
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -12,12 +11,6 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.kakao.sdk.common.util.Utility
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,7 +24,6 @@ class MainActivity : AppCompatActivity() {
     private var researchList = mutableListOf<Place>()
     private lateinit var resultAdapter: RecyclerViewAdapter
     private lateinit var tapAdapter: TapViewAdapter
-    private var textWatcher: TextWatcher? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,15 +57,24 @@ class MainActivity : AppCompatActivity() {
 
         updateTabRecyclerViewVisibility()
 
-        textWatcher = input.addTextChangedListener(
-            afterTextChanged = { s -> filterList(s.toString())}
-        )
+        input.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // 미사용
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // 미사용
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                filterList(s.toString())
+            }
+        })
 
         researchCloseButton.setOnClickListener {
             input.setText("")
         }
     }
-
 
     private fun filterList(query: String) {
         val filteredList = if (query.isEmpty()) {
@@ -111,7 +112,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun updateTabRecyclerViewVisibility() {
+    private fun updateTabRecyclerViewVisibility() {
         if (placeRepository.hasResearchEntries()) {
             tabRecyclerView.isVisible = true
         } else {
@@ -121,7 +122,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        textWatcher?.let { input.removeTextChangedListener(it) }
+        input.removeTextChangedListener(null)
     }
 }
 
