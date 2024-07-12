@@ -33,4 +33,9 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
 	fun searchLocalAPI(query: String){
 		retrofitData.searchPlace(query)
 	}
+
+	override fun onCleared() {
+		super.onCleared()
+		wordDbHelper.close()
+	}
 }
