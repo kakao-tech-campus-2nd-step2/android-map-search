@@ -6,13 +6,14 @@ import androidx.lifecycle.LiveData
 import campus.tech.kakao.map.DBHelper.SearchWordDbHelper
 import campus.tech.kakao.map.DTO.Document
 import campus.tech.kakao.map.DTO.SearchWord
+import campus.tech.kakao.map.RetrofitData.Companion.getInstance
 
 class MainViewModel(application: Application): AndroidViewModel(application) {
 
 	private val wordDbHelper = SearchWordDbHelper(application)
 	val wordList: LiveData<List<SearchWord>> get() =  wordDbHelper.getSearchWords()
 
-	private val retrofitData = RetrofitData()
+	private val retrofitData = getInstance()
 	val documentList: LiveData<List<Document>> get() = retrofitData.getDocuments()
 
 	fun addWord(document: Document){

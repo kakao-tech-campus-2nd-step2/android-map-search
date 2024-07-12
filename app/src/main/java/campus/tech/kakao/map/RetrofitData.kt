@@ -11,7 +11,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class RetrofitData {
+class RetrofitData private constructor() {
 	private val _documents = MutableLiveData<List<Document>>()
 	val retrofitService = Retrofit.Builder()
 		.baseUrl(UrlContract.BASE_URL)
@@ -40,4 +40,15 @@ class RetrofitData {
 		})
 	}
 	fun getDocuments() = _documents
+
+	companion object {
+		private var instance: RetrofitData? = null
+
+		fun getInstance(): RetrofitData {
+			if (instance == null) {
+				instance = RetrofitData()
+			}
+			return instance!!
+		}
+	}
 }
