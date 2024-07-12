@@ -25,7 +25,7 @@ class MapActivity : AppCompatActivity() {
 			}
 
 			override fun onMapError(p0: Exception?) {
-				Log.d("testt", "onMapError: " + p0.toString())
+				Log.e("MapActivity", "onMapError: ${p0?.message}", p0)
 			}
 
 		}, object: KakaoMapReadyCallback() {
