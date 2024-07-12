@@ -1,5 +1,6 @@
 package campus.tech.kakao.map
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
@@ -20,6 +21,13 @@ class MapActivity : AppCompatActivity() {
                 replace<MapViewFragment>(R.id.map_view_fragment_container)
             }
         }
-        // 검색바 부분 구현
+        setupSearchBar()
+    }
+
+    private fun setupSearchBar() {
+        binding.searchBarContainer.setOnClickListener{
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
     }
 }
