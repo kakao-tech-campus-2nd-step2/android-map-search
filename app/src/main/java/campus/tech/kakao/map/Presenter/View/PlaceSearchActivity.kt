@@ -78,8 +78,6 @@ class PlaceSearchActivity : AppCompatActivity() {
 
     private fun setFavoriteAdapter() {
         val adapter = FavoriteAdapter(
-            listOf<Place>(),
-            LayoutInflater.from(this),
             onClickDelete = {
                 viewModel.deleteFromFavorite(it)
             })
@@ -87,6 +85,8 @@ class PlaceSearchActivity : AppCompatActivity() {
         favorite.adapter = adapter
         viewModel.favoritePlace.observe(this) {
             adapter.updateData(it)
+            adapter.submitList(it)
+            favorite.smoothScrollToPosition(maxOf(it.size-1,0))
         }
     }
 
@@ -106,14 +106,12 @@ class PlaceSearchActivity : AppCompatActivity() {
     }
 
     private fun setSearchAdapter() {
-        val adapter = SearchResultAdapter(listOf<Place>(),
-            LayoutInflater.from(this),
             onClickAdd = {
                 viewModel.addFavorite(it)
-                favorite.scrollToPosition((viewModel.favoritePlace.value?.size?.minus(1) ?: 0))
             })
         viewModel.currentResult.observe(this) {
-            adapter.updateData(it)
+            adapter.submitList(it)
+            handleVisibility(it)
         }
         adapter.registerAdapterDataObserver(EmptyPlaceObserver(searchResult, noItem))
         searchResult.adapter = adapter

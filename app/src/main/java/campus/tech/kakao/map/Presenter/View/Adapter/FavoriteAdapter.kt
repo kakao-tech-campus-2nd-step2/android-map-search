@@ -1,24 +1,24 @@
 package campus.tech.kakao.map.Presenter.View.Adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.Domain.Model.Place
 import campus.tech.kakao.map.R
 
 class FavoriteAdapter(
-    private var favorites: List<Place>,
-    private val inflater: LayoutInflater,
     val onClickDelete: (name: String) -> Unit
-) : RecyclerView.Adapter<FavoriteAdapter.ViewHolder>() {
-
+) : ListAdapter<Place, FavoriteAdapter.ViewHolder>(PlaceDiffUtil()) {
     inner class ViewHolder(itemView: View, onClickDelete: (name: String) -> Unit) :
         RecyclerView.ViewHolder(itemView) {
-        var placeName: TextView
-        var deleteFavorite: ImageView
+        private var placeName: TextView
+        private var deleteFavorite: ImageView
 
         init {
             placeName = itemView.findViewById<TextView>(R.id.favoriteName)
@@ -26,30 +26,22 @@ class FavoriteAdapter(
 
             deleteFavorite.setOnClickListener {
                 onClickDelete.invoke(placeName?.text.toString())
-                notifyDataSetChanged()
             }
+        }
+
+        fun bind(place: Place){
+            placeName.text = place.name
         }
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val favorite = favorites[position]
-        holder.placeName.text = favorite.name
+        holder.bind(getItem(position))
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = inflater.inflate(R.layout.favorite_element, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.favorite_element, parent, false)
         return ViewHolder(view, onClickDelete)
     }
-
-    override fun getItemCount(): Int {
-        return favorites.size
-    }
-
-    fun updateData(favoriteList: List<Place>) {
-        this.favorites = favoriteList
-        notifyDataSetChanged()
-    }
-
 
 }
 

@@ -4,22 +4,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.Domain.Model.Place
 import campus.tech.kakao.map.R
 import campus.tech.kakao.map.Domain.Model.PlaceCategory
 
 class SearchResultAdapter(
-    private var places: List<Place>,
-    private val inflater: LayoutInflater,
     val onClickAdd: (name: String) -> Unit
-) : RecyclerView.Adapter<SearchResultAdapter.ViewHolder>() {
+) : ListAdapter<Place, SearchResultAdapter.ViewHolder>(PlaceDiffUtil()) {
 
     class ViewHolder(itemView: View, onClickAdd: (name: String) -> Unit) :
         RecyclerView.ViewHolder(itemView) {
-        var placeName: TextView
-        var placeAddress: TextView
-        var placeCategory: TextView
+        private var placeName: TextView
+        private var placeAddress: TextView
+        private var placeCategory: TextView
 
         init {
             placeName = itemView.findViewById<TextView>(R.id.placeName)
@@ -30,28 +30,23 @@ class SearchResultAdapter(
                 onClickAdd.invoke(placeName.text.toString())
             }
         }
+
+        fun bind(place:Place){
+            placeName.text = place.name
+            placeAddress.text = place.address ?: ""
+            placeCategory.text =
+                PlaceCategory.categoryToString(place.category ?: PlaceCategory.ELSE)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = inflater.inflate(R.layout.place_element, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.place_element, parent, false)
 
         return ViewHolder(view, onClickAdd)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val place = places[position]
-        holder.placeName.text = place.name
-        holder.placeAddress.text = place.address ?: ""
-        holder.placeCategory.text =
-            PlaceCategory.categoryToString(place.category ?: PlaceCategory.ELSE)
+        holder.bind(getItem(position))
     }
 
-    override fun getItemCount(): Int {
-        return places.size
-    }
-
-    fun updateData(placeList: List<Place>) {
-        places = placeList
-        notifyDataSetChanged()
-    }
 }
