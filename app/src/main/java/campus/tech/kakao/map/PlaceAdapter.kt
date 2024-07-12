@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
 
-class PlaceAdapter(var items: List<Place>, val inflater: LayoutInflater, var itemClickListener: OnItemClickListener): RecyclerView.Adapter<PlaceAdapter.PlaceViewHolder>() {
+class PlaceAdapter(var items: List<Document>, val inflater: LayoutInflater, var itemClickListener: OnItemClickListener): RecyclerView.Adapter<PlaceAdapter.PlaceViewHolder>() {
 
     interface OnItemClickListener {
         fun onItemClick(position: Int) {}
@@ -25,21 +25,27 @@ class PlaceAdapter(var items: List<Place>, val inflater: LayoutInflater, var ite
     }
 
     override fun onBindViewHolder(holder: PlaceAdapter.PlaceViewHolder, position: Int) {
-        holder.name.text = items[position].name
-        holder.address.text = items[position].address
-        holder.category.text = items[position].category
+        holder.name.text = items[position].placeName
+        holder.address.text = items[position].addressName
+        holder.category.text = getLastCategory(items[position].categoryName)
     }
 
     override fun getItemCount(): Int {
         return items.size
     }
 
-    fun setData(searchResults: List<Place>) {
+    private fun getLastCategory(input: String): String {
+        val categories = input.split(">")
+        val lastCategory = categories.lastOrNull()?.trim()
+
+        return lastCategory ?: ""
+    }
+    fun setData(searchResults: List<Document>) {
         items = searchResults
         notifyDataSetChanged()
     }
 
-    fun getItem(position: Int): Place {
+    fun getItem(position: Int): Document {
         return items[position]
     }
 
