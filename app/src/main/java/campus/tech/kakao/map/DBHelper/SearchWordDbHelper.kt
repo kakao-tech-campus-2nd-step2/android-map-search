@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import campus.tech.kakao.map.DTO.SearchWord
 import campus.tech.kakao.map.DTO.SearchWordContract
@@ -33,7 +34,7 @@ class SearchWordDbHelper(context: Context): SQLiteOpenHelper(
 		createTable(db)
 	}
 
-	fun getSearchWords(): MutableLiveData<List<SearchWord>> {
+	fun getSearchWords(): LiveData<List<SearchWord>> {
 		return _searchWords
 	}
 
