@@ -99,9 +99,9 @@ class PlaceSearchActivity : AppCompatActivity() {
 
     private fun setEditTextListener() {
         etSearchPlace.addTextChangedListener {
-            CoroutineScope(Dispatchers.IO).launch {
+            Thread {
                 viewModel.searchPlaceRemote(etSearchPlace.text.toString())
-            }
+            }.start()
         }
     }
 
