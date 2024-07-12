@@ -1,6 +1,7 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.map.Model
 
 import android.util.Log
+import campus.tech.kakao.map.view.MainActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

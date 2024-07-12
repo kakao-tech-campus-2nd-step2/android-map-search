@@ -1,4 +1,4 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.map.view
 
 import android.content.Context
 import android.os.Bundle
@@ -12,6 +12,16 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import campus.tech.kakao.map.BuildConfig
+import campus.tech.kakao.map.viewmodel.DataDbHelper
+import campus.tech.kakao.map.viewmodel.LocationAdapter
+import campus.tech.kakao.map.Model.LocationData
+import campus.tech.kakao.map.Model.RetrofitClient
+import campus.tech.kakao.map.Model.Place
+import campus.tech.kakao.map.R
+import campus.tech.kakao.map.Model.SearchCallback
+import campus.tech.kakao.map.Model.SearchResult
+import campus.tech.kakao.map.viewmodel.SearchViewAdapter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import retrofit2.Call
@@ -138,8 +148,8 @@ class MainActivity : AppCompatActivity() {
     }
     private fun searchLocations(key: String) {
         val apiService = RetrofitClient.instance
-        val call: Call<campus.tech.kakao.map.SearchResult> = apiService.searchPlaces(BuildConfig.API_KEY, key)
-        call.enqueue(campus.tech.kakao.map.SearchCallback(this))
+        val call: Call<SearchResult> = apiService.searchPlaces(BuildConfig.API_KEY, key)
+        call.enqueue(SearchCallback(this))
     }
 
     fun updateSearchResults(results: List<Place>) {
