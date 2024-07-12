@@ -149,8 +149,8 @@ class PlaceRepository(context: Context) {
             val cursor = db.rawQuery("SELECT COUNT(*) FROM ${MyPlaceContract.Research.TABLE_NAME}", null)
             try {
                 return if (cursor.moveToFirst()) {
-                    val count = cursor.getIntOrNull(0)
-                    count!! > 0
+                    val count = cursor.getIntOrNull(0) ?: 0
+                    count > 0
                 } else {
                     false
                 }
