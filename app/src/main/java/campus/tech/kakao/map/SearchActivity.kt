@@ -1,6 +1,7 @@
 package campus.tech.kakao.map
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -15,12 +16,11 @@ import campus.tech.kakao.map.viewModel.PlacesViewModel
 import campus.tech.kakao.map.viewModel.PlacesViewModelFactory
 
 class SearchActivity : AppCompatActivity() {
-    private lateinit var repository: MapRepository
     private lateinit var binding: ActivitySearchBinding
     private lateinit var viewModel: PlacesViewModel
     private lateinit var placesAdapter: PlacesAdapter
 
-    private lateinit var searchHistoryList: ArrayList<RecentSearchWord>
+    private lateinit var searchHistoryList: List<RecentSearchWord>
     private lateinit var searchHistoryAdapter: SearchHistoryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,11 +28,11 @@ class SearchActivity : AppCompatActivity() {
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        repository = MapRepository(this)
+        val repository = MapRepository(this)
         val viewModelFactory = PlacesViewModelFactory(repository)
         viewModel = ViewModelProvider(this, viewModelFactory).get(PlacesViewModel::class.java)
 
-        searchHistoryList = repository.searchHistoryList
+        searchHistoryList = viewModel.getSearchHistory()
         setUpSearchHistoryAdapter()
         setUpPlacesAdapter()
         setUpViewModelObservers()
@@ -65,7 +65,7 @@ class SearchActivity : AppCompatActivity() {
     private fun setUpPlacesAdapter() {
         placesAdapter = PlacesAdapter { position: Int ->
             val itemName = placesAdapter.getItemName(position)
-            insertSearch(position, itemName)
+            insertSearch(itemName)
             binding.searchHistory.visibility = View.VISIBLE
         }
         binding.placesRView.adapter = placesAdapter
@@ -79,6 +79,10 @@ class SearchActivity : AppCompatActivity() {
             binding.textView.visibility =
                 if (placesAdapter.itemCount <= 0) View.VISIBLE else View.GONE
         })
+
+        viewModel.searchHistoryData.observe(this, Observer {  searchHistoryData ->
+            searchHistoryList = searchHistoryData
+        })
     }
 
     private fun updateSearchHistoryVisibility() {
@@ -90,25 +94,22 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun moveSearchToLast(foundIdx: Int, itemName: String) {
-        searchHistoryList.removeAt(foundIdx)
-        searchHistoryList.add(RecentSearchWord(itemName))
+        viewModel.moveSearchToLast(foundIdx, itemName)
         searchHistoryAdapter.notifyItemMoved(foundIdx, searchHistoryList.size - 1)
     }
 
-    private fun insertSearch(position: Int, itemName: String) {
-        val foundIdx = searchHistoryContains(itemName)
+    private fun insertSearch(search: String) {
+        val foundIdx = searchHistoryContains(search)
         if (foundIdx != -1) {
-            moveSearchToLast(foundIdx, itemName)
+            moveSearchToLast(foundIdx, search)
         } else {
-            searchHistoryList.add(RecentSearchWord(itemName))
+            viewModel.addSearch(search)
             searchHistoryAdapter.notifyItemInserted(searchHistoryList.size)
         }
-        repository.saveSearchHistory()
     }
 
     private fun delSearch(position: Int) {
-        searchHistoryList.removeAt(position)
+        viewModel.delSearch(position)
         searchHistoryAdapter.notifyItemRemoved(position)
-        repository.saveSearchHistory()
     }
 }

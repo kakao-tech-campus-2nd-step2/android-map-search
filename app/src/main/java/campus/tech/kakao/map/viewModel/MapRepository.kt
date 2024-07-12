@@ -69,6 +69,7 @@ class MapRepository(private val context: Context) {
     }
 
 
+
     /**
      * Local DB 관련
      */
@@ -109,6 +110,7 @@ class MapRepository(private val context: Context) {
     }
 
 
+
     /**
      * Search History 관련
      */
@@ -116,7 +118,23 @@ class MapRepository(private val context: Context) {
         return searchHistoryList
     }
 
-    fun saveSearchHistory() {
+    fun moveSearchToLast(idx: Int, search: String) {
+        searchHistoryList.removeAt(idx)
+        searchHistoryList.add(RecentSearchWord(search))
+        saveSearchHistory()
+    }
+
+    fun addSearchHistory(search: String) {
+        searchHistoryList.add(RecentSearchWord(search))
+        saveSearchHistory()
+    }
+
+    fun delSearchHistory(idx: Int) {
+        searchHistoryList.removeAt(idx)
+        saveSearchHistory()
+    }
+
+    private fun saveSearchHistory() {
         stringPrefs = GsonBuilder().create().toJson(
             searchHistoryList, object : TypeToken<ArrayList<RecentSearchWord>>() {}.type
         )
