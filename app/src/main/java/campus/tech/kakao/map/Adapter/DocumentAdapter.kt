@@ -15,9 +15,7 @@ class DocumentAdapter(
 ): ListAdapter<Document, DocumentAdapter.ViewHolder>(
 	object : DiffUtil.ItemCallback<Document>(){
 		override fun areItemsTheSame(oldItem: Document, newItem: Document): Boolean {
-			return (oldItem.place_name == newItem.place_name)
-					&& (oldItem.address_name == newItem.address_name)
-					&& (oldItem.category_group_name == newItem.category_group_name)
+			return oldItem === newItem
 		}
 
 		override fun areContentsTheSame(oldItem: Document, newItem: Document): Boolean {

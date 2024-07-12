@@ -16,9 +16,7 @@ class WordAdapter(
 ): ListAdapter<SearchWord, WordAdapter.ViewHolder>(
 	object : DiffUtil.ItemCallback<SearchWord>(){
 		override fun areItemsTheSame(oldItem: SearchWord, newItem: SearchWord): Boolean {
-			return (oldItem.name == newItem.name)
-					&& (oldItem.address == newItem.address)
-					&& (oldItem.type == newItem.type)
+			return oldItem === newItem
 		}
 
 		override fun areContentsTheSame(oldItem: SearchWord, newItem: SearchWord): Boolean {
