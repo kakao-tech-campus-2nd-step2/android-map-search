@@ -15,10 +15,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import retrofit2.Call
-import campus.tech.kakao.map.SearchResult
 
 class MainActivity : AppCompatActivity() {
-    private val API_KEY = "KakaoAK 276613de22bf074fb398b9eed102f89b"
 
     private lateinit var db: DataDbHelper
     private lateinit var recyclerView: RecyclerView
@@ -138,10 +136,9 @@ class MainActivity : AppCompatActivity() {
         saveSearchList()
         Log.d("MainActivity", "Item clicked: ${locationData.name}")
     }
-
     private fun searchLocations(key: String) {
         val apiService = RetrofitClient.instance
-        val call: Call<campus.tech.kakao.map.SearchResult> = apiService.searchPlaces(API_KEY, key)
+        val call: Call<campus.tech.kakao.map.SearchResult> = apiService.searchPlaces(BuildConfig.API_KEY, key)
         call.enqueue(campus.tech.kakao.map.SearchCallback(this))
     }
 
