@@ -58,11 +58,6 @@ class PlaceSearchActivity : AppCompatActivity() {
 
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        sqliteDB.close()
-    }
-
     private fun settingSearchRecyclerView() {
         setSearchAdapter()
         searchResult.layoutManager = LinearLayoutManager(this)
