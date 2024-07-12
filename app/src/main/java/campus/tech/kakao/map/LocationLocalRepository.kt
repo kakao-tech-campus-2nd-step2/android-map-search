@@ -1,12 +1,11 @@
 package campus.tech.kakao.map
 
 import android.content.ContentValues
-import android.content.Context
 import android.util.Log
 import campus.tech.kakao.map.Contract.LocationEntry
 import campus.tech.kakao.map.Contract.SavedLocationEntry
 
-class LocationDbAccessor(private val dbHelper : LocationDbHelper) {
+class LocationLocalRepository(private val dbHelper : LocationDbHelper) {
 
     fun insertLocation(title: String, address: String, category: String): Long {
         val db = dbHelper.writableDatabase

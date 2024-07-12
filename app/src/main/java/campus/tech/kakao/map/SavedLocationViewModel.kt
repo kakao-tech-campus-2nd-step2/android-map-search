@@ -1,11 +1,10 @@
 package campus.tech.kakao.map
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class SavedLocationViewModel(private val locationDbAccessor: LocationDbAccessor) : ViewModel() {
+class SavedLocationViewModel(private val locationDbAccessor: LocationLocalRepository) : ViewModel() {
     private val _savedLocation = MutableLiveData<MutableList<SavedLocation>>()
     val savedLocation: LiveData<MutableList<SavedLocation>> get() = _savedLocation
 
