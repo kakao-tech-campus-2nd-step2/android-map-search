@@ -1,10 +1,12 @@
 package campus.tech.kakao.map
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import campus.tech.kakao.map.dto.Place
 
 class ResultRecyclerViewAdapter(
     private var places: List<Place>,
@@ -24,9 +26,9 @@ class ResultRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: PlaceViewHolder, position: Int) {
         val place = places[position]
-        holder.placeName.text = place.name
-        holder.placeCategory.text = place.category
-        holder.placeAddress.text = place.address
+        holder.placeName.text = place.placeName
+        holder.placeCategory.text = place.categoryGroupName
+        holder.placeAddress.text = place.addressName
         holder.itemView.setOnClickListener { onItemClick(place) }
     }
 
