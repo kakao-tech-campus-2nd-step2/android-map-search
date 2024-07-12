@@ -33,7 +33,6 @@ class MapActivity : AppCompatActivity() {
         initMapView()
         initClickListener()
         inputField.isFocusable = true
-        inputField.requestFocus()
     }
 
     private fun initVar(){
