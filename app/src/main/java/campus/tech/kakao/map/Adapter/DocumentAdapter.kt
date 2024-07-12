@@ -11,7 +11,7 @@ import campus.tech.kakao.map.DTO.Document
 import campus.tech.kakao.map.R
 
 class DocumentAdapter(
-	val onItemClicked: (Document) -> Unit
+	val addWord: (Document) -> Unit
 ): ListAdapter<Document, DocumentAdapter.ViewHolder>(
 	object : DiffUtil.ItemCallback<Document>(){
 		override fun areItemsTheSame(oldItem: Document, newItem: Document): Boolean {
@@ -28,7 +28,7 @@ class DocumentAdapter(
 ) {
 	private var placeClicked = { position:Int ->
 		val document: Document = getItem(position)
-		onItemClicked(document)
+		addWord(document)
 	}
 	inner class ViewHolder(
 		itemView: View
