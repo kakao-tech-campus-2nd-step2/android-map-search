@@ -15,8 +15,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.ViewModelFactory.LocationViewModelFactory
 import campus.tech.kakao.map.ViewModelFactory.SavedLocationViewModelFactory
-import com.kakao.sdk.common.util.Utility
-import com.kakao.sdk.v2.common.BuildConfig
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity(), OnItemSelectedListener {
 
@@ -39,10 +42,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val key = getString(R.string.KAKAO_API_KEY)
-        val restApiKey = getString(R.string.KAKAO_REST_API_KEY)
-        Log.d("jieun", "key: " + key)
-        Log.d("jieun", "key: " + restApiKey)
+        getLocationsWithKeyword("부산대")
 
         initViews()
         locationViewModel.insertLocation()
@@ -52,6 +52,41 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         setupViewModels()
         setupRecyclerViews()
     }
+
+    private fun getLocationsWithKeyword(keyword: String) {
+        val kakaoRestApiKey = "KakaoAK " + getString(R.string.KAKAO_REST_API_KEY)
+        Log.d("jieun", "key: " + kakaoRestApiKey)
+
+        val retrofitService = Retrofit.Builder()
+            .baseUrl("https://dapi.kakao.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(KakaoAPI::class.java)
+
+        retrofitService
+            .getSearchKeyword(kakaoRestApiKey, keyword, 15)
+            .enqueue(object : Callback<SearchKeywordResponse> {
+                override fun onResponse(
+                    call: Call<SearchKeywordResponse>,
+                    response: Response<SearchKeywordResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val body = response.body()
+                        if (body != null) {
+                            Log.d("jieun", "성공 " + body)
+                        }
+                    } else {
+                        Log.d("jieun", "response 성공못함 " + call.request().url)
+                    }
+
+                }
+
+                override fun onFailure(call: Call<SearchKeywordResponse>, t: Throwable) {
+                    Log.d("jieun", "error")
+                }
+            })
+    }
+
     private fun initViews() {
         locationDbHelper = LocationDbHelper(this)
         locationDbAccessor = LocationDbAccessor(locationDbHelper)
