@@ -10,7 +10,7 @@ import campus.tech.kakao.map.R
 import campus.tech.kakao.map.model.SavePlace
 
 class SavePlaceAdapter(
-    private val savePlaces: List<SavePlace>,
+    private var savePlaces: List<SavePlace>,
     private val onItemClickListener: (SavePlace) -> Unit
 ) : RecyclerView.Adapter<SavePlaceAdapter.SavePlaceViewHolder>() {
     class SavePlaceViewHolder(
@@ -44,5 +44,10 @@ class SavePlaceAdapter(
 
     override fun getItemCount(): Int {
         return savePlaces.size
+    }
+
+    fun updateData(newSavePlaces: List<SavePlace>) {
+        savePlaces = newSavePlaces
+        notifyDataSetChanged()
     }
 }
