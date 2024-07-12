@@ -4,14 +4,31 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class Repository(context: Context) {
     private val dbHelper = DatabaseHelper.getInstance(context)
     private val db = dbHelper.writableDatabase
-    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("search_prefs", Context.MODE_PRIVATE)
+    private val sharedPreferences = context.getSharedPreferences("search_prefs", Context.MODE_PRIVATE)
+
+    private val kakaoApiService = KakaoApiClient.createService()
+
+    suspend fun search(query: String): List<Keyword> = withContext(Dispatchers.IO) {
+        val response = kakaoApiService.searchPlaces(query).execute()
+        if (response.isSuccessful) {
+            response.body()?.documents?.map {
+                Keyword(it.id.toInt(), it.place_name, it.address_name)
+            } ?: emptyList()
+        } else {
+            emptyList()
+        }
+    }
 
     fun populateInitialData() {
-        val dataCategories = listOf("카페", "약국", "영화관")
+        val dataCategories = listOf("cafe", "pharmacy", "cinema")
 
         db.beginTransaction()
         for (category in dataCategories) {
@@ -34,21 +51,6 @@ class Repository(context: Context) {
         val exists = cursor.count > 0
         cursor.close()
         return exists
-    }
-
-    fun search(query: String): List<Keyword> {
-        val cursor = db.rawQuery("SELECT * FROM ${DatabaseHelper.TABLE_NAME} WHERE ${DatabaseHelper.COLUMN_NAME} LIKE ?", arrayOf("%$query%"))
-        val keywords = mutableListOf<Keyword>()
-        if (cursor.moveToFirst()) {
-            do {
-                val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID))
-                val name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_NAME))
-                val address = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ADDRESS))
-                keywords.add(Keyword(id, name, address))
-            } while (cursor.moveToNext())
-        }
-        cursor.close()
-        return keywords
     }
 
     fun saveKeywordToPrefs(keyword: Keyword) {

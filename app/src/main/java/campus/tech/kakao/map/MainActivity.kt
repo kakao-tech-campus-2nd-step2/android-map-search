@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         val clearButton = binding.clearButton
         val searchResultsRecyclerView = binding.recyclerView
         val savedKeywordsRecyclerView = binding.savedKeywordsRecyclerView
-        val noResultsTextView = binding.noResultsTextView
+        val noResultsTextView: TextView = binding.noResultsTextView
 
         searchResultsRecyclerView.layoutManager = LinearLayoutManager(this)
         savedKeywordsRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -57,6 +58,13 @@ class MainActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val query = s.toString()
+                if (query.isNotEmpty()) {
+                    viewModel.search(query)
+                    noResultsTextView.visibility = View.GONE
+                } else {
+                    searchResultsAdapter.updateData(emptyList())
+                    noResultsTextView.visibility = View.VISIBLE
+                }
                 viewModel.search(query)
                 noResultsTextView.visibility = if (query.isEmpty()) View.VISIBLE else View.GONE
             }
