@@ -15,14 +15,13 @@ class SearchViewModel(private val repository: PlaceRepository) : ViewModel() {
 
     init{
         _currentResult.value = listOf<Place>()
-        _favoritePlace.value = repository.getCurrentFavorite().toMutableList()
+        getFavorite()
     }
-
     fun searchPlace(string: String) {
         _currentResult.value = repository.getSimilarPlacesByName(string)
     }
 
-    suspend fun searchPlaceRemote(name : String){
+    fun searchPlaceRemote(name : String){
         _currentResult.postValue(repository.getPlaceByNameHTTP(name))
     }
 
@@ -35,18 +34,23 @@ class SearchViewModel(private val repository: PlaceRepository) : ViewModel() {
 
         place?.apply {
             repository.addFavorite(this)
-            _favoritePlace.value?.add(this)
+            getFavorite()
         }
     }
 
     fun deleteFromFavorite(name: String) {
         val place = favoritePlace.value?.find { it.name == name }
-        favoritePlace.value?.remove(place)
         repository.deleteFavorite(name)
+        getFavorite()
     }
 
     private fun isPlaceInFavorite(name: String): Boolean {
         return (favoritePlace.value?.find { it.name == name }) != null
     }
+
+    private fun getFavorite(){
+        _favoritePlace.value = repository.getCurrentFavorite().toMutableList()
+    }
+
 
 }
