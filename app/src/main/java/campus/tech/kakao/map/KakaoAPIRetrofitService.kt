@@ -9,7 +9,6 @@ interface KakaoAPIRetrofitService {
     @GET("v2/local/search/keyword.json")
 
     suspend fun getSearchKeyword(
-        @Header("Authorization") key: String,
         @Query("query") query: String
     ): SearchResponse
 }
