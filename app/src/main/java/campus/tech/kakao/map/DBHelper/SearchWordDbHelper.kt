@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import campus.tech.kakao.map.DTO.SearchWord
@@ -62,11 +63,10 @@ class SearchWordDbHelper(context: Context): SQLiteOpenHelper(
 			null,
 			null,
 			"${SearchWordContract.COLUMN_NAME_NAME} DESC"
-		)
-
-		val result = cursor.moveToFirst()
-		cursor.close()
-		return if (result) true else false
+		).use {
+			it.moveToFirst()
+		}
+		return cursor
 	}
 
 	fun deleteWord(word: SearchWord){
@@ -92,19 +92,19 @@ class SearchWordDbHelper(context: Context): SQLiteOpenHelper(
 			null,
 			null,
 			null
-		)
-		while (cursor.moveToNext()) {
-			val name = cursor.getString(
-				cursor.getColumnIndexOrThrow(SearchWordContract.COLUMN_NAME_NAME)
-			)
-			val address = cursor.getString(
-				cursor.getColumnIndexOrThrow(SearchWordContract.COLUMN_NAME_ADDRESS)
-			)
-			val type = cursor.getString(
-				cursor.getColumnIndexOrThrow(SearchWordContract.COLUMN_NAME_TYPE))
-			resultList.add(SearchWord(name, address, type))
+		).use {cursor ->
+			while (cursor.moveToNext()) {
+				val name = cursor.getString(
+					cursor.getColumnIndexOrThrow(SearchWordContract.COLUMN_NAME_NAME)
+				)
+				val address = cursor.getString(
+					cursor.getColumnIndexOrThrow(SearchWordContract.COLUMN_NAME_ADDRESS)
+				)
+				val type = cursor.getString(
+					cursor.getColumnIndexOrThrow(SearchWordContract.COLUMN_NAME_TYPE))
+				resultList.add(SearchWord(name, address, type))
+			}
 		}
-		cursor.close()
 		_searchWords.value = resultList
 	}
 }
