@@ -5,12 +5,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import campus.tech.kakao.map.model.Place
 import campus.tech.kakao.map.R
+import campus.tech.kakao.map.model.Document
 
 class PlaceAdapter(
-    private val items: List<Place>,
-    private val onItemClick: (Place) -> Unit
+    private val items: List<Document>,
+    private val onItemClick: (Document) -> Unit
 ) : RecyclerView.Adapter<PlaceAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -25,8 +25,8 @@ class PlaceAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val place = items[position]
-        holder.nameTextView.text = place.name
-        holder.locationTextView.text = place.location
+        holder.nameTextView.text = place.placeName
+        holder.locationTextView.text = place.addressName
         holder.itemView.setOnClickListener { onItemClick(place) }
     }
 
