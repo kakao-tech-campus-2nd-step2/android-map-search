@@ -19,7 +19,7 @@ interface RetrofitService {
     ): Call<SearchResponse>
 
     companion object {
-        const val BASE = "https://dapi.kakao.com/"
+        const val BASE = BuildConfig.BASE_URL
         private const val KEY = "KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}"
         private const val URL = "/v2/local/search/keyword.json"
         private const val X = 127.06283102249932

@@ -155,7 +155,7 @@ class HttpUrlConnect : RemoteService{
     }
 
     companion object {
-        const val BASE = "https://dapi.kakao.com/"
+        private const val BASE = BuildConfig.BASE_URL
         private const val KEY = "KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}"
         private const val URL = "v2/local/search/keyword.json"
         private const val READ_TIMEOUT = 1000
