@@ -9,19 +9,20 @@ import campus.tech.kakao.map.Domain.PlaceRepository
 class SearchViewModel(private val repository: PlaceRepository) : ViewModel() {
 
     private val _currentResult: MutableLiveData<List<Place>> = MutableLiveData()
-    val currentResult : LiveData<List<Place>> = _currentResult
+    val currentResult: LiveData<List<Place>> = _currentResult
     private val _favoritePlace: MutableLiveData<List<Place>> = MutableLiveData()
-    val favoritePlace : LiveData<List<Place>> = _favoritePlace
+    val favoritePlace: LiveData<List<Place>> = _favoritePlace
 
-    init{
+    init {
         _currentResult.value = listOf<Place>()
         _favoritePlace.value = repository.getCurrentFavorite()
     }
+
     fun searchPlace(string: String) {
         _currentResult.value = repository.getSimilarPlacesByName(string)
     }
 
-    fun searchPlaceRemote(name : String){
+    fun searchPlaceRemote(name: String) {
         _currentResult.postValue(repository.getPlaceByNameHTTP(name))
     }
 
@@ -30,17 +31,17 @@ class SearchViewModel(private val repository: PlaceRepository) : ViewModel() {
             it.name == name
         }
 
-        if(isPlaceInFavorite(name)) return
+        if (isPlaceInFavorite(name)) return
 
         place?.let {
-            repository.addFavorite(it).apply{
+            repository.addFavorite(it).run {
                 _favoritePlace.value = this
             }
         }
     }
 
     fun deleteFromFavorite(name: String) {
-        repository.deleteFavorite(name).apply {
+        repository.deleteFavorite(name).run {
             _favoritePlace.value = this
         }
     }
