@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import campus.tech.kakao.map.presentation.MapActivity
 import campus.tech.kakao.map.presentation.PlaceActivity
 
+
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
