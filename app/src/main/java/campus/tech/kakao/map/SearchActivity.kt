@@ -57,35 +57,27 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        with(binding) {
-            val searchEditText = editSearch
-            val clearButton = clearButton
-            val searchResultsRecyclerView = recyclerView
-            val savedKeywordsRecyclerView = savedKeywordsRecyclerView
-            val noResultsTextView: TextView = noResultsTextView
+        binding.clearButton.setOnClickListener {
+            binding.editSearch.text.clear()
+            searchResultsAdapter.updateData(emptyList())
+            binding.noResultsTextView.visibility = View.VISIBLE
+        }
 
-            clearButton.setOnClickListener {
-                searchEditText.text.clear()
-                searchResultsAdapter.updateData(emptyList())
-                noResultsTextView.visibility = View.VISIBLE
+        binding.editSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val query = s.toString()
+                if (query.isNotEmpty()) {
+                    viewModel.search(query)
+                    binding.noResultsTextView.visibility = View.GONE
+                } else {
+                    searchResultsAdapter.updateData(emptyList())
+                    binding.noResultsTextView.visibility = View.VISIBLE
+                }
             }
 
-            searchEditText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    val query = s.toString()
-                    if (query.isNotEmpty()) {
-                        viewModel.search(query)
-                        noResultsTextView.visibility = View.GONE
-                    } else {
-                        searchResultsAdapter.updateData(emptyList())
-                        noResultsTextView.visibility = View.VISIBLE
-                    }
-                }
-
-                override fun afterTextChanged(s: Editable?) {}
-            })
-        }
+            override fun afterTextChanged(s: Editable?) {}
+        })
     }
 }
