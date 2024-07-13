@@ -10,8 +10,8 @@ class SearchViewModel(private val repository: PlaceRepository) : ViewModel() {
 
     private val _currentResult: MutableLiveData<List<Place>> = MutableLiveData()
     val currentResult : LiveData<List<Place>> = _currentResult
-    private val _favoritePlace: MutableLiveData<MutableList<Place>> = MutableLiveData()
-    val favoritePlace : LiveData<MutableList<Place>> = _favoritePlace
+    private val _favoritePlace: MutableLiveData<List<Place>> = MutableLiveData()
+    val favoritePlace : LiveData<List<Place>> = _favoritePlace
 
     init{
         _currentResult.value = listOf<Place>()
@@ -48,7 +48,7 @@ class SearchViewModel(private val repository: PlaceRepository) : ViewModel() {
     }
 
     private fun getFavorite(){
-        _favoritePlace.value = repository.getCurrentFavorite().toMutableList()
+        _favoritePlace.value = repository.getCurrentFavorite()
     }
 
 
