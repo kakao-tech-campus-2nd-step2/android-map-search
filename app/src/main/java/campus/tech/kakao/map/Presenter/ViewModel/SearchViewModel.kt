@@ -15,7 +15,7 @@ class SearchViewModel(private val repository: PlaceRepository) : ViewModel() {
 
     init{
         _currentResult.value = listOf<Place>()
-        getFavorite()
+        _favoritePlace.value = repository.getCurrentFavorite()
     }
     fun searchPlace(string: String) {
         _currentResult.value = repository.getSimilarPlacesByName(string)
@@ -33,22 +33,20 @@ class SearchViewModel(private val repository: PlaceRepository) : ViewModel() {
         if(isPlaceInFavorite(name)) return
 
         place?.let {
-            repository.addFavorite(it)
-            getFavorite()
+            repository.addFavorite(it).apply{
+                _favoritePlace.value = this
+            }
         }
     }
 
     fun deleteFromFavorite(name: String) {
-        repository.deleteFavorite(name)
-        getFavorite()
+        repository.deleteFavorite(name).apply {
+            _favoritePlace.value = this
+        }
     }
 
     private fun isPlaceInFavorite(name: String): Boolean {
         return (favoritePlace.value?.find { it.name == name }) != null
-    }
-
-    private fun getFavorite(){
-        _favoritePlace.value = repository.getCurrentFavorite()
     }
 
 

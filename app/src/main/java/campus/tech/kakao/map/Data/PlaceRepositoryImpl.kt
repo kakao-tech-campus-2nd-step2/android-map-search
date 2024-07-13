@@ -32,13 +32,14 @@ class PlaceRepositoryImpl(
         return placeDao.getPlaceByName(name)
     }
 
-    override fun addFavorite(place : Place) {
+    override fun addFavorite(place : Place) : List<Place> {
         favoriteDao.addFavorite(place)
+        return getCurrentFavorite()
     }
 
-    override fun deleteFavorite(name: String) {
+    override fun deleteFavorite(name: String) : List<Place>{
         favoriteDao.deleteFavorite(name)
-        getCurrentFavorite()
+        return getCurrentFavorite()
     }
 
     override suspend fun searchPlaceRemote(name: String) : List<Place>{
