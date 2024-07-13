@@ -25,9 +25,7 @@ class PlaceViewModel(private val context: Context) : ViewModel() {
     val places: LiveData<List<Document>> get() = _places
     val savedQueries: LiveData<MutableList<String>> get() = _savedQueries
 
-    init {
-        _savedQueries.value = loadSavedQueries()
-    }
+    init { _savedQueries.value = loadSavedQueries() }
 
     fun loadPlaces(query: String, categoryGroupName: String) {
         searchPlaces(query, categoryGroupName) { places ->
@@ -65,7 +63,7 @@ class PlaceViewModel(private val context: Context) : ViewModel() {
         editor.apply()
     }
 
-    fun searchPlaces(query: String, categoryGroupName: String, callback: (List<Document>) -> Unit) {
+    private fun searchPlaces(query: String, categoryGroupName: String, callback: (List<Document>) -> Unit) {
         retrofit.getPlaces(API_KEY, categoryGroupName, query).enqueue(object :
             Callback<PlaceResponse> {
             override fun onResponse(call: Call<PlaceResponse>, response: Response<PlaceResponse>) {

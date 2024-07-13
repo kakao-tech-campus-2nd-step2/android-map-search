@@ -1,36 +1,54 @@
 package campus.tech.kakao.map.viewmodel
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import campus.tech.kakao.map.R
+import campus.tech.kakao.map.databinding.ItemPlaceBinding
 import campus.tech.kakao.map.model.Document
 
 class PlaceAdapter(
-    private val items: List<Document>,
+    private var items: List<Document>,
     private val onItemClick: (Document) -> Unit
 ) : RecyclerView.Adapter<PlaceAdapter.ViewHolder>() {
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val nameTextView: TextView = view.findViewById(R.id.placeName)
-        val locationTextView: TextView = view.findViewById(R.id.placeLocation)
+    class ViewHolder(private val binding: ItemPlaceBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(document: Document, onItemClick: (Document) -> Unit) {
+            binding.placeName.text = document.placeName
+            binding.placeLocation.text = document.addressName
+            binding.root.setOnClickListener { onItemClick(document) }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_place, parent, false)
-        return ViewHolder(view)
+        val binding = ItemPlaceBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val place = items[position]
-        holder.nameTextView.text = place.placeName
-        holder.locationTextView.text = place.addressName
-        holder.itemView.setOnClickListener { onItemClick(place) }
+        holder.bind(items[position], onItemClick)
     }
 
-    override fun getItemCount(): Int {
-        return items.size
+    override fun getItemCount(): Int = items.size
+
+    fun updateItems(newItems: List<Document>) {
+        val diffResult = DiffUtil.calculateDiff(PlaceDiffCallback(items, newItems))
+        items = newItems
+        diffResult.dispatchUpdatesTo(this)
+    }
+
+    class PlaceDiffCallback(
+        private val oldList: List<Document>,
+        private val newList: List<Document>
+    ) : DiffUtil.Callback() {
+        override fun getOldListSize(): Int = oldList.size
+        override fun getNewListSize(): Int = newList.size
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition].id == newList[newItemPosition].id
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition] == newList[newItemPosition]
+        }
     }
 }
