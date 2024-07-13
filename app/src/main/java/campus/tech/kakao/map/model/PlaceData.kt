@@ -1,5 +1,6 @@
 package campus.tech.kakao.map.model
 
+
 data class SearchResponse(
     val documents: List<PlaceDocument>,
 )

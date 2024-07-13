@@ -17,6 +17,7 @@ import retrofit2.Callback
 import retrofit2.Call
 import retrofit2.Response
 
+
 class SearchRepository(context: Context) {
     private val dbHelper = DatabaseHelper(context)
 
@@ -161,8 +162,7 @@ class SearchRepository(context: Context) {
         fetchPage(1) // 첫 페이지 요청 시작
     }
 
-        /*
-    suspend fun searchPlaces(keyword: String): List<PlaceData> {
+    suspend fun searchPlacesForDB(keyword: String): List<PlaceData> {
         return withContext(Dispatchers.IO) {
             val db = dbHelper.readableDatabase
             val cursor = db.query(
@@ -190,6 +190,4 @@ class SearchRepository(context: Context) {
             places
         }
     }
-
-         */
 }

@@ -4,6 +4,7 @@
     package="campus.tech.kakao.map">
 
 
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application

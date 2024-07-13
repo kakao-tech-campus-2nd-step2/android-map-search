@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+
 import campus.tech.kakao.map.api.KakaoLocalApiService
 import campus.tech.kakao.map.api.RetrofitInstance
 import campus.tech.kakao.map.model.PlaceData
@@ -18,6 +19,7 @@ import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+
 
 class SearchViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -82,6 +84,7 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
             Log.d("SearchViewModel", "Places searched with keyword: $keyword, results: $places")
         }
     }
+
 
     fun onClearButtonClicked() {
         searchKeyword.value = ""
