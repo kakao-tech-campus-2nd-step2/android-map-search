@@ -1,12 +1,9 @@
 package campus.tech.kakao.map.Data.Datasource.Remote
 
-import android.util.Log
 import campus.tech.kakao.map.BuildConfig
 import campus.tech.kakao.map.Data.Datasource.Remote.Response.Document
 import campus.tech.kakao.map.Data.Datasource.Remote.Response.Meta
-import campus.tech.kakao.map.Data.Datasource.Remote.Response.SameName
 import campus.tech.kakao.map.Data.Datasource.Remote.Response.SearchResponse
-import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.BufferedWriter
@@ -30,7 +27,7 @@ class HttpUrlConnect : RemoteService{
 
         response?.apply {
             result.addAll(this.documents)
-            val pageCount : Int = this.meta.pageable_count ?: 0
+            val pageCount : Int = this.meta.pageableCount ?: 0
 
             if (pageCount > MAX_PAGE) {
                 val threads = mutableListOf<Thread>()

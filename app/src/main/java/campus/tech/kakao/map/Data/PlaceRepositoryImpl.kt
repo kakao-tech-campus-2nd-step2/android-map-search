@@ -2,7 +2,6 @@ package campus.tech.kakao.map.Data
 
 import campus.tech.kakao.map.Data.Datasource.Local.Dao.FavoriteDao
 import campus.tech.kakao.map.Data.Datasource.Local.Dao.PlaceDao
-import campus.tech.kakao.map.Data.Datasource.Remote.HttpUrlConnect
 import campus.tech.kakao.map.Data.Datasource.Remote.RemoteService
 import campus.tech.kakao.map.Data.Datasource.Remote.Response.Document
 import campus.tech.kakao.map.Data.Datasource.Remote.RetrofitService
@@ -80,7 +79,7 @@ class PlaceRepositoryImpl(
 
         when (req.code()) {
             200 -> return minOf(
-                MAX_PAGE, req.body()?.meta?.pageable_count ?: 1
+                MAX_PAGE, req.body()?.meta?.pageableCount ?: 1
             )
 
             else -> return 0
