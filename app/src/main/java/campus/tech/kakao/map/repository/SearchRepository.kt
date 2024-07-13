@@ -2,13 +2,21 @@ package campus.tech.kakao.map.repository
 
 import android.content.ContentValues
 import android.content.Context
+import android.util.Log
+import campus.tech.kakao.map.api.RetrofitInstance
 import campus.tech.kakao.map.model.DatabaseHelper
 import campus.tech.kakao.map.model.Place
 import campus.tech.kakao.map.model.PlaceData
 import campus.tech.kakao.map.model.Search
+import campus.tech.kakao.map.model.SearchResponse
 import campus.tech.kakao.map.model.SearchResult
+import campus.tech.kakao.map.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import retrofit2.Callback
+import retrofit2.Call
+import retrofit2.Response
+
 
 class SearchRepository(context: Context) {
     private val dbHelper = DatabaseHelper(context)
@@ -115,7 +123,46 @@ class SearchRepository(context: Context) {
         }
     }
 
-    suspend fun searchPlaces(keyword: String): List<PlaceData> {
+    fun searchPlaces(keyword: String, callback: (List<PlaceData>) -> Unit) {
+        val apiKey = "KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}"
+        val maxPages = 3
+        val pageSize = 15
+
+        val allPlaces = mutableListOf<PlaceData>()
+        val apiService = RetrofitInstance.apiService
+
+        fun fetchPage(page: Int) {
+            apiService.searchPlaces(apiKey, keyword, page, pageSize).enqueue(object : Callback<SearchResponse> {
+                override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
+                    if (response.isSuccessful) {
+                        val places = response.body()?.documents?.map {
+                            PlaceData(it.id, it.place_name, it.address_name, it.category_group_name)
+                        } ?: emptyList()
+
+                        allPlaces.addAll(places)
+
+                        if (page < maxPages && places.isNotEmpty()) {
+                            fetchPage(page + 1) // 다음 페이지 요청
+                        } else {
+                            callback(allPlaces)
+                        }
+                    } else {
+                        Log.e("SearchRepository", "API call failed: ${response.errorBody()?.string()}")
+                        callback(allPlaces)
+                    }
+                }
+
+                override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
+                    Log.e("SearchRepository", "API call failed: ${t.message}")
+                    callback(allPlaces)
+                }
+            })
+        }
+
+        fetchPage(1) // 첫 페이지 요청 시작
+    }
+
+    suspend fun searchPlacesForDB(keyword: String): List<PlaceData> {
         return withContext(Dispatchers.IO) {
             val db = dbHelper.readableDatabase
             val cursor = db.query(

@@ -6,6 +6,12 @@ plugins {
     id("org.jetbrains.kotlin.kapt") version "1.9.0" apply false
 }
 
+subprojects {
+    ext {
+        set("KAKAO_REST_API_KEY", rootProject.findProperty("KAKAO_REST_API_KEY") as String)
+    }
+}
+
 allprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 }
