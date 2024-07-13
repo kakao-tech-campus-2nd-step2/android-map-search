@@ -32,8 +32,8 @@ class SearchViewModel(private val repository: PlaceRepository) : ViewModel() {
 
         if(isPlaceInFavorite(name)) return
 
-        place?.apply {
-            repository.addFavorite(this)
+        place?.let {
+            repository.addFavorite(it)
             getFavorite()
         }
     }
