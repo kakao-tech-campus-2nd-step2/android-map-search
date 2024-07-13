@@ -39,7 +39,6 @@ class SearchViewModel(private val repository: PlaceRepository) : ViewModel() {
     }
 
     fun deleteFromFavorite(name: String) {
-        val place = favoritePlace.value?.find { it.name == name }
         repository.deleteFavorite(name)
         getFavorite()
     }
