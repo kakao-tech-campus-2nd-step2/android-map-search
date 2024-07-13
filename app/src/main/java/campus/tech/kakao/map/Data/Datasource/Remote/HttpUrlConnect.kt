@@ -83,8 +83,8 @@ class HttpUrlConnect : RemoteService{
                     val line = br.readLine() ?: break
 
                     val jsonObject = JSONObject(line)
-                    val meta = parseMeta(jsonObject.getJSONObject("meta"))
-                    val document = parseDocument(jsonObject.getJSONArray("documents"))
+                    val meta = Meta.fromJSON(jsonObject.getJSONObject("meta"))
+                    val document = Document.fromJSON(jsonObject.getJSONArray("documents"))
 
                     return SearchResponse(document,meta)
                 }
@@ -95,63 +95,6 @@ class HttpUrlConnect : RemoteService{
             }
         }
         return null
-    }
-
-    private fun parseMeta(metaJsonObject : JSONObject) : Meta{
-        val sameName = parseSameName(
-            metaJsonObject.getJSONObject("same_name")
-        )
-
-        return Meta(
-            metaJsonObject.get("is_end") as Boolean,
-            metaJsonObject.get("pageable_count") as Int,
-            sameName,
-            metaJsonObject.get("total_count") as Int
-        )
-    }
-
-    private fun parseDocument(documentJsonArray : JSONArray) : List<Document>{
-        val result = mutableListOf<Document>()
-        for (i in 0..<documentJsonArray.length()) {
-            val documentJson = documentJsonArray.getJSONObject(i)
-            result.add(
-                Document(
-                    documentJson.get("address_name").toString(),
-                    documentJson.get("category_group_code").toString(),
-                    documentJson.get("category_group_name").toString(),
-                    documentJson.get("category_name").toString(),
-                    documentJson.get("distance").toString(),
-                    documentJson.get("id").toString(),
-                    documentJson.get("phone").toString(),
-                    documentJson.get("place_name").toString(),
-                    documentJson.get("place_url").toString(),
-                    documentJson.get("road_address_name").toString(),
-                    documentJson.get("x").toString(),
-                    documentJson.get("y").toString()
-                )
-            )
-        }
-        return result
-    }
-
-    private fun parseSameName(sameNameJsonObject : JSONObject) : SameName{
-        val regionJsonArray = sameNameJsonObject.getJSONArray("region")
-        return SameName(
-            sameNameJsonObject.get("keyword").toString(),
-            parseRegion(regionJsonArray),
-            sameNameJsonObject.get("selected_region").toString()
-        )
-    }
-
-    private fun parseRegion(regionJsonArray : JSONArray) : List<String>{
-        val region = mutableListOf<String>()
-        for(i in 0..<regionJsonArray.length()){
-            val regionJson = regionJsonArray.getJSONObject(i)
-            region.add(
-                regionJson.toString()
-            )
-        }
-        return region
     }
 
     companion object {
