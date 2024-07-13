@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     }   //onCreate
-
+    
     override fun onResume() {
         super.onResume()
         mapView?.resume()
@@ -59,5 +59,6 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         mapView?.pause()
     }
-
+    
 }
+
