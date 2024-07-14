@@ -34,6 +34,7 @@ class PlaceResultRecyclerViewAdapter(
         val item = placeList[position]
         holder.placeName.text = item.name
         holder.placeLocation.text = item.location
-        holder.placeCategory.text = item.category
+
+        holder.placeCategory.text = if (item.category.isNotEmpty()) item.category else "장소"
     }
 }
