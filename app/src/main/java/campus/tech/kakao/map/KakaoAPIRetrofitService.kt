@@ -8,8 +8,7 @@ import retrofit2.http.Query
 interface KakaoAPIRetrofitService {
     @GET("v2/local/search/keyword.json")
 
-    fun getSearchKeyword(
-        @Header("Authorization") key: String,
+    suspend fun getSearchKeyword(
         @Query("query") query: String
-    ): Call<SearchResponse>
+    ): SearchResponse
 }

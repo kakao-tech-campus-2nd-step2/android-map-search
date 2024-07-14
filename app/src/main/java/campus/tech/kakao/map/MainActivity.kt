@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.databinding.ActivityMainBinding
 import android.util.Log
+import com.kakao.sdk.common.util.Utility
 
 class MainActivity : AppCompatActivity() {
 
