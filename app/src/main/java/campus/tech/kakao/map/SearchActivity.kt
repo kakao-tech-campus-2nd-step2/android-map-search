@@ -12,6 +12,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import campus.tech.kakao.map.databinding.ActivitySearchBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SearchActivity : AppCompatActivity() {
     private val viewModel: SearchViewModel by viewModels {
@@ -19,7 +24,8 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private val placeAdapter: PlaceAdapter by lazy {
-        PlaceAdapter(viewModel.locationList.value ?: emptyList(),
+        PlaceAdapter(
+            emptyList(),
             LayoutInflater.from(this@SearchActivity),
             object :
                 PlaceAdapter.OnItemClickListener {
@@ -34,7 +40,7 @@ class SearchActivity : AppCompatActivity() {
 
     private val historyAdapter: HistoryAdapter by lazy {
         HistoryAdapter(
-            viewModel.searchHistoryList.value ?: emptyList(),
+            emptyList(),
             LayoutInflater.from(this@SearchActivity),
             object : HistoryAdapter.OnItemClickListener {
                 override fun onItemClick(position: Int) {
@@ -80,8 +86,9 @@ class SearchActivity : AppCompatActivity() {
 
     private fun setupSearchEditText(mainBinding: ActivitySearchBinding) {
         val searchEditText = mainBinding.search
-        val handler = Handler(Looper.getMainLooper())
-        val delayMillis = 800L
+        val timeMillis = 300L
+        val debounce = debounce<String>(timeMillis, CoroutineScope(Dispatchers.Main)) { query ->
+            viewModel.getPlace(query) }
 
         searchEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -90,11 +97,7 @@ class SearchActivity : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {
                 val searchText = s.toString().trim()
-
-                handler.removeCallbacksAndMessages(null)
-                handler.postDelayed({
-                    viewModel.getPlace(searchText)
-                }, delayMillis)
+                debounce(searchText)
             }
         })
     }
@@ -109,5 +112,20 @@ class SearchActivity : AppCompatActivity() {
             placeAdapter.setData(it)
             mainBinding.emptyMainText.visibility = if (it.isNullOrEmpty()) View.VISIBLE else View.GONE
         })
+    }
+
+    private fun <T> debounce(
+        timeMillis: Long = 500L,
+        coroutineScope: CoroutineScope,
+        block: (T) -> Unit
+    ): (T) -> Unit {
+        var debounceJob: Job? = null
+        return {
+            debounceJob?.cancel()
+            debounceJob = coroutineScope.launch {
+                delay(timeMillis)
+                block(it)
+            }
+        }
     }
 }

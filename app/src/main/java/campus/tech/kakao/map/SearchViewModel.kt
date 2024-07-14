@@ -1,9 +1,14 @@
 package campus.tech.kakao.map
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SearchViewModel(context: Context) : ViewModel() {
     private val dbHelper: DBHelper = DBHelper(context)
@@ -82,7 +87,10 @@ class SearchViewModel(context: Context) : ViewModel() {
         getSearchHistoryList()
     }
 
-    fun getPlace(query: String): LiveData<List<Document>> {
-        return repository.getPlace(query)
+    fun getPlace(query: String) {
+        repository.getPlace(query) { places ->
+            _locationList.postValue(places)
+            Log.d("결과", "" + _locationList.value)
+        }
     }
 }
