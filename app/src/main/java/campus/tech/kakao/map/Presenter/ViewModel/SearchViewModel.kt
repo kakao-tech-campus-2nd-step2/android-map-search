@@ -9,21 +9,21 @@ import campus.tech.kakao.map.Domain.PlaceRepository
 class SearchViewModel(private val repository: PlaceRepository) : ViewModel() {
 
     private val _currentResult: MutableLiveData<List<Place>> = MutableLiveData()
-    val currentResult : LiveData<List<Place>> = _currentResult
-    private val _favoritePlace: MutableLiveData<MutableList<Place>> = MutableLiveData()
-    val favoritePlace : LiveData<MutableList<Place>> = _favoritePlace
+    val currentResult: LiveData<List<Place>> = _currentResult
+    private val _favoritePlace: MutableLiveData<List<Place>> = MutableLiveData()
+    val favoritePlace: LiveData<List<Place>> = _favoritePlace
 
-    init{
+    init {
         _currentResult.value = listOf<Place>()
-        _favoritePlace.value = repository.getCurrentFavorite().toMutableList()
+        _favoritePlace.value = repository.getCurrentFavorite()
     }
 
     fun searchPlace(string: String) {
         _currentResult.value = repository.getSimilarPlacesByName(string)
     }
 
-    suspend fun searchPlaceRemote(name : String){
-        _currentResult.postValue(repository.searchPlaceRemote(name))
+    fun searchPlaceRemote(name: String) {
+        _currentResult.postValue(repository.getPlaceByNameHTTP(name))
     }
 
     fun addFavorite(name: String) {
@@ -31,22 +31,24 @@ class SearchViewModel(private val repository: PlaceRepository) : ViewModel() {
             it.name == name
         }
 
-        if(isPlaceInFavorite(name)) return
+        if (isPlaceInFavorite(name)) return
 
-        place?.apply {
-            repository.addFavorite(this)
-            _favoritePlace.value?.add(this)
+        place?.let {
+            repository.addFavorite(it).run {
+                _favoritePlace.value = this
+            }
         }
     }
 
     fun deleteFromFavorite(name: String) {
-        val place = favoritePlace.value?.find { it.name == name }
-        favoritePlace.value?.remove(place)
-        repository.deleteFavorite(name)
+        repository.deleteFavorite(name).run {
+            _favoritePlace.value = this
+        }
     }
 
     private fun isPlaceInFavorite(name: String): Boolean {
         return (favoritePlace.value?.find { it.name == name }) != null
     }
+
 
 }

@@ -2,6 +2,7 @@ package campus.tech.kakao.map.Data
 
 import campus.tech.kakao.map.Data.Datasource.Local.Dao.FavoriteDao
 import campus.tech.kakao.map.Data.Datasource.Local.Dao.PlaceDao
+import campus.tech.kakao.map.Data.Datasource.Remote.RemoteService
 import campus.tech.kakao.map.Data.Datasource.Remote.Response.Document
 import campus.tech.kakao.map.Data.Datasource.Remote.RetrofitService
 import campus.tech.kakao.map.Data.Mapper.EntityToModelMapper
@@ -14,7 +15,8 @@ class PlaceRepositoryImpl(
     private val placeDao: PlaceDao,
     private val favoriteDao: FavoriteDao,
     private val retrofitService: RetrofitService,
-    private val docToPlaceMapper: EntityToModelMapper<Document, Place>
+    private val docToPlaceMapper: EntityToModelMapper<Document, Place>,
+    private val httpUrlConnect: RemoteService
 ) : PlaceRepository {
 
     override fun getCurrentFavorite() : List<Place>{
@@ -29,17 +31,26 @@ class PlaceRepositoryImpl(
         return placeDao.getPlaceByName(name)
     }
 
-    override fun addFavorite(place : Place) {
+    override fun addFavorite(place : Place) : List<Place> {
         favoriteDao.addFavorite(place)
+        return getCurrentFavorite()
     }
 
-    override fun deleteFavorite(name: String) {
+    override fun deleteFavorite(name: String) : List<Place>{
         favoriteDao.deleteFavorite(name)
-        getCurrentFavorite()
+        return getCurrentFavorite()
     }
 
     override suspend fun searchPlaceRemote(name: String) : List<Place>{
         return getPlaceByNameRemote(name)
+    }
+
+    override fun getPlaceByNameHTTP(name : String) : List<Place>{
+        val places = mutableListOf<Place>()
+        httpUrlConnect.getPlaceResponse(name).forEach{
+            places.add(docToPlaceMapper.map(it))
+        }
+        return places
     }
 
     private suspend fun getPlaceByNameRemote(name: String): List<Place> =
@@ -68,7 +79,7 @@ class PlaceRepositoryImpl(
 
         when (req.code()) {
             200 -> return minOf(
-                MAX_PAGE, req.body()?.meta?.pageable_count ?: 1
+                MAX_PAGE, req.body()?.meta?.pageableCount ?: 1
             )
 
             else -> return 0

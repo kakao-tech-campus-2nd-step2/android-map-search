@@ -11,16 +11,20 @@ interface RetrofitService {
     @GET(URL)
     fun requestProducts(
         @Header("authorization") auth: String = KEY,
-        @Query("x") x : Double = 127.06283102249932,
-        @Query("y") y : Double = 37.514322572335935,
-        @Query("radius") radius : Int = 20000,
+        @Query("x") x : Double = X,
+        @Query("y") y : Double = Y,
+        @Query("radius") radius : Int = RADIUS,
         @Query("query",encoded = true) query: String = "",
-        @Query("page") page: Int = 1
+        @Query("page") page: Int = CURRENT_PAGE
     ): Call<SearchResponse>
 
     companion object {
-        const val BASE = "https://dapi.kakao.com/"
+        const val BASE = BuildConfig.BASE_URL
         private const val KEY = "KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}"
         private const val URL = "/v2/local/search/keyword.json"
+        private const val X = 127.06283102249932
+        private const val Y = 37.514322572335935
+        private const val RADIUS = 20000
+        private const val CURRENT_PAGE = 1
     }
 }

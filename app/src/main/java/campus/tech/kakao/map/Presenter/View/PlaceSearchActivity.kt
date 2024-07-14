@@ -1,7 +1,8 @@
 package campus.tech.kakao.map.Presenter.View
 
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout.VERTICAL
@@ -13,17 +14,14 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.Data.Datasource.Local.SqliteDB
-import campus.tech.kakao.map.Domain.Model.Place
 import campus.tech.kakao.map.R
 import campus.tech.kakao.map.Base.ViewModelFactory
+import campus.tech.kakao.map.Domain.Model.Place
 import campus.tech.kakao.map.MyApplication
 import campus.tech.kakao.map.Presenter.View.Adapter.FavoriteAdapter
 import campus.tech.kakao.map.Presenter.View.Adapter.SearchResultAdapter
 import campus.tech.kakao.map.Presenter.View.Observer.EmptyPlaceObserver
 import campus.tech.kakao.map.ViewModel.SearchViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class PlaceSearchActivity : AppCompatActivity() {
     private lateinit var viewModel: SearchViewModel
@@ -58,11 +56,6 @@ class PlaceSearchActivity : AppCompatActivity() {
 
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        sqliteDB.close()
-    }
-
     private fun settingSearchRecyclerView() {
         setSearchAdapter()
         searchResult.layoutManager = LinearLayoutManager(this)
@@ -78,15 +71,14 @@ class PlaceSearchActivity : AppCompatActivity() {
 
     private fun setFavoriteAdapter() {
         val adapter = FavoriteAdapter(
-            listOf<Place>(),
-            LayoutInflater.from(this),
             onClickDelete = {
                 viewModel.deleteFromFavorite(it)
             })
 
         favorite.adapter = adapter
         viewModel.favoritePlace.observe(this) {
-            adapter.updateData(it)
+            adapter.submitList(it)
+            favorite.smoothScrollToPosition(maxOf(it.size-1,0))
         }
     }
 
@@ -99,24 +91,32 @@ class PlaceSearchActivity : AppCompatActivity() {
 
     private fun setEditTextListener() {
         etSearchPlace.addTextChangedListener {
-            CoroutineScope(Dispatchers.IO).launch {
+            Thread {
                 viewModel.searchPlaceRemote(etSearchPlace.text.toString())
-            }
+            }.start()
         }
     }
 
     private fun setSearchAdapter() {
-        val adapter = SearchResultAdapter(listOf<Place>(),
-            LayoutInflater.from(this),
+        val adapter = SearchResultAdapter(
             onClickAdd = {
                 viewModel.addFavorite(it)
-                favorite.scrollToPosition((viewModel.favoritePlace.value?.size?.minus(1) ?: 0))
             })
         viewModel.currentResult.observe(this) {
-            adapter.updateData(it)
+            adapter.submitList(it)
+            handleVisibility(it)
         }
-        adapter.registerAdapterDataObserver(EmptyPlaceObserver(searchResult, noItem))
         searchResult.adapter = adapter
+    }
+
+    private fun handleVisibility(places : List<Place>){
+        if(places.isEmpty()){
+            searchResult.visibility = GONE
+            noItem.visibility = VISIBLE
+        } else {
+            searchResult.visibility = VISIBLE
+            noItem.visibility = GONE
+        }
     }
 
 }

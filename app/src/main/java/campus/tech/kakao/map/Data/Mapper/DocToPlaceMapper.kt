@@ -6,9 +6,9 @@ import campus.tech.kakao.map.Domain.Model.PlaceCategory
 
 class DocToPlaceMapper : EntityToModelMapper<Document, Place> {
     override fun map(document: Document): Place = Place(
-            document.place_name,
-            document.address_name,
-            groupCodeToPlaceCategory(document.category_group_code)
+            document.placeName,
+            document.addressName,
+            groupCodeToPlaceCategory(document.categoryGroupCode)
     )
 
     private fun groupCodeToPlaceCategory(code : String) : PlaceCategory {
