@@ -11,7 +11,7 @@ class MapDbHelper(mContext: Context) :
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL(SQL_CREATE_ENTRIES)
         db?.execSQL(SQL_CREATE_ENTRIES_HISTORY)
-        initializeDb(db)
+//        initializeDb(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -36,25 +36,32 @@ class MapDbHelper(mContext: Context) :
         }
     }
 
+    fun clearDb(db: SQLiteDatabase?) {
+        db?.execSQL(SQL_DELETE_ENTRIES)
+        db?.execSQL(SQL_CREATE_ENTRIES)
+    }
+
     companion object {
         const val DATABASE_NAME = "map.db"
         const val DATABASE_VERSION = 1
 
-        private const val SQL_CREATE_ENTRIES =
-            "CREATE TABLE ${MapContract.MapEntry.TABLE_NAME} (" +
-                    "${BaseColumns._ID} INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "${MapContract.MapEntry.COLUMN_NAME_NAME} TEXT," +
-                    "${MapContract.MapEntry.COLUMN_NAME_CATEGORY} TEXT," +
-                    "${MapContract.MapEntry.COLUMN_NAME_ADDRESS} TEXT" +
-                    ");"
+        private const val SQL_CREATE_ENTRIES = """
+            CREATE TABLE ${MapContract.MapEntry.TABLE_NAME} (
+            ${BaseColumns._ID} INTEGER PRIMARY KEY AUTOINCREMENT,
+            ${MapContract.MapEntry.COLUMN_NAME_NAME} TEXT,
+            ${MapContract.MapEntry.COLUMN_NAME_CATEGORY} TEXT,
+            ${MapContract.MapEntry.COLUMN_NAME_ADDRESS} TEXT); 
+            """
+
         private const val SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS ${MapContract.MapEntry.TABLE_NAME}"
 
-        private const val SQL_CREATE_ENTRIES_HISTORY =
-            "CREATE TABLE ${MapContract.MapEntry.TABLE_NAME_HISTORY} (" +
-                    "${BaseColumns._ID} INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "${MapContract.MapEntry.COLUMN_NAME_NAME} TEXT" +
-                    ");"
+        private const val SQL_CREATE_ENTRIES_HISTORY = """
+            CREATE TABLE ${MapContract.MapEntry.TABLE_NAME_HISTORY} (
+            ${BaseColumns._ID} INTEGER PRIMARY KEY AUTOINCREMENT,
+            ${MapContract.MapEntry.COLUMN_NAME_NAME} TEXT);
+            """
+
         private const val SQL_DELETE_ENTRIES_HISTORY =
             "DROP TABLE IF EXISTS ${MapContract.MapEntry.TABLE_NAME_HISTORY}"
     }
