@@ -1,99 +1,62 @@
 package campus.tech.kakao.map
 
+import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.LinearLayoutManager
 import campus.tech.kakao.map.databinding.ActivityMainBinding
-import kotlinx.coroutines.launch
+import com.kakao.vectormap.KakaoMap
+import com.kakao.vectormap.KakaoMapReadyCallback
+import com.kakao.vectormap.KakaoMapSdk
+import com.kakao.vectormap.MapLifeCycleCallback
+import com.kakao.vectormap.MapView
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var viewModel: SearchViewModel
+    lateinit var mapView: MapView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val searchRepository = SearchRepository()
-        val savedSearchKeywordRepository = SavedSearchKeywordRepository(this)
-        val viewModelProviderFactory =
-            SearchViewModelFactory(searchRepository, savedSearchKeywordRepository)
-        viewModel =
-            ViewModelProvider(this, viewModelProviderFactory)[SearchViewModel::class.java]
-
-        addDelSearchKeywordListener()
-        addDetectSearchWindowChangedListener()
-        getSavedSearchKeyword()
+        gotoSearchWindowBtnListener()
+        displayKakaoMap()
     }
 
-    private fun addDelSearchKeywordListener() {
-        binding.delSearchKeyword.setOnClickListener {
-            binding.searchWindow.text = null
+    override fun onResume() {
+        super.onResume()
+        mapView.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView.pause()
+    }
+
+    fun gotoSearchWindowBtnListener(){
+        binding.gotoSearchWindow.setOnClickListener {
+            val intent = Intent(this, SearchWindowActivity::class.java)
+            startActivity(intent)
         }
     }
 
-    private fun addDetectSearchWindowChangedListener() {
-        binding.searchWindow.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+    fun displayKakaoMap(){
+        KakaoMapSdk.init(this, BuildConfig.KAKAO_API_KEY)
+        mapView = binding.mapView
+        mapView.start(object: MapLifeCycleCallback() {
+            override fun onMapDestroy() {
 
             }
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val searchKeyWord = SearchKeyword(s.toString())
-                viewModel.getSearchResults(searchKeyWord)
-            }
+            override fun onMapError(p0: Exception?) {
 
-            override fun afterTextChanged(s: Editable?) {
+            }
+        }, object: KakaoMapReadyCallback() {
+            override fun onMapReady(kakaoMap: KakaoMap) {
 
             }
         })
-
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.searchResults.collect {
-                    if (it.isEmpty()) {
-                        showView(binding.emptySearchResults, true)
-                        showView(binding.searchResultsList, false)
-                    } else {
-                        showView(binding.emptySearchResults, false)
-                        showView(binding.searchResultsList, true)
-                        binding.searchResultsList.adapter =
-                            SearchResultsAdapter(it, layoutInflater, viewModel::saveSearchKeyword)
-                        binding.searchResultsList.layoutManager =
-                            LinearLayoutManager(this@MainActivity)
-                    }
-                }
-            }
-        }
-    }
-
-    private fun getSavedSearchKeyword() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.savedSearchKeywords.collect {
-                    binding.savedSearchKeywordsList.adapter =
-                        SavedSearchKeywordsAdapter(it, layoutInflater, viewModel::delSavedSearchKeyword)
-                    binding.savedSearchKeywordsList.layoutManager = LinearLayoutManager(
-                        this@MainActivity,
-                        LinearLayoutManager.HORIZONTAL,
-                        false
-                    )
-                }
-            }
-        }
-    }
-
-    private fun showView(view: View, isShow: Boolean) {
-        view.visibility = if (isShow) View.VISIBLE else View.GONE
     }
 }
+
