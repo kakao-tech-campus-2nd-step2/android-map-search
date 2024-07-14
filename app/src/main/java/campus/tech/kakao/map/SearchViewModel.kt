@@ -88,9 +88,11 @@ class SearchViewModel(context: Context) : ViewModel() {
     }
 
     fun getPlace(query: String) {
-        repository.getPlace(query) { places ->
+        viewModelScope.launch {
+            val places = withContext(Dispatchers.IO) {
+                repository.getPlace(query)
+            }
             _locationList.postValue(places)
-            Log.d("결과", "" + _locationList.value)
         }
     }
 }
