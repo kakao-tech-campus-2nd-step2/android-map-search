@@ -73,4 +73,3 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1
         return profiles
     }
 }
-

@@ -1,5 +1,6 @@
 package campus.tech.kakao.map
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -144,6 +145,7 @@ class MainActivity : AppCompatActivity() {
             addSavedItem(name)
         }
     }
+    
     fun addSavedItem(name: String) {
         val savedView = LayoutInflater.from(this)
             .inflate(R.layout.search_save, llSave, false) as ConstraintLayout
