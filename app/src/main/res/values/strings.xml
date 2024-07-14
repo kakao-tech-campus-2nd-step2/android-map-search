@@ -8,4 +8,5 @@
     <string name="placeCategory">카테고리</string>
     <string name="saveplace">장소</string>
     <string name="deleteSavePlace">검색기록삭제</string>
+    <string name="search_btn">검색 버튼</string>
 </resources>
