@@ -9,4 +9,8 @@
     <string name="place_name">place name</string>
     <string name="place_address">place address</string>
     <string name="category">category</string>
+    <string name="searchImage">검색어 돋보기 이미지</string>
+    <string name="onMapDestroyLog">지도 API 정상 종료</string>
+    <string name="onMapErrorLog">지도 API 인증 실패</string>
+    <string name="onMapReadyLog">지도 API 정상 실행</string>
 </resources>
