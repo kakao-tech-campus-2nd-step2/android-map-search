@@ -9,11 +9,11 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class RetrofitRepository {
-    fun getPlace(query: String): LiveData<List<Document>> {
-        val locationListLiveData = MutableLiveData<List<Document>>()
+    fun getPlace(query: String): List<Document> {
+        var locationListLiveData: List<Document> = emptyList()
 
         if (query.isEmpty()) {
-            locationListLiveData.value = emptyList()
+            locationListLiveData = emptyList()
         } else {
             retrofitService.getPlaces(
                 "KakaoAK " + BuildConfig.KAKAO_REST_API_KEY,
@@ -27,20 +27,20 @@ class RetrofitRepository {
                     if (response.isSuccessful) {
                         val body = response.body()
                         if (body != null) {
-                            locationListLiveData.postValue(body.documents)
+                            locationListLiveData = body.documents
                             Log.d("성공", "" + body.documents)
                         } else {
-                            locationListLiveData.postValue(emptyList())
+                            locationListLiveData = emptyList()
                         }
                     } else {
                         Log.d("태그", response.code().toString())
-                        locationListLiveData.postValue(emptyList())
+                        locationListLiveData = emptyList()
                     }
                 }
 
                 override fun onFailure(call: Call<Location>, t: Throwable) {
                     Log.d("error", "" + t)
-                    locationListLiveData.postValue(emptyList())
+                    locationListLiveData = emptyList()
                 }
             })
         }
