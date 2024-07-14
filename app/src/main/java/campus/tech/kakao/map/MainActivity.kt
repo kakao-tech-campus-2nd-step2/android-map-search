@@ -25,10 +25,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         Log.d("MainActivity", "onCreate called")
 
-        //키 해시 값 로그로 출력
-        val keyHash = Utility.getKeyHash(this)
-        Log.d("KeyHash:", keyHash)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         Log.d("MainActivity", "View binding initialized")
