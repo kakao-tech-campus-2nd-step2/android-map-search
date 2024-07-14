@@ -17,15 +17,17 @@ class SavedSearchAdapter(private var items : List<SavedSearch> , private val onC
         val name: TextView = view.findViewById(R.id.saved_search_name)
 
         fun bind(item: SavedSearch) {
-            itemView.setOnClickListener {
+            close.setOnClickListener {
+                it.playSoundEffect(android.view.SoundEffectConstants.CLICK) //클릭 시 소리
+                it.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY)  //가벼운 진동
                 onCloseClick(item)
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SavedSearchAdapter.ViewHolder {
-        val view: View =
-            LayoutInflater.from(parent?.context).inflate(R.layout.item_saved_search, parent, false)
+        val view: View = LayoutInflater.from(parent?.context).inflate(R.layout.item_saved_search, parent, false)
+
         return SavedSearchAdapter.ViewHolder(view, onCloseClick)
     }
 

@@ -18,6 +18,7 @@ class PlaceAdapter(private var items : List<Place>, private val onItemClick : (P
 
         fun bind(item: Place) {
             itemView.setOnClickListener {
+                it.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY)  //진동
                 onItemClick(item)
             }
         }
