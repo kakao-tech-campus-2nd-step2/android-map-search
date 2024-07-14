@@ -15,7 +15,7 @@ import campus.tech.kakao.map.R
 class FavoriteAdapter(
     val onClickDelete: (name: String) -> Unit
 ) : ListAdapter<Place, FavoriteAdapter.ViewHolder>(PlaceDiffUtil()) {
-    inner class ViewHolder(itemView: View, onClickDelete: (name: String) -> Unit) :
+    class ViewHolder(itemView: View, onClickDelete: (name: String) -> Unit) :
         RecyclerView.ViewHolder(itemView) {
         private var placeName: TextView
         private var deleteFavorite: ImageView
