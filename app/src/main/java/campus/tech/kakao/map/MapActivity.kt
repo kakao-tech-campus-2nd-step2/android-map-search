@@ -36,15 +36,6 @@ class MapActivity : AppCompatActivity() {
 
     // 지도의 LifeCycle 관련 이벤트 수신
     private val lifeCycleCallback: MapLifeCycleCallback = object : MapLifeCycleCallback() {
-        override fun onMapResumed() {
-            super.onMapResumed()
-            mapView.resume()
-        }
-
-        override fun onMapPaused() {
-            super.onMapPaused()
-            mapView.pause()
-        }
 
         override fun onMapDestroy() {
             Toast.makeText(
@@ -71,5 +62,15 @@ class MapActivity : AppCompatActivity() {
             val searchIntent = Intent(this, PlaceActivity::class.java)
             startActivity(searchIntent)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mapView.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView.pause()
     }
 }

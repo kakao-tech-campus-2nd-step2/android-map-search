@@ -103,9 +103,9 @@ class PlaceActivity : AppCompatActivity() {
                     places?.let {
                         for (placeInfo in places) {
                             val place = PlaceDataModel(
-                                name = placeInfo.place_name,
-                                category = placeInfo.category_group_name,
-                                address = placeInfo.address_name
+                                name = placeInfo.placeName,
+                                category = placeInfo.categoryGroupName,
+                                address = placeInfo.addressName
                             )
                             addPlaceList(categoryList, place)
                         }
