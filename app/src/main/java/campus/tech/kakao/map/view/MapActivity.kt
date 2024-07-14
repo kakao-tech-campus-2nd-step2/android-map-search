@@ -2,6 +2,7 @@ package campus.tech.kakao.map.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import campus.tech.kakao.map.R
@@ -27,7 +28,9 @@ class MapActivity : AppCompatActivity() {
         mapView.start(
             object : MapLifeCycleCallback() {
                 override fun onMapDestroy() {}
-                override fun onMapError(error: Exception) {}
+                override fun onMapError(error: Exception) {
+                    Log.e("MapError", "${error.message}", error)
+                }
             },
             object : KakaoMapReadyCallback() {
                 override fun onMapReady(kakaoMap: KakaoMap) {
@@ -35,6 +38,8 @@ class MapActivity : AppCompatActivity() {
                     val mapCenter = LatLng.from(37.566, 126.978)  // 서울시청 좌표
                     kakaoMap.moveCamera(CameraUpdateFactory.newCenterPosition(mapCenter))
                     kakaoMap.moveCamera(CameraUpdateFactory.zoomTo(15))
+
+
                 }
             }
         )
@@ -47,12 +52,20 @@ class MapActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        mapView.resume()
+        if (::mapView.isInitialized && mapView != null) {
+            try {
+                mapView.resume()
+            } catch (e: Exception) {
+                Log.e("MapError", "Error resuming map: ${e.message}", e)
+            }
+        }
     }
 
     override fun onPause() {
         super.onPause()
-        mapView.pause()
+        if (::mapView.isInitialized) {
+            mapView.pause()
+        }
     }
 
 }
