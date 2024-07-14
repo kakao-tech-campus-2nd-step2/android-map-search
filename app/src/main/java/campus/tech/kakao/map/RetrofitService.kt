@@ -9,7 +9,7 @@ import retrofit2.http.Query
 interface RetrofitService {
 	@GET("keyword.json")
 	fun requestPlaces(
-		@Header("Authorization") Authorization: String,
+		@Header("Authorization") authorization: String,
 		@Query("query") query: String
 	): Call<PlaceResponse>
 }
