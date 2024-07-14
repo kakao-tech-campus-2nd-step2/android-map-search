@@ -41,7 +41,6 @@ class MainActivity : AppCompatActivity(), SearchResultAdapter.OnItemClickListene
         rvKeywords.adapter = keywordAdapter
 
         mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
-        mapViewModel.insertData()
 
         etKeywords.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
