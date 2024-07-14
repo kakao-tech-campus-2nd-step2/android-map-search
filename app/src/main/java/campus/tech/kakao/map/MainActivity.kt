@@ -47,11 +47,10 @@ class MainActivity : AppCompatActivity() {
 
             override fun onMapError(error: Exception) {
 
-                Log.d("실패", "${error}")
             }
         }, object : KakaoMapReadyCallback() {
             override fun onMapReady(kakaoMap: KakaoMap) {
-                Log.d("굿.", "실행")
+
             }
 
             override fun isVisible(): Boolean {
