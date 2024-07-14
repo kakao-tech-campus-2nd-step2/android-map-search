@@ -22,8 +22,9 @@ object CategoryGroupCodes {
         CategoryGroupCode("PM9", "약국")
     )
 
+    val categoryMap = categories.associateBy({ it.name }, { it.code })
+
     fun getCodeByName(name: String): String? {
-        val category = categories.find { it.name == name }
-        return category?.code
+        return categoryMap[name]
     }
 }
