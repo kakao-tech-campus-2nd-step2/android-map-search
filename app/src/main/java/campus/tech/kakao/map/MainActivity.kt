@@ -1,123 +1,58 @@
 package campus.tech.kakao.map
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
-import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import campus.tech.kakao.map.model.RecentSearchWord
 import campus.tech.kakao.map.databinding.ActivityMainBinding
-import campus.tech.kakao.map.viewModel.MapRepository
-import campus.tech.kakao.map.viewModel.PlacesViewModel
-import campus.tech.kakao.map.viewModel.PlacesViewModelFactory
-import com.kakao.sdk.common.KakaoSdk
-import com.kakao.vectormap.KakaoMapSdk
+import com.kakao.vectormap.KakaoMap
+import com.kakao.vectormap.KakaoMapReadyCallback
+import com.kakao.vectormap.MapLifeCycleCallback
+import java.lang.Exception
+
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var repository: MapRepository
     private lateinit var binding: ActivityMainBinding
-    private lateinit var viewModel: PlacesViewModel
-    private lateinit var placesAdapter: PlacesAdapter
-
-    private lateinit var searchHistoryList: ArrayList<RecentSearchWord>
-    private lateinit var searchHistoryAdapter: SearchHistoryAdapter
+    private lateinit var kakaoMap: KakaoMap
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val key = getString(R.string.kakao_api_key)
-        val restKey = BuildConfig.KAKAO_REST_API_KEY
-        KakaoSdk.init(this, key)
-        KakaoMapSdk.init(this, restKey)
+        binding.mapView.start(object : MapLifeCycleCallback() {
+            override fun onMapDestroy() {
+                Log.d("KakaoMap", "카카오맵 종료")
+            }
 
-        repository = MapRepository(this)
-        val viewModelFactory = PlacesViewModelFactory(repository)
-        viewModel = ViewModelProvider(this, viewModelFactory).get(PlacesViewModel::class.java)
-
-        searchHistoryList = repository.searchHistoryList
-
-        setUpSearchHistoryAdapter()
-        setUpPlacesAdapter()
-        setUpViewModelObservers()
-
-        binding.searchInput.addTextChangedListener { text ->
-            viewModel.searchPlaces(text.toString())
-        }
-
-        binding.deleteInput.setOnClickListener {
-            binding.searchInput.text.clear()
-        }
-
-        updateSearchHistoryVisibility()
-    }
-
-    private fun setUpSearchHistoryAdapter() {
-        searchHistoryAdapter = SearchHistoryAdapter(
-            searchHistoryList,
-            onDeleteClick = { position: Int ->
-                delSearch(position)
-                updateSearchHistoryVisibility()
-            },
-            onTextClick = { position: Int ->
-                val itemName = searchHistoryAdapter.getItemName(position)
-                binding.searchInput.setText(itemName)
-            })
-        binding.searchHistory.adapter = searchHistoryAdapter
-    }
-
-    private fun setUpPlacesAdapter() {
-        placesAdapter = PlacesAdapter { position: Int ->
-            val itemName = placesAdapter.getItemName(position)
-            insertSearch(position, itemName)
-            binding.searchHistory.visibility = View.VISIBLE
-        }
-        binding.placesRView.adapter = placesAdapter
-        binding.placesRView.layoutManager = LinearLayoutManager(this)
-    }
-
-    private fun setUpViewModelObservers() {
-        viewModel.places.observe(this, Observer { places ->
-            placesAdapter.updateList(places)
-            placesAdapter.notifyDataSetChanged()
-            binding.textView.visibility =
-                if (placesAdapter.itemCount <= 0) View.VISIBLE else View.GONE
+            override fun onMapError(e: Exception?) {
+                Log.e("KakaoMap", "카카오맵 인증실패", e)
+            }
+        }, object : KakaoMapReadyCallback() {
+            override fun onMapReady(p0: KakaoMap) {
+                Log.d("KakaoMap", "카카오맵 실행")
+                kakaoMap = p0
+            }
         })
-    }
 
-    private fun updateSearchHistoryVisibility() {
-        binding.searchHistory.isVisible = searchHistoryList.isNotEmpty()
-    }
-
-    private fun searchHistoryContains(itemName: String): Int {
-        return searchHistoryList.indexOfFirst { it.word == itemName }
-    }
-
-    private fun moveSearchToLast(foundIdx: Int, itemName: String) {
-        searchHistoryList.removeAt(foundIdx)
-        searchHistoryList.add(RecentSearchWord(itemName))
-        searchHistoryAdapter.notifyItemMoved(foundIdx, searchHistoryList.size - 1)
-    }
-
-    private fun insertSearch(position: Int, itemName: String) {
-        val foundIdx = searchHistoryContains(itemName)
-        if (foundIdx != -1) {
-            moveSearchToLast(foundIdx, itemName)
-        } else {
-            searchHistoryList.add(RecentSearchWord(itemName))
-            searchHistoryAdapter.notifyItemInserted(searchHistoryList.size)
+        binding.searchInput.setOnClickListener {
+            val intent = Intent(this, SearchActivity::class.java)
+            startActivity(intent)
         }
-        repository.saveSearchHistory()
+
+        binding.searchButton.setOnClickListener {
+            val intent = Intent(this, SearchActivity::class.java)
+            startActivity(intent)
+        }
     }
 
-    private fun delSearch(position: Int) {
-        searchHistoryList.removeAt(position)
-        searchHistoryAdapter.notifyItemRemoved(position)
-        repository.saveSearchHistory()
+    override fun onResume() {
+        super.onResume()
+        binding.mapView.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.mapView.pause()
     }
 }

@@ -41,7 +41,7 @@ class MapRepository(private val context: Context) {
      * 카카오 REST API 관련
      */
     fun searchPlaces(search: String) {
-        if (search == "") {
+        if (search.isEmpty()) {
             _places.value = mutableListOf()
             return
         }
@@ -99,13 +99,14 @@ class MapRepository(private val context: Context) {
     }
 
     fun searchDBPlaces(search: String) {
-            val allPlaces = getAllLocalPlaces()
-            val filtered = if (search.isEmpty()) {
-                emptyList()
-            } else {
-                allPlaces.filter { it.name.contains(search, ignoreCase = true) }
-            }
-            _places.postValue(filtered)
+        val allPlaces = getAllLocalPlaces()
+        val filtered = if (search.isEmpty()) {
+            emptyList()
+        } else {
+            allPlaces.filter { it.name.contains(search, ignoreCase = true) }
+        }
+        Log.d("Thread", "${Thread.currentThread().name}")   // main 스레드
+        _places.value = filtered
     }
 
 
@@ -117,7 +118,23 @@ class MapRepository(private val context: Context) {
         return searchHistoryList
     }
 
-    fun saveSearchHistory() {
+    fun moveSearchToLast(idx: Int, search: String) {
+        searchHistoryList.removeAt(idx)
+        searchHistoryList.add(RecentSearchWord(search))
+        saveSearchHistory()
+    }
+
+    fun addSearchHistory(search: String) {
+        searchHistoryList.add(RecentSearchWord(search))
+        saveSearchHistory()
+    }
+
+    fun delSearchHistory(idx: Int) {
+        searchHistoryList.removeAt(idx)
+        saveSearchHistory()
+    }
+
+    private fun saveSearchHistory() {
         stringPrefs = GsonBuilder().create().toJson(
             searchHistoryList, object : TypeToken<ArrayList<RecentSearchWord>>() {}.type
         )
