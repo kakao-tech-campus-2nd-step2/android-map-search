@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         setUpMapView(mapView)
 
-        mainViewBinding.searchButton.setOnClickListener {
+        mainViewBinding.search.setOnClickListener {
             val intent = Intent(this@MainActivity,SearchActivity::class.java)
             startActivity(intent)
         }
