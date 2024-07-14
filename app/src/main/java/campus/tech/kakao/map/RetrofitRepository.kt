@@ -1,8 +1,6 @@
 package campus.tech.kakao.map
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import campus.tech.kakao.map.RetrofitInstance.retrofitService
 import retrofit2.Call
 import retrofit2.Callback
@@ -10,10 +8,10 @@ import retrofit2.Response
 
 class RetrofitRepository {
     fun getPlace(query: String): List<Document> {
-        var locationListLiveData: List<Document> = emptyList()
+        var locationList: List<Document> = emptyList()
 
         if (query.isEmpty()) {
-            locationListLiveData = emptyList()
+            locationList = emptyList()
         } else {
             retrofitService.getPlaces(
                 "KakaoAK " + BuildConfig.KAKAO_REST_API_KEY,
@@ -27,23 +25,23 @@ class RetrofitRepository {
                     if (response.isSuccessful) {
                         val body = response.body()
                         if (body != null) {
-                            locationListLiveData = body.documents
+                            locationList = body.documents
                             Log.d("성공", "" + body.documents)
                         } else {
-                            locationListLiveData = emptyList()
+                            locationList = emptyList()
                         }
                     } else {
                         Log.d("태그", response.code().toString())
-                        locationListLiveData = emptyList()
+                        locationList = emptyList()
                     }
                 }
 
                 override fun onFailure(call: Call<Location>, t: Throwable) {
                     Log.d("error", "" + t)
-                    locationListLiveData = emptyList()
+                    locationList = emptyList()
                 }
             })
         }
-        return locationListLiveData
+        return locationList
     }
 }
