@@ -31,7 +31,7 @@ class PlaceRepository (val dbHelper: PlaceDBHelper){
     }
 
     fun writePlace(place: Place){
-        dbHelper.insertPlaceData(place.name, place.location, place.category)
+        dbHelper.insertPlaceData(place.name, place.location ?: "", place.category ?: "")
     }
 
     fun getPlaceWithCategory(category : String): List<Place>{

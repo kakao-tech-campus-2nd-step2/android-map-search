@@ -8,6 +8,6 @@ data class ResultSearch(
 
 data class Place(
     @SerializedName("place_name") val name : String,
-    @SerializedName("road_address_name") val location : String,
-    @SerializedName("category_group_name") val category : String
+    @SerializedName("road_address_name") val location : String?,
+    @SerializedName("category_group_name") val category : String?
 )
