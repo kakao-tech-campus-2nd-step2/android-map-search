@@ -32,7 +32,7 @@ class Map_Activity : AppCompatActivity() {
         searchView = findViewById(R.id.search_text)
         mapView = MapView(this)
         mapView.start(
-            object : MapLifeCycleCallback {
+            object : MapLifeCycleCallback() {
                 override fun onMapDestroy() {
                     // 지도 API가 정상적으로 종료될 때 호출됨
                 }
@@ -41,7 +41,7 @@ class Map_Activity : AppCompatActivity() {
                     // 인증 실패 및 지도 사용 중 에러가 발생할 때 호출됨
                 }
             },
-            object : KakaoMapReadyCallback {
+            object : KakaoMapReadyCallback() {
                 override fun onMapReady(kakaoMap: KakaoMap) {
                     // 인증 후 API가 정상적으로 실행될 때 호출됨
                 }
