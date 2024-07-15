@@ -48,4 +48,13 @@ class MapActivity : AppCompatActivity() {
             startMainActivityForResult.launch(intent)
         }
     }
+    override fun onResume() {
+        super.onResume()
+        mapView.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView.pause()
+    }
 }

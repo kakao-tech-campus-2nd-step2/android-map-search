@@ -11,20 +11,17 @@ import android.widget.EditText
 import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.kakao.sdk.common.util.Utility
 import org.json.JSONArray
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
-    companion object {
-        const val API_KEY = "KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}"
-    }
 
     lateinit var adapter: Adapter
     lateinit var tvNoResult: TextView
@@ -59,14 +56,15 @@ class MainActivity : AppCompatActivity() {
                 val search = s.toString()
                 if (search.isEmpty()) {
                     showNoResults()
-                }
-                CategoryGroupCode.categoryMap[search]?.let {
-                    categoryCode -> searchCategory(categoryCode)
+                } else {
+                    CategoryGroupCode.categoryMap[search]?.let { categoryCode ->
+                        searchCategory(categoryCode)
+                    }
                 }
             }
         })
 
-        adapter.setOnItemClickListener(object :Adapter.OnItemClickListener {
+        adapter.setOnItemClickListener(object : Adapter.OnItemClickListener {
             override fun onItemClick(name: String) {
                 if (isProfileInSearchSave(name)) {
                     removeSavedItem(name)
@@ -75,29 +73,26 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        btnClose.setOnClickListener{
+        btnClose.setOnClickListener {
             etSearch.text.clear()
         }
         loadSavedItems()
     }
 
     fun searchCategory(categoryGroupCode: String) {
-        val retrofitService = Retrofit.Builder()
-            .baseUrl("https://dapi.kakao.com")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val api = retrofitService.create(RetrofitService::class.java)
-//        val x = "127"
-//        val y = "37"
-//        val radius = 2000
-
-        api.getSearchCategory(API_KEY, categoryGroupCode).enqueue(object : Callback<KakaoResponse> {
+        Network.searchCategory(categoryGroupCode, object : Callback<KakaoResponse> {
             override fun onResponse(call: Call<KakaoResponse>, response: Response<KakaoResponse>) {
-                searchProfiles(response.body())
+                if (response.isSuccessful) {
+                    searchProfiles(response.body())
+                } else {
+                    Toast.makeText(applicationContext, "응답 실패", Toast.LENGTH_SHORT).show()
+                    Log.e("MainActivity", "응답 실패")
+                }
             }
 
             override fun onFailure(call: Call<KakaoResponse>, t: Throwable) {
-                Log.e("MainActivity", "요청실패")
+                Toast.makeText(applicationContext, "요청 실패: ${t.message}", Toast.LENGTH_SHORT).show()
+                Log.e("MainActivity", "요청 실패", t)
             }
         })
     }
@@ -108,13 +103,14 @@ class MainActivity : AppCompatActivity() {
                 showNoResults()
             } else {
                 val profiles = documents.map { document ->
-                    Profile(document.place_name, document.road_address_name, document.category_group_name)
+                    Profile(document.name, document.address, document.type)
                 }
                 adapter.updateProfiles(profiles)
                 tvNoResult.visibility = View.GONE
             }
         } ?: showNoResults()
     }
+
     fun showNoResults() {
         tvNoResult.visibility = View.VISIBLE
         adapter.updateProfiles(emptyList())
