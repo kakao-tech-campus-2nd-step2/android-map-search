@@ -50,22 +50,5 @@ class MapActivity : AppCompatActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (::mapView.isInitialized && mapView != null) {
-            try {
-                mapView.resume()
-            } catch (e: Exception) {
-                Log.e("MapError", "Error resuming map: ${e.message}", e)
-            }
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        if (::mapView.isInitialized) {
-            mapView.pause()
-        }
-    }
 
 }
