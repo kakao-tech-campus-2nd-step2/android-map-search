@@ -11,7 +11,6 @@ import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
 
-
 class MapActivity : AppCompatActivity() {
 
     private lateinit var mapView: MapView

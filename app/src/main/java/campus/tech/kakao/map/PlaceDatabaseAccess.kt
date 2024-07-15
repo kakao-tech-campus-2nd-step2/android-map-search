@@ -22,11 +22,6 @@ class PlaceDatabaseAccess(context: Context, databaseName: String) {
         db.delete(PlaceContract.Place.TABLE_NAME, "${PlaceContract.Place.COLUMN_NAME} = ?", arrayOf(name))
     }
 
-    fun deleteAllPlaces() {
-        val db = dbHelper.writableDatabase
-        db.delete(PlaceContract.Place.TABLE_NAME, null, null)
-    }
-
     fun getAllPlace(): MutableList<PlaceDataModel> {
         val db = dbHelper.readableDatabase
         val cursor: Cursor = db.rawQuery("SELECT * FROM ${PlaceContract.Place.TABLE_NAME}", null)
@@ -43,54 +38,4 @@ class PlaceDatabaseAccess(context: Context, databaseName: String) {
         cursor.close()
         return dataList
     }
-
-    fun searchPlaceName(keyword: String): MutableList<PlaceDataModel> {
-        if (keyword.isBlank()) {
-            return mutableListOf()
-        }
-
-        val db = dbHelper.readableDatabase
-        val cursor: Cursor = db.rawQuery(
-            "SELECT * FROM ${PlaceContract.Place.TABLE_NAME} WHERE ${PlaceContract.Place.COLUMN_NAME} LIKE ?",
-            arrayOf("$keyword%")
-        )
-        val dataList = mutableListOf<PlaceDataModel>()
-
-        if (cursor.moveToFirst()) {
-            do {
-                val name = cursor.getString(cursor.getColumnIndexOrThrow(PlaceContract.Place.COLUMN_NAME))
-                val address = cursor.getString(cursor.getColumnIndexOrThrow(PlaceContract.Place.COLUMN_ADDRESS))
-                val category = cursor.getString(cursor.getColumnIndexOrThrow(PlaceContract.Place.COLUMN_CATEGORY))
-                dataList.add(PlaceDataModel(name, address, category))
-            } while (cursor.moveToNext())
-        }
-        cursor.close()
-        return dataList
-    }
-
-    fun searchPlaceCategory(keyword: String): MutableList<PlaceDataModel> {
-        if (keyword.isBlank()) {
-            return mutableListOf()
-        }
-
-        val db = dbHelper.readableDatabase
-        val cursor: Cursor = db.rawQuery(
-            "SELECT * FROM ${PlaceContract.Place.TABLE_NAME} WHERE ${PlaceContract.Place.COLUMN_CATEGORY} LIKE ?",
-            arrayOf("$keyword%")
-        )
-        val dataList = mutableListOf<PlaceDataModel>()
-
-        if (cursor.moveToFirst()) {
-            do {
-                val name = cursor.getString(cursor.getColumnIndexOrThrow(PlaceContract.Place.COLUMN_NAME))
-                val address = cursor.getString(cursor.getColumnIndexOrThrow(PlaceContract.Place.COLUMN_ADDRESS))
-                val category = cursor.getString(cursor.getColumnIndexOrThrow(PlaceContract.Place.COLUMN_CATEGORY))
-                dataList.add(PlaceDataModel(name, address, category))
-            } while (cursor.moveToNext())
-        }
-        cursor.close()
-        return dataList
-    }
-
-
 }

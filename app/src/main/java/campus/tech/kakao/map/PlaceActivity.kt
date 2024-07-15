@@ -11,11 +11,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class PlaceActivity : AppCompatActivity() {
 
@@ -26,11 +21,9 @@ class PlaceActivity : AppCompatActivity() {
     private lateinit var rvSearchList: RecyclerView
     private lateinit var placeAdapter: PlaceRecyclerViewAdapter
     private lateinit var searchAdapter: SearchRecyclerViewAdapter
-    private val placeDatabaseAccess = PlaceDatabaseAccess(this, "Place.db")
     private val searchDatabaseAccess = PlaceDatabaseAccess(this, "Search.db")
 
-    private lateinit var retrofit: Retrofit
-    private lateinit var retrofitLocalService: RetrofitLocalService
+    private lateinit var placeRepository: PlaceRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,16 +35,10 @@ class PlaceActivity : AppCompatActivity() {
         rvPlaceList = findViewById<RecyclerView>(R.id.rvPlaceList)
         rvSearchList = findViewById<RecyclerView>(R.id.rvSearchList)
 
-        val placeList: MutableList<PlaceDataModel> = placeDatabaseAccess.getAllPlace()
         val searchList: MutableList<PlaceDataModel> = searchDatabaseAccess.getAllPlace()
-        var keywordList: MutableList<PlaceDataModel> = mutableListOf()
+        val keywordList: MutableList<PlaceDataModel> = mutableListOf()
 
-        // Retrofit 객체
-        retrofit = Retrofit.Builder()
-            .baseUrl(getString(R.string.BASE_URL))
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        retrofitLocalService = retrofit.create(RetrofitLocalService::class.java)
+        placeRepository = PlaceRepository()
 
         // Search 어댑터
         searchAdapter = searchRecyclerViewAdapter(searchList)
@@ -79,7 +66,6 @@ class PlaceActivity : AppCompatActivity() {
                 val category = s.toString()
                 if (category.isNotEmpty()) {
                     searchPlace(category)
-                    Log.d("success", "onTextChanged")
                 }
                 else {
                     keywordList.clear()
@@ -94,53 +80,15 @@ class PlaceActivity : AppCompatActivity() {
     }
 
     private fun searchPlace(categoryName: String) {
-        val call = retrofitLocalService.searchPlaceByCategory("KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}", CategoryGroupCodes.getCodeByName(categoryName) ?: "")
-        call.enqueue(object : Callback<SearchResult> {
-            override fun onResponse(call: Call<SearchResult>, response: Response<SearchResult>) {
-                if (response.isSuccessful) {
-                    var categoryList: MutableList<PlaceDataModel> = mutableListOf()
-                    val places = response.body()?.documents
-                    places?.let {
-                        for (placeInfo in places) {
-                            val place = PlaceDataModel(
-                                name = placeInfo.placeName,
-                                category = placeInfo.categoryGroupName,
-                                address = placeInfo.addressName
-                            )
-                            addPlaceList(categoryList, place)
-                        }
-                    }
-                    placeAdapter.updateData(categoryList)
-                    controlPlaceVisibility(categoryList)
-                    Log.d("API response", "Success: $places")
-                }
-                else {
-                    val errorBody = response.errorBody()?.string()
-                    Log.d("API response", "Error response: $errorBody")
-                }
-            }
-
-            override fun onFailure(call: Call<SearchResult>, throwable: Throwable) {
+        placeRepository.searchPlace(categoryName,
+            onSuccess = { categoryList ->
+                placeAdapter.updateData(categoryList)
+                controlPlaceVisibility(categoryList)
+            },
+            onFailure = { throwable ->
                 Log.w("API response", "Failure: $throwable")
             }
-        })
-    }
-
-
-    private fun includeKeywordList(s: CharSequence?, placeList: MutableList<PlaceDataModel>): MutableList<PlaceDataModel> {
-        var keywordList = placeList
-        val keyword = s.toString()
-        keywordList = placeDatabaseAccess.searchPlaceName(keyword)
-        placeAdapter.updateData(keywordList)
-        return keywordList
-    }
-
-    private fun includeCategoryList(s: CharSequence?, placeList: MutableList<PlaceDataModel>): MutableList<PlaceDataModel> {
-        var keywordList = placeList
-        val keyword = s.toString()
-        keywordList = placeDatabaseAccess.searchPlaceCategory(keyword)
-        placeAdapter.updateData(keywordList)
-        return keywordList
+        )
     }
 
     private fun placeRecyclerViewAdapter(placeList: MutableList<PlaceDataModel>, searchList: MutableList<PlaceDataModel>) =
@@ -172,13 +120,7 @@ class PlaceActivity : AppCompatActivity() {
         searchAdapter.notifyDataSetChanged()
     }
 
-    // 장소 목록 조작
-    private fun addPlaceList(placeList: MutableList<PlaceDataModel>, place: PlaceDataModel) {
-        placeList.add(place)
-        placeDatabaseAccess.insertPlace(place)
-        placeAdapter.notifyDataSetChanged()
-    }
-
+    // visibility 조작
     private fun controlPlaceVisibility(placeList: List<PlaceDataModel>) {
         if (placeList.isEmpty()) {
             rvPlaceList.visibility = View.INVISIBLE

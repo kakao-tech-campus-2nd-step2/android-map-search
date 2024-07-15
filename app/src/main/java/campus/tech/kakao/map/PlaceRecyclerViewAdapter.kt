@@ -42,7 +42,7 @@ class PlaceRecyclerViewAdapter(
         holder.placeCategory.text = place.category
     }
 
-    fun updateData(newPlace: MutableList<PlaceDataModel>) {
+    fun updateData(newPlace: List<PlaceDataModel>) {
         places.clear()
         places.addAll(newPlace)
     }
