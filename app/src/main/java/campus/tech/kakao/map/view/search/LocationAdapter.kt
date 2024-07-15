@@ -27,12 +27,12 @@ class LocationAdapter(
         itemSelectedListener: OnItemSelectedListener
     ) : RecyclerView.ViewHolder(itemView) {
         val titleTextView: TextView by lazy { itemView.findViewById(R.id.titleTextView) }
-        val addressTextView: TextView by lazy { itemView.findViewById(R.id.titleTextView) }
-        val categoryTextView: TextView by lazy { itemView.findViewById(R.id.titleTextView) }
+        val addressTextView: TextView by lazy { itemView.findViewById(R.id.addressTextView) }
+        val categoryTextView: TextView by lazy { itemView.findViewById(R.id.categoryTextView) }
 
         init {
             itemView.setOnClickListener {
-                itemSelectedListener.insertSavedLocation(getItem(bindingAdapterPosition).title)
+                itemSelectedListener.addSavedLocation(getItem(bindingAdapterPosition).title)
             }
         }
     }
