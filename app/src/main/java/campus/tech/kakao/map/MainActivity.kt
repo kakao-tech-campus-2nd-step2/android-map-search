@@ -1,5 +1,6 @@
 package campus.tech.kakao.map
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -24,6 +25,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MainActivity : AppCompatActivity() {
 
     lateinit var adapter: Adapter
+
     lateinit var tvNoResult: TextView
     lateinit var llSave: LinearLayoutCompat
     lateinit var hScrollView: HorizontalScrollView
@@ -36,6 +38,7 @@ class MainActivity : AppCompatActivity() {
 //        var keyHash = Utility.getKeyHash(this)
 //        Log.d("keyHash", keyHash)
 
+
         val etSearch = findViewById<EditText>(R.id.etSearch)
         tvNoResult = findViewById(R.id.tvNoResult)
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
@@ -45,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         hScrollView = findViewById(R.id.hScrollView)
 
         adapter = Adapter(mutableListOf())
+
         recyclerView.adapter = adapter
 
         tvNoResult.visibility = TextView.VISIBLE
@@ -145,6 +149,7 @@ class MainActivity : AppCompatActivity() {
             addSavedItem(name)
         }
     }
+
 
     fun addSavedItem(name: String) {
         val savedView = LayoutInflater.from(this)

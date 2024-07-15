@@ -22,6 +22,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1
 
         insertPharData(db)
         insertCafeData(db)
+
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -48,6 +49,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1
         if (db == null) {
             return
         }
+
         val type = "카페"
         val name = "카페"
         val address = "서울 성동구 성수동"
@@ -56,6 +58,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1
             val nameWithIndex = "$name$i"
             val addressWithIndex = "$address $i"
             db?.execSQL("INSERT INTO $TABLE_PLACE ($COLUMN_TYPE, $COLUMN_NAME, $COLUMN_ADDRESS) VALUES ('$type', '$nameWithIndex', '$addressWithIndex');")
+
         }
     }
 
@@ -79,4 +82,3 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1
         return profiles
     }
 }
-
