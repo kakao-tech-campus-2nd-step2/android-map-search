@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class Adapter(private var profiles: List<Profile>) : RecyclerView.Adapter<Adapter.ProfileViewHolder>() {
+class Adapter(private val profiles: MutableList<Profile>) : RecyclerView.Adapter<Adapter.ProfileViewHolder>() {
 
     interface OnItemClickListener {
         fun onItemClick(name: String)
@@ -48,7 +48,8 @@ class Adapter(private var profiles: List<Profile>) : RecyclerView.Adapter<Adapte
     }
 
     fun updateProfiles(newProfiles: List<Profile>) {
-        profiles = newProfiles
+        profiles.clear()
+        profiles.addAll(newProfiles)
         notifyDataSetChanged()
     }
 }

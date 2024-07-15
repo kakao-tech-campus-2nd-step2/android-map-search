@@ -30,6 +30,9 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1
     }
 
     private fun insertPharData(db: SQLiteDatabase?) {
+        if (db == null) {
+            return
+        }
         val type = "약국"
         val name = "약국"
         val address = "서울 강남구 대치동"
@@ -42,6 +45,9 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1
     }
 
     private fun insertCafeData(db: SQLiteDatabase?) {
+        if (db == null) {
+            return
+        }
         val type = "카페"
         val name = "카페"
         val address = "서울 성동구 성수동"

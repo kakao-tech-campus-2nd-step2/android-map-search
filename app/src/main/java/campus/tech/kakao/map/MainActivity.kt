@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         llSave = findViewById(R.id.llSave)
         hScrollView = findViewById(R.id.hScrollView)
 
-        adapter = Adapter(emptyList())
+        adapter = Adapter(mutableListOf())
         recyclerView.adapter = adapter
 
         tvNoResult.visibility = TextView.VISIBLE
@@ -136,7 +136,7 @@ class MainActivity : AppCompatActivity() {
         editor.apply()
     }
 
-    fun loadSavedItems(){
+    fun loadSavedItems() {
         val sharedPreferences = getSharedPreferences("SavedItems", MODE_PRIVATE)
         val savedNamesString = sharedPreferences.getString("savedNames", "[]")
         val savedNames = JSONArray(savedNamesString)
@@ -145,6 +145,7 @@ class MainActivity : AppCompatActivity() {
             addSavedItem(name)
         }
     }
+
     fun addSavedItem(name: String) {
         val savedView = LayoutInflater.from(this)
             .inflate(R.layout.search_save, llSave, false) as ConstraintLayout
@@ -161,6 +162,7 @@ class MainActivity : AppCompatActivity() {
         hScrollView.visibility = View.VISIBLE
         scrollToEndOfSearchSave()
     }
+
     fun removeSavedItem(name: String) {
         for (i in 0 until llSave.childCount) {
             val savedView = llSave.getChildAt(i) as? ConstraintLayout
@@ -171,6 +173,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
     fun isProfileInSearchSave(name: String): Boolean {
         for (i in 0 until llSave.childCount) {
             val savedView = llSave.getChildAt(i) as? ConstraintLayout
