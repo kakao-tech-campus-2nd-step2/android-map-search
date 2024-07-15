@@ -35,7 +35,6 @@ class ViewActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("ViewActivity", "onCreate 호출됨")
         init()
     }
 

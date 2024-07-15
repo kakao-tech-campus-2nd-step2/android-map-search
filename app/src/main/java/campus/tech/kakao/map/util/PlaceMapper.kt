@@ -6,8 +6,8 @@ class PlaceMapper {
     companion object{
         fun mapPlaces(places: List<Place>): List<Place> {
             return places.map { place ->
-                place.copy(category_name = setCategoryName(place.category_name),
-                    place_name = setPlaceName(place.place_name)
+                place.copy(category = setCategoryName(place.category),
+                    place = setPlaceName(place.place)
                 )
             }
         }

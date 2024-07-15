@@ -47,9 +47,9 @@ class PlaceRepositoryImpl(context: Context):
         places.forEach {
             val values = ContentValues().apply {
                 put(PlaceContract.COLUMN_ID, it.id)
-                put(PlaceContract.COLUMN_NAME, it.place_name)
-                put(PlaceContract.COLUMN_LOCATION, it.address_name)
-                put(PlaceContract.COLUMN_TYPE, it.category_name)
+                put(PlaceContract.COLUMN_NAME, it.place)
+                put(PlaceContract.COLUMN_LOCATION, it.address)
+                put(PlaceContract.COLUMN_TYPE, it.category)
             }
             db.insert(PlaceContract.TABLE_NAME, null, values)
         }
@@ -61,7 +61,7 @@ class PlaceRepositoryImpl(context: Context):
         logs.forEach { placeLog ->
             val values = ContentValues().apply {
                 put(PlaceContract.COLUMN_LOG_ID, placeLog.id)
-                put(PlaceContract.COLUMN_LOG_NAME, placeLog.place_name)
+                put(PlaceContract.COLUMN_LOG_NAME, placeLog.place)
             }
             db.insert(PlaceContract.TABLE_LOG_NAME, null, values)
         }
