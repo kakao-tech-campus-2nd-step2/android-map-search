@@ -11,11 +11,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <EditText
+    <View
         android:id="@+id/MapinputText"
         android:layout_width="390dp"
         android:layout_height="50dp"
-        android:hint="검색어를 입력해주세요."
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -23,6 +22,16 @@
         android:background="@color/white"
         android:padding="10dp"
         />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/MapinputText"
+        app:layout_constraintTop_toTopOf="@id/MapinputText"
+        app:layout_constraintBottom_toBottomOf="@id/MapinputText"
+        android:text="검색어를 입력해주세요."
+        android:textSize="20sp"
+        android:textColor="@color/gray"
+        android:padding="10dp"/>
 
     <Button
         android:id="@+id/MapcancelBtn"

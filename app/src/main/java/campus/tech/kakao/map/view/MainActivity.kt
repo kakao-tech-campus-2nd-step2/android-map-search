@@ -49,6 +49,7 @@ class MainActivity : AppCompatActivity() {
         setSearchView()
         setRecyclerView()
         setSearchListener()
+
     }
 
     private fun initialize() {

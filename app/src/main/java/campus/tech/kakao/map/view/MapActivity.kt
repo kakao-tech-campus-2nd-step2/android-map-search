@@ -3,7 +3,7 @@ package campus.tech.kakao.map.view
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.EditText
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import campus.tech.kakao.map.R
 import com.kakao.vectormap.KakaoMap
@@ -16,7 +16,7 @@ import com.kakao.vectormap.camera.CameraUpdateFactory
 class MapActivity : AppCompatActivity() {
 
     private lateinit var mapView: MapView
-    private lateinit var inputText: EditText
+    private lateinit var inputText: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +49,5 @@ class MapActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
-
 
 }
