@@ -7,7 +7,10 @@ import campus.tech.kakao.map.retrofit.KakaoAPI
 import campus.tech.kakao.map.retrofit.RetrofitInstance
 
 class LocationRemoteDataSource {
-    private val RESULT_SIZE = 15
+    companion object{
+        private const val RESULT_SIZE = 15
+    }
+
     private val client = RetrofitInstance.getInstance().create(KakaoAPI::class.java)
 
     suspend fun getLocations(restApiKey:String, keyword: String): List<Location> {
