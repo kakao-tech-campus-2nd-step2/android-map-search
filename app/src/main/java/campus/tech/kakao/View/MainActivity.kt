@@ -45,7 +45,6 @@ class MainActivity : AppCompatActivity() {
         if (supportFragmentManager.backStackEntryCount > 1) {
             supportFragmentManager.popBackStack()
         } else {
-            finish()
             super.onBackPressed()
         }
     }
