@@ -8,9 +8,8 @@ import retrofit2.http.Query
 
 interface KakaoLocalApi {
     @GET("v2/local/search/keyword.json")
-    fun getPlaceData(
+    suspend fun getPlaceData(
         @Header("Authorization") key: String,
         @Query("query") query: String
-
-        ): Call<ResultSearch>
+        ): ResultSearch
 }

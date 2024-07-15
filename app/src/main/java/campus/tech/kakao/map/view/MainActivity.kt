@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.R
@@ -24,6 +25,7 @@ import campus.tech.kakao.map.repository.PlaceRepository
 import campus.tech.kakao.map.repository.SavedPlaceRepository
 import campus.tech.kakao.map.viewmodel.MainActivityViewModel
 import campus.tech.kakao.map.viewmodel.ViewModelFactory
+import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity(), OnClickPlaceListener, OnClickSavedPlaceListener {
@@ -115,8 +117,9 @@ class MainActivity : AppCompatActivity(), OnClickPlaceListener, OnClickSavedPlac
             override fun afterTextChanged(searchText: Editable?) {
                 val text = searchText.toString()
                 Log.d("inputField", "text : ${text}")
-                viewModel.getKakaoLocalData(text)
-
+                lifecycleScope.launch {
+                    viewModel.getKakaoLocalData(text)
+                }
             }
         })
     }
