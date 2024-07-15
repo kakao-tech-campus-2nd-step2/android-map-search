@@ -1,6 +1,7 @@
 package campus.tech.kakao.map
 
 import com.google.gson.annotations.SerializedName
+
 data class Place (
     val name: String,
     val address: String,

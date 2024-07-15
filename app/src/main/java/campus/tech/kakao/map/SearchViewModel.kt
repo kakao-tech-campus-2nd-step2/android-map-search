@@ -5,15 +5,17 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import campus.tech.kakao.map.RetrofitInstance.retrofitService
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class MainViewModel(context: Context) : ViewModel() {
+class SearchViewModel(context: Context) : ViewModel() {
     private val dbHelper: DBHelper = DBHelper(context)
     private val db = dbHelper.writableDatabase
     private val preferenceManager = MapApplication.prefs
+    private val repository = RetrofitRepository()
+
 
     private var _placeList = MutableLiveData<List<Place>>()
     private val _searchHistoryList = MutableLiveData<List<SearchHistory>>()
@@ -86,31 +88,11 @@ class MainViewModel(context: Context) : ViewModel() {
     }
 
     fun getPlace(query: String) {
-        if (query.isEmpty()) {
-            _locationList.value = emptyList()
-        } else {
-            retrofitService.getPlaces("KakaoAK "+BuildConfig.KAKAO_REST_API_KEY, query).enqueue(object : Callback<Location> {
-                override fun onResponse(
-                    call: Call<Location>,
-                    response: Response<Location>
-                ) {
-                    if (response.isSuccessful) {
-                        val body = response.body()
-                        if (body != null) {
-                            _locationList.postValue(body.documents)
-                            Log.d("성공", ""+ body.documents)
-                        } else {
-                            _locationList.postValue(emptyList())
-                        }
-                    } else {
-                        Log.d("태그",response.code().toString())
-                    }
-                }
-
-                override fun onFailure(call: Call<Location>, t: Throwable) {
-                    Log.d("error", ""+ t)
-                }
-            })
+        viewModelScope.launch {
+            val places = withContext(Dispatchers.IO) {
+                repository.getPlace(query)
+            }
+            _locationList.postValue(places)
         }
     }
 }
