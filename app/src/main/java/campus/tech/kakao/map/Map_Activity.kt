@@ -2,29 +2,51 @@ package campus.tech.kakao.map
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import com.kakao.sdk.common.KakaoSdk
+import com.kakao.vectormap.KakaoMap
+import com.kakao.vectormap.KakaoMapReadyCallback
+import com.kakao.vectormap.LatLng
+import com.kakao.vectormap.MapLifeCycleCallback
+import com.kakao.vectormap.MapReadyCallback
 import com.kakao.vectormap.MapView
+import com.kakao.vectormap.camera.CameraUpdateFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.lang.Exception
 
 class Map_Activity : AppCompatActivity() {
 
     private lateinit var mapView: MapView
     private lateinit var searchView: SearchView
-    private lateinit var kakaoApiService: KakaoApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        KakaoSdk.init(this, "e6a7c826ae7a55df129b8be2c636e213") // Kakao SDK 초기화
         setContentView(R.layout.activity_map)
-        kakaoApiService = createKakaoApiService()
 
         mapView = findViewById(R.id.map_view)
         searchView = findViewById(R.id.search_text)
+        mapView = MapView(this)
+        mapView.start(
+            object : MapLifeCycleCallback {
+                override fun onMapDestroy() {
+                    // 지도 API가 정상적으로 종료될 때 호출됨
+                }
+
+                override fun onMapError(error: Exception) {
+                    // 인증 실패 및 지도 사용 중 에러가 발생할 때 호출됨
+                }
+            },
+            object : KakaoMapReadyCallback {
+                override fun onMapReady(kakaoMap: KakaoMap) {
+                    // 인증 후 API가 정상적으로 실행될 때 호출됨
+                }
+            }
+        )
 
         searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
@@ -33,28 +55,16 @@ class Map_Activity : AppCompatActivity() {
             }
         }
     }
-    private fun createKakaoApiService(): KakaoApiService {
-        val logging = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BASIC
-        }
 
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(logging)
-            .addInterceptor { chain ->
-                val request = chain.request().newBuilder()
-                    .addHeader("Authorization", "KakaoAK 13c6b4e1c003d0f42b3b07888391c355")
-                    .build()
-                chain.proceed(request)
-            }
-            .build()
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://dapi.kakao.com")
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        return retrofit.create(KakaoApiService::class.java)
+    override fun onResume() {
+        super.onResume()
+        mapView.resume() // MapView의 resume 호출
     }
 
+    override fun onPause() {
+        super.onPause()
+        mapView.pause() // MapView의 pause 호출
+    }
 }
+
+

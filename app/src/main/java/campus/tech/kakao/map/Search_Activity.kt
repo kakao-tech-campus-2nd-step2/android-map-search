@@ -14,6 +14,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.kakao.sdk.common.KakaoSdk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class Search_Activity : AppCompatActivity() {
     //Binding만 추가하면 됨
@@ -29,6 +33,7 @@ class Search_Activity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         KakaoSdk.init(this, "e6a7c826ae7a55df129b8be2c636e213")
         setContentView(R.layout.activity_search)
+        kakaoApiService = createKakaoApiService()
 
         initViews()
         databaseHelper = MyDatabaseHelper(this)
@@ -37,6 +42,29 @@ class Search_Activity : AppCompatActivity() {
         setupRecyclerViews()
         setupSearchView()
         //searchAndDisplayResults("")
+    }
+    private fun createKakaoApiService(): KakaoApiService {
+        val logging = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BASIC
+        }
+
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .addInterceptor { chain ->
+                val request = chain.request().newBuilder()
+                    .addHeader("Authorization", "KakaoAK 13c6b4e1c003d0f42b3b07888391c355")
+                    .build()
+                chain.proceed(request)
+            }
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://dapi.kakao.com")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        return retrofit.create(KakaoApiService::class.java)
     }
 
     private fun initViews() {
