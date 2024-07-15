@@ -1,15 +1,16 @@
-package campus.tech.kakao.map.repository
+package campus.tech.kakao.map.model.datasource
 
 import android.content.ContentValues
 import android.util.Log
-import campus.tech.kakao.map.repository.Contract.LocationEntry
-import campus.tech.kakao.map.repository.Contract.SavedLocationEntry
+import campus.tech.kakao.map.model.Contract.LocationEntry
+import campus.tech.kakao.map.model.Contract.SavedLocationEntry
 import campus.tech.kakao.map.model.Location
+import campus.tech.kakao.map.model.LocationDbHelper
 import campus.tech.kakao.map.model.SavedLocation
 
-class LocationLocalRepository(private val dbHelper : LocationDbHelper) {
+class LocationLocalDataSource(private val dbHelper : LocationDbHelper) {
 
-    fun insertLocation(title: String, address: String, category: String): Long {
+    fun addLocation(title: String, address: String, category: String): Long {
         val db = dbHelper.writableDatabase
 
         val values = ContentValues().apply {
@@ -21,7 +22,7 @@ class LocationLocalRepository(private val dbHelper : LocationDbHelper) {
         return db.insert(LocationEntry.TABLE_NAME, null, values)
     }
 
-    fun getLocationAll(): MutableList<Location> {
+    fun getLocations(): MutableList<Location> {
         val db = dbHelper.readableDatabase
 
         val projection = arrayOf(
@@ -55,7 +56,7 @@ class LocationLocalRepository(private val dbHelper : LocationDbHelper) {
         return results
     }
 
-    fun insertSavedLocation(title: String): Long {
+    fun addSavedLocation(title: String): Long {
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {
             put(SavedLocationEntry.COLUMN_NAME_TITLE, title)
@@ -92,16 +93,16 @@ class LocationLocalRepository(private val dbHelper : LocationDbHelper) {
         return results
     }
 
-    fun deleteSavedLocation(title: String) {
+    fun deleteSavedLocation(title: String): Int {
         val db = dbHelper.writableDatabase
 
         val selection = "${SavedLocationEntry.COLUMN_NAME_TITLE} = ?"
         val selectionArgs = arrayOf(title)
 
-        db.delete(SavedLocationEntry.TABLE_NAME, selection, selectionArgs)
+        return db.delete(SavedLocationEntry.TABLE_NAME, selection, selectionArgs)
     }
 
-    fun searchLocations(query: String): List<Location> {
+    fun searchLocation(query: String): List<Location> {
         if(query.isBlank()){
             return emptyList()
         }

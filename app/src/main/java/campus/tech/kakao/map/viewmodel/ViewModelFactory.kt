@@ -3,17 +3,17 @@ package campus.tech.kakao.map.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
-import campus.tech.kakao.map.repository.LocationLocalRepository
-import campus.tech.kakao.map.repository.LocationRemoteRepository
+import campus.tech.kakao.map.model.datasource.LocationLocalDataSource
+import campus.tech.kakao.map.model.repository.LocationRepository
+import campus.tech.kakao.map.model.repository.SavedLocationRepository
 
 class ViewModelFactory {
     class LocationViewModelFactory(
-        private val locationLocalRepository: LocationLocalRepository,
-        private val locationRemoteRepository: LocationRemoteRepository
+        private val locationRepository: LocationRepository
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
             if (modelClass.isAssignableFrom(LocationViewModel::class.java)) {
-                return LocationViewModel(locationLocalRepository, locationRemoteRepository) as T
+                return LocationViewModel(locationRepository) as T
             } else {
                 throw IllegalArgumentException()
             }
@@ -21,11 +21,11 @@ class ViewModelFactory {
     }
 
     class SavedLocationViewModelFactory(
-        private val locationDbAccessor: LocationLocalRepository
+        private val savedLocationRepository: SavedLocationRepository
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
             if (modelClass.isAssignableFrom(SavedLocationViewModel::class.java)) {
-                return SavedLocationViewModel(locationDbAccessor) as T
+                return SavedLocationViewModel(savedLocationRepository) as T
             } else {
                 throw IllegalArgumentException()
             }

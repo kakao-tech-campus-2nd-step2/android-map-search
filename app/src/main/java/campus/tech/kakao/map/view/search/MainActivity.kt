@@ -12,11 +12,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import campus.tech.kakao.map.repository.LocationLocalRepository
-import campus.tech.kakao.map.repository.LocationRemoteRepository
+import campus.tech.kakao.map.model.datasource.LocationLocalDataSource
+import campus.tech.kakao.map.model.datasource.LocationRemoteDataSource
 import campus.tech.kakao.map.R
 import campus.tech.kakao.map.model.SavedLocation
-import campus.tech.kakao.map.repository.LocationDbHelper
+import campus.tech.kakao.map.model.LocationDbHelper
+import campus.tech.kakao.map.model.repository.LocationRepository
+import campus.tech.kakao.map.model.repository.SavedLocationRepository
 import campus.tech.kakao.map.viewmodel.ViewModelFactory.LocationViewModelFactory
 import campus.tech.kakao.map.viewmodel.ViewModelFactory.SavedLocationViewModelFactory
 import campus.tech.kakao.map.viewmodel.LocationViewModel
@@ -33,8 +35,10 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
     private lateinit var savedLocationRecyclerView: RecyclerView
 
     private lateinit var locationDbHelper: LocationDbHelper
-    private lateinit var locationDbAccessor: LocationLocalRepository
-    private lateinit var locationRemoteRepository: LocationRemoteRepository
+    private lateinit var locationLocalDataSource: LocationLocalDataSource
+    private lateinit var locationRemoteDataSource: LocationRemoteDataSource
+    private lateinit var locationRepository: LocationRepository
+    private lateinit var savedLocationRepository: SavedLocationRepository
 
     private lateinit var clearButton: ImageView
     private lateinit var searchEditText: EditText
@@ -58,14 +62,16 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
 
     private fun initViews() {
         locationDbHelper = LocationDbHelper(this)
-        locationDbAccessor = LocationLocalRepository(locationDbHelper)
-        locationRemoteRepository = LocationRemoteRepository()
+        locationLocalDataSource = LocationLocalDataSource(locationDbHelper)
+        locationRemoteDataSource = LocationRemoteDataSource()
+        locationRepository = LocationRepository(locationLocalDataSource, locationRemoteDataSource)
+        savedLocationRepository = SavedLocationRepository(locationLocalDataSource)
 
-        locationViewModel = ViewModelProvider(this, LocationViewModelFactory(locationDbAccessor, locationRemoteRepository))
+        locationViewModel = ViewModelProvider(this, LocationViewModelFactory(locationRepository))
             .get(LocationViewModel::class.java)
         locationRecyclerView = findViewById(R.id.locationRecyclerView)
 
-        savedLocationViewModel = ViewModelProvider(this, SavedLocationViewModelFactory(locationDbAccessor))
+        savedLocationViewModel = ViewModelProvider(this, SavedLocationViewModelFactory(savedLocationRepository))
             .get(SavedLocationViewModel::class.java)
         savedLocationRecyclerView = findViewById(R.id.savedLocationRecyclerView)
 
@@ -80,8 +86,8 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val query = s.toString()
-                locationViewModel.searchLocationsFromKakaoAPI(getKakaoRestApiKey(),query){
-                    if (locationViewModel.getSearchedLocationsSize() > 0) {
+                locationViewModel.searchLocationsFromKakaoAPI(getKakaoRestApiKey(), query) {searchLocationsSize ->
+                    if (searchLocationsSize > 0) {
                         noResultTextView.visibility = View.GONE
                     } else {
                         noResultTextView.visibility = View.VISIBLE
@@ -136,8 +142,8 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         savedLocationRecyclerView.adapter = savedLocationAdapter
     }
 
-    override fun insertSavedLocation(title: String) {
-        savedLocationViewModel.insertSavedLocation(title)
+    override fun addSavedLocation(title: String) {
+        savedLocationViewModel.addSavedLocation(title)
     }
 
     override fun deleteSavedLocation(item: SavedLocation) {

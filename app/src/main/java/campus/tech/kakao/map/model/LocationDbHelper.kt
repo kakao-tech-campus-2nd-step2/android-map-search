@@ -1,10 +1,10 @@
-package campus.tech.kakao.map.repository
+package campus.tech.kakao.map.model
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import campus.tech.kakao.map.repository.Contract.LocationEntry
-import campus.tech.kakao.map.repository.Contract.SavedLocationEntry
+import campus.tech.kakao.map.model.Contract.LocationEntry
+import campus.tech.kakao.map.model.Contract.SavedLocationEntry
 class LocationDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     private val SQL_CREATE_LOCATION_TABLE =

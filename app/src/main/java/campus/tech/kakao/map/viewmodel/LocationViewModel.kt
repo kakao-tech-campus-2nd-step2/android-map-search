@@ -1,18 +1,15 @@
 package campus.tech.kakao.map.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import campus.tech.kakao.map.repository.LocationLocalRepository
-import campus.tech.kakao.map.repository.LocationRemoteRepository
 import campus.tech.kakao.map.model.Location
+import campus.tech.kakao.map.model.repository.LocationRepository
 import kotlinx.coroutines.launch
 
 class LocationViewModel(
-    private val locationLocalRepository: LocationLocalRepository,
-    private val locationRemoteRepository: LocationRemoteRepository
+    private val locationRepository: LocationRepository
 ) : ViewModel() {
     private val _locations = MutableLiveData<List<Location>>()
 
@@ -20,12 +17,21 @@ class LocationViewModel(
     val searchedLocations: LiveData<List<Location>> get() = _searchedLocations
 
     fun setLocationsFromDB() {
-        _locations.value = readLocationFromDB()
+        _locations.value = locationRepository.getLocationLocal()
         _searchedLocations.value = emptyList()
     }
 
-    fun getSearchedLocationsSize(): Int {
+    private fun getSearchedLocationsSize(): Int {
         return _searchedLocations.value?.size ?: 0
+    }
+
+
+    fun searchLocationsFromDB(query: String): Int {
+        return locationRepository.searchLocationLocal(query).size
+    }
+
+    fun addLocationFromDB() {
+        locationRepository.addLocationLocal()
     }
 
     fun setLocationsFromKakaoAPI() {
@@ -33,33 +39,10 @@ class LocationViewModel(
         _searchedLocations.value = emptyList()
     }
 
-
-    fun searchLocationsFromDB(query: String): Int {
-        val results = locationLocalRepository.searchLocations(query)
-        _searchedLocations.value = if (results.isNotEmpty()) results else emptyList()
-        return results.size
-    }
-
-    fun insertLocationFromDB() {
-        for (i in 1..9) {
-            locationLocalRepository.insertLocation("카페$i", "부산 부산진구 전포대로$i", "카페")
-        }
-        for (i in 1..9) {
-            locationLocalRepository.insertLocation("음식점$i", "부산 부산진구 중앙대로$i", "음식점")
-        }
-    }
-
-    private fun readLocationFromDB(): MutableList<Location> {
-        val result: MutableList<Location> = locationLocalRepository.getLocationAll()
-        Log.d("jieun", "$result")
-        return result
-    }
-
     fun searchLocationsFromKakaoAPI(restApiKey: String, query: String, deleteNoResultMessageCallback: (Int) -> Unit) {
         viewModelScope.launch {
-            val results: List<Location> = locationRemoteRepository.getLocations(restApiKey, query)
-            _searchedLocations.value = results
-            deleteNoResultMessageCallback(results.size)
+            _searchedLocations.value = locationRepository.getLocationRemote(restApiKey, query)
+            deleteNoResultMessageCallback(getSearchedLocationsSize())
         }
     }
 }
