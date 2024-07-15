@@ -51,6 +51,7 @@ android {
 }
 
 dependencies {
+    implementation ("androidx.multidex:multidex:2.0.1")
     // Kakao Map SDK - 최신 버전 사용
     implementation("com.kakao.maps.open:android:2.9.5")
     // Kakao SDK

@@ -5,24 +5,17 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import com.kakao.sdk.common.KakaoSdk
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
-import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapLifeCycleCallback
-import com.kakao.vectormap.MapReadyCallback
 import com.kakao.vectormap.MapView
-import com.kakao.vectormap.camera.CameraUpdateFactory
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.Exception
 
 class Map_Activity : AppCompatActivity() {
 
     private lateinit var mapView: MapView
     private lateinit var searchView: SearchView
+    private val LOCATION_PERMISSION_REQUEST_CODE = 1000
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,20 +23,21 @@ class Map_Activity : AppCompatActivity() {
 
         mapView = findViewById(R.id.map_view)
         searchView = findViewById(R.id.search_text)
+
         mapView = MapView(this)
         mapView.start(
             object : MapLifeCycleCallback() {
                 override fun onMapDestroy() {
-                    // 지도 API가 정상적으로 종료될 때 호출됨
+                    Log.d("map", "Map Destroy")
                 }
 
                 override fun onMapError(error: Exception) {
-                    // 인증 실패 및 지도 사용 중 에러가 발생할 때 호출됨
+                    Log.d("map", "지도가 정상적으로 호출되지 않음")
                 }
             },
             object : KakaoMapReadyCallback() {
                 override fun onMapReady(kakaoMap: KakaoMap) {
-                    // 인증 후 API가 정상적으로 실행될 때 호출됨
+                    Log.d("map", "지도가 정상적으로 호출됨")
                 }
             }
         )
@@ -58,12 +52,12 @@ class Map_Activity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        mapView.resume() // MapView의 resume 호출
+        mapView.resume()
     }
 
     override fun onPause() {
         super.onPause()
-        mapView.pause() // MapView의 pause 호출
+        mapView.pause()
     }
 }
 
