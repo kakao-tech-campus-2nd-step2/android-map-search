@@ -6,7 +6,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class Adapter(private var profiles: List<Profile>) : RecyclerView.Adapter<Adapter.ProfileViewHolder>() {
+class Adapter(private val profiles: MutableList<Profile>) : RecyclerView.Adapter<Adapter.ProfileViewHolder>() {
+
 
     interface OnItemClickListener {
         fun onItemClick(name: String)
@@ -18,9 +19,10 @@ class Adapter(private var profiles: List<Profile>) : RecyclerView.Adapter<Adapte
     }
 
     inner class ProfileViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvName: TextView = itemView.findViewById(R.id.tvname)
-        val tvAddress: TextView = itemView.findViewById(R.id.tvaddress)
-        val tvType: TextView = itemView.findViewById(R.id.tvtype)
+        val tvName: TextView = itemView.findViewById(R.id.tvName)
+        val tvAddress: TextView = itemView.findViewById(R.id.tvAddress)
+        val tvType: TextView = itemView.findViewById(R.id.tvType)
+
 
         init {
             itemView.setOnClickListener {
@@ -48,7 +50,8 @@ class Adapter(private var profiles: List<Profile>) : RecyclerView.Adapter<Adapte
     }
 
     fun updateProfiles(newProfiles: List<Profile>) {
-        profiles = newProfiles
+        profiles.clear()
+        profiles.addAll(newProfiles)
         notifyDataSetChanged()
     }
 }

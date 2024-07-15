@@ -10,7 +10,7 @@ private const val COLUMN_TYPE = "type"
 private const val COLUMN_NAME = "name"
 private const val COLUMN_ADDRESS = "address"
 
-class DBHelper(context: Context): SQLiteOpenHelper(context, "place.db", null, 1) {
+class DBHelper(context: Context) : SQLiteOpenHelper(context, "place.db", null, 1) {
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL(
             "CREATE TABLE $TABLE_PLACE (" +
@@ -20,8 +20,9 @@ class DBHelper(context: Context): SQLiteOpenHelper(context, "place.db", null, 1)
                     ");"
         )
 
-        insertPharData()
-        insertCafeData()
+        insertPharData(db)
+        insertCafeData(db)
+
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -29,8 +30,10 @@ class DBHelper(context: Context): SQLiteOpenHelper(context, "place.db", null, 1)
         onCreate(db)
     }
 
-    fun insertPharData() {
-        val db = this.writableDatabase
+    private fun insertPharData(db: SQLiteDatabase?) {
+        if (db == null) {
+            return
+        }
         val type = "약국"
         val name = "약국"
         val address = "서울 강남구 대치동"
@@ -38,12 +41,15 @@ class DBHelper(context: Context): SQLiteOpenHelper(context, "place.db", null, 1)
         for (i in 1..30) {
             val nameWithIndex = "$name$i"
             val addressWithIndex = "$address $i"
-            db.execSQL("INSERT INTO $TABLE_PLACE ($COLUMN_TYPE, $COLUMN_NAME, $COLUMN_ADDRESS) VALUES ('$type', '$nameWithIndex', '$addressWithIndex');")
+            db?.execSQL("INSERT INTO $TABLE_PLACE ($COLUMN_TYPE, $COLUMN_NAME, $COLUMN_ADDRESS) VALUES ('$type', '$nameWithIndex', '$addressWithIndex');")
         }
     }
 
-    fun insertCafeData() {
-        val db = this.writableDatabase
+    private fun insertCafeData(db: SQLiteDatabase?) {
+        if (db == null) {
+            return
+        }
+
         val type = "카페"
         val name = "카페"
         val address = "서울 성동구 성수동"
@@ -51,7 +57,8 @@ class DBHelper(context: Context): SQLiteOpenHelper(context, "place.db", null, 1)
         for (i in 1..30) {
             val nameWithIndex = "$name$i"
             val addressWithIndex = "$address $i"
-            db.execSQL("INSERT INTO $TABLE_PLACE ($COLUMN_TYPE, $COLUMN_NAME, $COLUMN_ADDRESS) VALUES ('$type', '$nameWithIndex', '$addressWithIndex');")
+            db?.execSQL("INSERT INTO $TABLE_PLACE ($COLUMN_TYPE, $COLUMN_NAME, $COLUMN_ADDRESS) VALUES ('$type', '$nameWithIndex', '$addressWithIndex');")
+
         }
     }
 

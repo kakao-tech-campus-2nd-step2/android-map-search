@@ -16,7 +16,7 @@
         android:layout_margin="10dp"/>
 
     <TextView
-        android:id="@+id/tvname"
+        android:id="@+id/tvName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="name"
@@ -29,19 +29,19 @@
         android:layout_marginTop="10dp"/>
 
     <TextView
-        android:id="@+id/tvaddress"
+        android:id="@+id/tvAddress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="address"
         tools:textSize="15sp"
-        app:layout_constraintTop_toBottomOf="@+id/tvname"
+        app:layout_constraintTop_toBottomOf="@+id/tvName"
         app:layout_constraintStart_toEndOf="@+id/ivloc"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginStart="15dp"
         android:layout_marginBottom="10dp"/>
 
     <TextView
-        android:id="@+id/tvtype"
+        android:id="@+id/tvType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="type"
