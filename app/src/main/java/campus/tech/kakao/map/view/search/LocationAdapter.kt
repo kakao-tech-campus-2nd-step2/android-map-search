@@ -1,4 +1,4 @@
-package campus.tech.kakao.map.view
+package campus.tech.kakao.map.view.search
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.R
-import campus.tech.kakao.map.view.LocationAdapter.LocationHolder
+import campus.tech.kakao.map.view.search.LocationAdapter.LocationHolder
 import campus.tech.kakao.map.model.Location
 
 class LocationAdapter(
@@ -26,9 +26,9 @@ class LocationAdapter(
         itemView: View,
         itemSelectedListener: OnItemSelectedListener
     ) : RecyclerView.ViewHolder(itemView) {
-        val titleTextView: TextView = itemView.findViewById(R.id.titleTextView)
-        val addressTextView: TextView = itemView.findViewById(R.id.addressTextView)
-        val categoryTextView: TextView = itemView.findViewById(R.id.categoryTextView)
+        val titleTextView: TextView by lazy { itemView.findViewById(R.id.titleTextView) }
+        val addressTextView: TextView by lazy { itemView.findViewById(R.id.titleTextView) }
+        val categoryTextView: TextView by lazy { itemView.findViewById(R.id.titleTextView) }
 
         init {
             itemView.setOnClickListener {

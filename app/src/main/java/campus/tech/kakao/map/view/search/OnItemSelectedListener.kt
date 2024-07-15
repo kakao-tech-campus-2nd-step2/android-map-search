@@ -1,4 +1,4 @@
-package campus.tech.kakao.map.view
+package campus.tech.kakao.map.view.search
 
 import campus.tech.kakao.map.model.SavedLocation
 

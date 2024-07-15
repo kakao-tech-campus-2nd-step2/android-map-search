@@ -1,4 +1,4 @@
-package campus.tech.kakao.map.view
+package campus.tech.kakao.map.view.search
 
 import android.os.Bundle
 import android.text.Editable
