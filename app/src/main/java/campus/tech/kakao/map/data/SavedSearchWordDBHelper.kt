@@ -14,8 +14,7 @@ class SavedSearchWordDBHelper(context: Context) :
             CREATE TABLE $TABLE_NAME (
                 $COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 $COLUMN_NAME TEXT,
-                $COLUMN_PLACE_ID INTEGER,
-                FOREIGN KEY($COLUMN_PLACE_ID) REFERENCES ${PlaceDBHelper.TABLE_NAME}(${PlaceDBHelper.COLUMN_ID}) ON DELETE CASCADE
+                $COLUMN_PLACE_ID TEXT
             )
         """
         db.execSQL(createTableQuery)
@@ -34,7 +33,7 @@ class SavedSearchWordDBHelper(context: Context) :
         val db = writableDatabase
         db.beginTransaction()
         try {
-            db.delete(TABLE_NAME, "$COLUMN_PLACE_ID = ?", arrayOf(searchWord.placeId.toString()))
+            db.delete(TABLE_NAME, "$COLUMN_PLACE_ID = ?", arrayOf(searchWord.placeId))
             val contentValues =
                 ContentValues().apply {
                     put(COLUMN_NAME, searchWord.name)
@@ -56,7 +55,7 @@ class SavedSearchWordDBHelper(context: Context) :
         while (cursor.moveToNext()) {
             val id = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_ID))
             val name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME))
-            val placeId = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_PLACE_ID))
+            val placeId = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PLACE_ID))
             searchWords.add(SavedSearchWord(id, name, placeId))
         }
         cursor.close()
