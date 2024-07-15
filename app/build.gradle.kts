@@ -27,6 +27,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "API_KEY", "\"${getApiKey("API_KEY")}\"")
+        buildConfigField("String", "MAP_API_KEY", "\"${getApiKey("MAP_API_KEY")}\"")
+
     }
 
     buildTypes {

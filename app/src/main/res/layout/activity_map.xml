@@ -14,12 +14,14 @@
     <EditText
         android:id="@+id/MapinputText"
         android:layout_width="390dp"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:hint="검색어를 입력해주세요."
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:padding="10dp"
         />
 
     <Button

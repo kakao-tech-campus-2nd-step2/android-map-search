@@ -30,9 +30,9 @@
             </intent-filter>
         </activity>
 
-        <meta-data
-            android:name="com.kakao.sdk.APP_KEY"
-            android:value="b6f4b70a2090ca9cfca380ec1ebc9c5f"/>
+<!--        <meta-data-->
+<!--            android:name="com.kakao.sdk.APP_KEY"-->
+<!--            android:value="${MAP_API_KEY}"/>-->
     </application>
 
 </manifest>
