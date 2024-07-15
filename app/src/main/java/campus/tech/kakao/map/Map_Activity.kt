@@ -5,8 +5,10 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
+import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
 import java.lang.Exception
@@ -37,7 +39,10 @@ class Map_Activity : AppCompatActivity() {
             },
             object : KakaoMapReadyCallback() {
                 override fun onMapReady(kakaoMap: KakaoMap) {
-                    Log.d("map", "지도가 정상적으로 호출됨")
+                    val mapCenter = com.google.android.gms.maps.model.LatLng(
+                        37.5665,
+                        126.9780
+                    ) // 예시: 서울의 위도, 경도
                 }
             }
         )
