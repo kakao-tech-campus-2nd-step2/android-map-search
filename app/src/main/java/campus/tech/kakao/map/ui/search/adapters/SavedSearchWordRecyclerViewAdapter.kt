@@ -1,25 +1,25 @@
 package campus.tech.kakao.map.ui.search.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import campus.tech.kakao.map.R
+import campus.tech.kakao.map.databinding.ItemSavedSearchWordBinding
 import campus.tech.kakao.map.model.SavedSearchWord
 import campus.tech.kakao.map.ui.search.SearchActivity
 
 class SavedSearchWordRecyclerViewAdapter(private val clickListener: SearchActivity.OnSavedSearchWordClearImageViewClickListener) :
-    ListAdapter<SavedSearchWord, SavedSearchWordRecyclerViewAdapter.SavedSearchWordViewHolder>(SavedSearchWordDiffCallback()) {
+    ListAdapter<SavedSearchWord, SavedSearchWordRecyclerViewAdapter.SavedSearchWordViewHolder>(
+        SavedSearchWordDiffCallback(),
+    ) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
     ): SavedSearchWordViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_saved_search_word, parent, false)
-        return SavedSearchWordViewHolder(itemView)
+        val binding =
+            ItemSavedSearchWordBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return SavedSearchWordViewHolder(binding, clickListener)
     }
 
     override fun onBindViewHolder(
@@ -28,14 +28,17 @@ class SavedSearchWordRecyclerViewAdapter(private val clickListener: SearchActivi
     ) {
         val savedSearchWord = getItem(position)
         holder.bind(savedSearchWord)
-        holder.itemView.findViewById<ImageView>(R.id.saved_search_word_clear_image_view).setOnClickListener {
-            clickListener.onSavedSearchWordClearImageViewClicked(savedSearchWord)
-        }
     }
 
-    class SavedSearchWordViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class SavedSearchWordViewHolder(
+        private val binding: ItemSavedSearchWordBinding,
+        private val clickListener: SearchActivity.OnSavedSearchWordClearImageViewClickListener,
+    ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(savedSearchWord: SavedSearchWord) {
-            itemView.findViewById<TextView>(R.id.saved_search_word_text_view).text = savedSearchWord.name
+            binding.savedSearchWordTextView.text = savedSearchWord.name
+            binding.savedSearchWordClearImageView.setOnClickListener {
+                clickListener.onSavedSearchWordClearImageViewClicked(savedSearchWord)
+            }
         }
     }
 

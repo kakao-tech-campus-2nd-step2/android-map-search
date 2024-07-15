@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import campus.tech.kakao.map.R
+import campus.tech.kakao.map.BuildConfig
 import campus.tech.kakao.map.databinding.ActivityMapBinding
 import campus.tech.kakao.map.ui.search.SearchActivity
 import com.kakao.vectormap.KakaoMap
@@ -30,7 +30,7 @@ class MapActivity : AppCompatActivity() {
      * Kakao Map SDK를 초기화하는 함수.
      */
     private fun initializeKakaoMapSdk() {
-        KakaoMapSdk.init(this, getString(R.string.kakao_api_key))
+        KakaoMapSdk.init(this, BuildConfig.KAKAO_API_KEY)
     }
 
     /**

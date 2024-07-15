@@ -8,21 +8,25 @@ import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import campus.tech.kakao.map.databinding.ActivitySearchBinding
-import campus.tech.kakao.map.di.SearchActivityContainer
 import campus.tech.kakao.map.model.Place
 import campus.tech.kakao.map.model.SavedSearchWord
+import campus.tech.kakao.map.ui.ViewModelFactory
 import campus.tech.kakao.map.ui.search.adapters.ResultRecyclerViewAdapter
 import campus.tech.kakao.map.ui.search.adapters.SavedSearchWordRecyclerViewAdapter
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
-    private val container: SearchActivityContainer by lazy {
-        SearchActivityContainer(this)
-    }
-    private val placeViewModel: PlaceViewModel by viewModels { container.provideViewModelFactory() }
-    private val savedSearchWordViewModel: SavedSearchWordViewModel by viewModels { container.provideViewModelFactory() }
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+
+    private val placeViewModel: PlaceViewModel by viewModels { viewModelFactory }
+    private val savedSearchWordViewModel: SavedSearchWordViewModel by viewModels { viewModelFactory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -1,13 +1,11 @@
 package campus.tech.kakao.map.ui.search.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import campus.tech.kakao.map.R
+import campus.tech.kakao.map.databinding.ItemPlaceBinding
 import campus.tech.kakao.map.model.Place
 import campus.tech.kakao.map.ui.search.SearchActivity
 
@@ -17,8 +15,8 @@ class ResultRecyclerViewAdapter(private val clickListener: SearchActivity.OnPlac
         parent: ViewGroup,
         viewType: Int,
     ): PlaceViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_place, parent, false)
-        return PlaceViewHolder(itemView)
+        val binding = ItemPlaceBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return PlaceViewHolder(binding)
     }
 
     override fun onBindViewHolder(
@@ -32,11 +30,11 @@ class ResultRecyclerViewAdapter(private val clickListener: SearchActivity.OnPlac
         }
     }
 
-    class PlaceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class PlaceViewHolder(private val binding: ItemPlaceBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(place: Place) {
-            itemView.findViewById<TextView>(R.id.place_name_text_view).text = place.name
-            itemView.findViewById<TextView>(R.id.place_category_text_view).text = place.category
-            itemView.findViewById<TextView>(R.id.place_address_text_view).text = place.address
+            binding.placeNameTextView.text = place.name
+            binding.placeCategoryTextView.text = place.category
+            binding.placeAddressTextView.text = place.address
         }
     }
 

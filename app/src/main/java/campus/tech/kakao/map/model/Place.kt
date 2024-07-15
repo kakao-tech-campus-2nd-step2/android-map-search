@@ -4,5 +4,5 @@ data class Place(
     val id: String,
     val name: String,
     val address: String,
-    val category: String?,
+    val category: String,
 )
