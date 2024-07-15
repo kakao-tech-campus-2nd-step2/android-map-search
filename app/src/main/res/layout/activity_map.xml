@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".Map_Activity">
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/search_text"
@@ -12,21 +13,10 @@
         android:layout_height="50dp"
         android:hint="@string/search_hint" />
 
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerHor"
-        android:layout_marginTop="55dp"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:orientation="horizontal" />
-
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/RecyclerVer"
-        android:layout_marginTop="55dp"
+    <com.kakao.vectormap.MapView
+        android:id="@+id/map_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical" />
+        android:layout_marginTop="55dp"/>
 
 </FrameLayout>
