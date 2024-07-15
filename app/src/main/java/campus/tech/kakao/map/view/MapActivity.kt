@@ -28,10 +28,7 @@ class MapActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
-        val key = getString(R.string.kakao_api_key)
 
-
-        KakaoMapSdk.init(this, key)
         mapView = findViewById(R.id.mapView)
 
         mapView.start(object : MapLifeCycleCallback(){
