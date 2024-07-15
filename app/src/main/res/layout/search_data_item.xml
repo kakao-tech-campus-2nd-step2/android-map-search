@@ -30,7 +30,9 @@
         app:layout_constraintBottom_toTopOf="@id/search_data_address"
         app:layout_constraintEnd_toStartOf="@id/search_data_category"
         android:textSize="20sp"
-        android:layout_marginTop="11dp"/>
+        android:layout_marginTop="11dp"
+        android:maxLines="1"
+        android:ellipsize="end"/>
 
 
     <TextView
@@ -42,8 +44,10 @@
         app:layout_constraintHeight_percent="0.25"
         app:layout_constraintStart_toStartOf="@id/search_data_name"
         app:layout_constraintTop_toBottomOf="@id/search_data_name"
-        app:layout_constraintWidth_percent="0.8"
-        android:layout_marginBottom="11dp"/>
+        app:layout_constraintWidth_percent="0.7"
+        android:layout_marginBottom="11dp"
+        android:maxLines="1"
+        android:ellipsize="end"/>
 
     <TextView
         android:id="@+id/search_data_category"
@@ -52,10 +56,12 @@
         android:textSize="15sp"
         app:layout_constraintStart_toEndOf="@id/search_data_name"
         app:layout_constraintTop_toTopOf="@id/search_data_name"
-        app:layout_constraintEnd_toEndOf="@id/search_data_address"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintWidth_percent="0.15"
         android:gravity="end"
-        android:layout_marginEnd="10dp"/>
+        android:layout_marginEnd="10dp"
+        android:maxLines="1"
+        android:ellipsize="end"/>
 
     <View
         android:id="@+id/bottom_border"

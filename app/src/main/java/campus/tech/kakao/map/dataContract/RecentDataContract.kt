@@ -1,4 +1,4 @@
-package campus.tech.kakao.map.DataContract
+package campus.tech.kakao.map.dataContract
 
 import android.provider.BaseColumns
 

@@ -1,9 +1,9 @@
-package campus.tech.kakao.map.DBHelper
+package campus.tech.kakao.map.dBHelper
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import campus.tech.kakao.map.DataContract.RecentDataContract
+import campus.tech.kakao.map.dataContract.RecentDataContract
 
 //version 2: DB에 time 컬럼을 추가함
 //version 3" DB에 address 컬럼을 추가함

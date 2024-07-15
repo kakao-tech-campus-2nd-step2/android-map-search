@@ -1,4 +1,4 @@
-package campus.tech.kakao.map.Adapter
+package campus.tech.kakao.map.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.R
-import campus.tech.kakao.map.ViewModel.RecentViewModel
+import campus.tech.kakao.map.viewModel.RecentViewModel
 import campus.tech.kakao.map.retrofit.Document
 
 class SearchDataAdapter(
@@ -33,11 +33,15 @@ class SearchDataAdapter(
         val viewHolder = holder as SearchDataViewHolder
         viewHolder.name.text = item.name
         viewHolder.address.text = item.address
-        viewHolder.category.text = item.category
-
+        // API 데이터에 "category_group_code"가 있는 경우 해당 그룹 코드에 맞는 설명을 출력하고, 비어 있는 경우 "category_name"의 일부 문자열을 출력
+        if (item.categoryCode.isEmpty()) {
+            viewHolder.category.text = item.categoryTail
+        } else {
+            viewHolder.category.text = item.categoryDescription
+        }
         holder.itemView.setOnClickListener {
             val searchTime = System.currentTimeMillis()
-            recentViewModel.addRecentData(item.name,item.address, searchTime)
+            recentViewModel.addRecentData(item.name, item.address, searchTime)
         }
     }
 

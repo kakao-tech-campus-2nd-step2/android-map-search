@@ -1,11 +1,11 @@
-package campus.tech.kakao.map.ViewModel
+package campus.tech.kakao.map.viewModel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import campus.tech.kakao.map.DataRepository.RecentDataRepository
-import campus.tech.kakao.map.Data.RecentSearchData
+import campus.tech.kakao.map.dataRepository.RecentDataRepository
+import campus.tech.kakao.map.data.RecentSearchData
 
 class RecentViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: RecentDataRepository = RecentDataRepository(application)
