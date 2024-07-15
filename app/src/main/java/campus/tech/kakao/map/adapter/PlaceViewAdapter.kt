@@ -59,7 +59,7 @@ class PlaceViewHolder(itemView: View, val listener: OnClickPlaceListener) :
     fun bind(place : Place){
         currentPlace = place
         name.text = place.name
-        location.text = place.location
-        category.text = place.category
+        location.text = place.location ?: ""
+        category.text = place.category ?: ""
     }
 }

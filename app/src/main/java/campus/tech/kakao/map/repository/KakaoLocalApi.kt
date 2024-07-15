@@ -12,5 +12,5 @@ interface KakaoLocalApi {
         @Header("Authorization") key: String,
         @Query("query") query: String
 
-    ): Call<ResultSearch>
+        ): Call<ResultSearch>
 }
