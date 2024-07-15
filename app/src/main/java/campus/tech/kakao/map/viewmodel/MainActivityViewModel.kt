@@ -45,9 +45,9 @@ class MainActivityViewModel(
         getSavedPlace()
     }
 
-    fun getKakaoLocalData(text:String){
-        if (text.isNotEmpty())
-        kakaoLocalRepository.getPlaceData(text) { placeList ->
+    suspend fun getKakaoLocalData(text:String){
+        if (text.isNotEmpty()){
+            val placeList = kakaoLocalRepository.getPlaceData(text)
             _place.value = (placeList)
         }
         else _place.value = listOf<Place>()
