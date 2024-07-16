@@ -2,6 +2,7 @@ package campus.tech.kakao.map.model.datasource
 
 import android.util.Log
 import campus.tech.kakao.map.model.Location
+import campus.tech.kakao.map.model.Location.Companion.toLocation
 import campus.tech.kakao.map.model.LocationDto
 import campus.tech.kakao.map.model.repository.KakaoAPI
 import campus.tech.kakao.map.model.repository.RetrofitInstance
@@ -27,6 +28,6 @@ class LocationRemoteDataSource {
 
     private fun toLocations(locationDtos: List<LocationDto>) =
         locationDtos.map {
-            Location.toLocation(it)
+            it.toLocation()
         }
 }

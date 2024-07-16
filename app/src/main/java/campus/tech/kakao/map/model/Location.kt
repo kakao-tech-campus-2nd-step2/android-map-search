@@ -6,8 +6,8 @@ data class Location(
     val category: String
 ){
     companion object {
-        fun toLocation(locationDto: LocationDto): Location {
-            return Location(locationDto.title, locationDto.address, locationDto.category)
+        fun LocationDto.toLocation(): Location {
+            return Location(title, address, category)
         }
     }
 }
