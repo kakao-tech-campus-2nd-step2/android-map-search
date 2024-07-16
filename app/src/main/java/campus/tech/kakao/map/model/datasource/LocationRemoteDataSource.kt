@@ -19,10 +19,9 @@ class LocationRemoteDataSource {
     private val client = RetrofitInstance.getInstance().create(KakaoAPI::class.java)
 
     suspend fun getLocations(keyword: String): List<Location> {
-        val kakaoRestApiKey = "KakaoAK " + campus.tech.kakao.map.BuildConfig.KAKAO_REST_API_KEY
 
         return withContext(Dispatchers.IO){
-            val response = client.searchFromKeyword(kakaoRestApiKey, keyword, RESULT_SIZE)
+            val response = client.searchFromKeyword(keyword, RESULT_SIZE)
             val locationDtos: List<LocationDto> = response.body()?.documents ?: emptyList()
             Log.d("jieun", "locationDtos: " + locationDtos)
             toLocations(locationDtos)
