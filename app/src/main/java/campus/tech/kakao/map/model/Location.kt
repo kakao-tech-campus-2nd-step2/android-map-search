@@ -7,7 +7,7 @@ data class Location(
 ){
     companion object {
         fun toLocation(locationDto: LocationDto): Location {
-            return Location(locationDto.place_name, locationDto.address_name, locationDto.category_group_name)
+            return Location(locationDto.title, locationDto.address, locationDto.category)
         }
     }
 }
