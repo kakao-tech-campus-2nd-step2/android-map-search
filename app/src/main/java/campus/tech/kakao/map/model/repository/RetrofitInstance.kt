@@ -1,16 +1,12 @@
-package campus.tech.kakao.map.retrofit
+package campus.tech.kakao.map.model.repository
 
-import android.content.Context
 import android.os.Looper
-import android.widget.Toast
 import campus.tech.kakao.map.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.logging.Handler
-import kotlin.coroutines.coroutineContext
 
 object RetrofitInstance {
     val retrofitClient = Retrofit.Builder()
