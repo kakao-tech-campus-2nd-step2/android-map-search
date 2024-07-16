@@ -1,9 +1,9 @@
 package campus.tech.kakao.map
 
-import android.provider.BaseColumns
 import androidx.annotation.DrawableRes
 
 data class Place (
+    val id: Int? = null,
     @DrawableRes val img: Int,
     val name: String,
     val location: String,

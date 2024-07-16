@@ -13,11 +13,6 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kakao.sdk.common.util.Utility
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,7 +26,6 @@ class MainActivity : AppCompatActivity() {
     private var researchList = mutableListOf<Place>()
     private lateinit var resultAdapter: RecyclerViewAdapter
     private lateinit var tapAdapter: TapViewAdapter
-    private var textWatcher: TextWatcher? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,16 +40,15 @@ class MainActivity : AppCompatActivity() {
 
         placeRepository = PlaceRepository(this)
         placeRepository.reset()
-        placeRepository.insertInitialData()
-        placeList = placeRepository.returnPlaceList()
-        Log.d("test_arieum", "$placeList")
-        //resultAdapter = RecyclerViewAdapter(placeList, placeRepository)
-        resultAdapter = RecyclerViewAdapter(placeList) {
+        placeList = placeRepository.insertInitialData()
+
+        resultAdapter = RecyclerViewAdapter {
             placeRepository.insertLog(it)
             addResearchList(it)
         }
         recyclerView.adapter = resultAdapter
         recyclerView.layoutManager = LinearLayoutManager(this)
+        resultAdapter.submitList(placeList)
 
         researchList = placeRepository.getResearchEntries().toMutableList()
         tapAdapter = TapViewAdapter(researchList) {
@@ -67,9 +60,19 @@ class MainActivity : AppCompatActivity() {
 
         updateTabRecyclerViewVisibility()
 
-        textWatcher = input.addTextChangedListener(
-            afterTextChanged = { s -> filterList(s.toString())}
-        )
+        input.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // 미사용
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // 미사용
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                filterList(s.toString())
+            }
+        })
 
         researchCloseButton.setOnClickListener {
             input.setText("")
@@ -92,10 +95,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             noResultTextView.isGone = true
             recyclerView.isVisible = true
-            resultAdapter.placeList = filteredList.toMutableList()
-            resultAdapter.notifyDataSetChanged()
-            //resultAdapter.notifyItemRangeChanged(0, filteredList.size)
-            //resultAdapter.updatePlaceList(filteredList.toMutableList())
+            resultAdapter.submitList(filteredList.toMutableList())
         }
     }
 
@@ -116,17 +116,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun updateTabRecyclerViewVisibility() {
-        if (placeRepository.hasResearchEntries()) {
-            tabRecyclerView.isVisible = true
-        } else {
-            tabRecyclerView.isGone = true
-        }
+    private fun updateTabRecyclerViewVisibility() {
+        tabRecyclerView.isVisible = placeRepository.hasResearchEntries()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        textWatcher?.let { input.removeTextChangedListener(it) }
+        input.removeTextChangedListener(null)
     }
 }
 

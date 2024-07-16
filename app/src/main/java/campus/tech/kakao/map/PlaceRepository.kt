@@ -87,34 +87,11 @@ class PlaceRepository(context: Context) {
         }
     }
 
-    fun insertInitialData() {
+    fun insertInitialData(): MutableList<Place> {
         //kakao에서 데이터 가져와서 place 객체 생성하기
         val apiKey = "KakaoAK " + BuildConfig.KAKAO_REST_API_KEY
-        Log.d("KakaoAPI", BuildConfig.KAKAO_REST_API_KEY)
 
-        var instance: Retrofit? = null
-        val CONNECT_TIMEOUT_SEC = 20000L
-
-        val interceptor = HttpLoggingInterceptor()
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
-
-        // OKHttpClient에 로깅인터셉터 등록
-        val client = OkHttpClient.Builder()
-            .addInterceptor(interceptor)
-            .connectTimeout(CONNECT_TIMEOUT_SEC, TimeUnit.SECONDS)
-            .build()
-        val retrofitService = Retrofit.Builder()
-            .baseUrl("https://dapi.kakao.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(client)
-            .build()
-            .create(KakaoApiService::class.java)
-
-        val centerX = "127.027610"
-        val centerY = "37.497942"
-        val radius = 20000
-
-        retrofitService.getPlace(apiKey, "CE7", centerX, centerY, radius)
+        RetrofitObject.retrofitService.getPlace(apiKey, "CE7")
             .enqueue(object : Callback<KakaoResponse> {
                 override fun onResponse(
                     call: Call<KakaoResponse>,
@@ -124,7 +101,7 @@ class PlaceRepository(context: Context) {
                     if (response.isSuccessful) {
                         val documentList = response.body()?.documents
                         documentList?.forEach {
-                            val place = Place(R.drawable.cafe, it.place_name, it.address_name, PlaceCategory.CAFE)
+                            val place = Place(img = R.drawable.cafe, name = it.placeName, location = it.addressName, category = PlaceCategory.CAFE)
                             placeList.add(place)
                             insertPlace(place)
                         }
@@ -139,7 +116,7 @@ class PlaceRepository(context: Context) {
                 }
             })
 
-        retrofitService.getPlace(apiKey, "PM9", centerX, centerY, radius)
+        RetrofitObject.retrofitService.getPlace(apiKey, "PM9")
             .enqueue(object : Callback<KakaoResponse> {
                 override fun onResponse(
                     call: Call<KakaoResponse>,
@@ -148,7 +125,7 @@ class PlaceRepository(context: Context) {
                     if (response.isSuccessful) {
                         val documentList = response.body()?.documents
                         documentList?.forEach {
-                            val place = Place(R.drawable.hospital, it.place_name, it.address_name, PlaceCategory.PHARMACY)
+                            val place = Place(img = R.drawable.hospital, name = it.placeName, location = it.addressName, category = PlaceCategory.PHARMACY)
                             placeList.add(place)
                             insertPlace(place)
                         }
@@ -162,9 +139,8 @@ class PlaceRepository(context: Context) {
                     Log.d("KakaoAPI", "Failure: ${t.message}")
                 }
             })
+        return placeList
     }
-
-    fun returnPlaceList() = placeList
 
     fun hasResearchEntries() : Boolean {
         val db = dbHelper.readableDatabase
@@ -172,8 +148,8 @@ class PlaceRepository(context: Context) {
             val cursor = db.rawQuery("SELECT COUNT(*) FROM ${MyPlaceContract.Research.TABLE_NAME}", null)
             try {
                 return if (cursor.moveToFirst()) {
-                    val count = cursor.getIntOrNull(0)
-                    count!! > 0
+                    val count = cursor.getIntOrNull(0) ?: 0
+                    count > 0
                 } else {
                     false
                 }
@@ -202,12 +178,12 @@ class PlaceRepository(context: Context) {
             val researchList = mutableListOf<Place>()
             try {
                 while (cursor.moveToNext()) {
-                    val img = cursor.getInt(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_IMG))
+                    var img = cursor.getInt(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_IMG))
                     val name = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_NAME))
                     val location = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_LOCATION))
                     val categoryDisplayName = cursor.getString(cursor.getColumnIndexOrThrow(MyPlaceContract.Research.COLUMN_CATEGORY))
                     val category = PlaceCategory.fromCategory(categoryDisplayName)
-                    val place = Place(img, name, location, category)
+                    val place = Place(img = img, name = name, location = location, category = category)
                     researchList.add(place)
                 }
             } finally {
@@ -218,7 +194,6 @@ class PlaceRepository(context: Context) {
             db.close()
         }
     }
-
 
     fun deleteResearchEntry(place: Place) {
         val db = dbHelper.writableDatabase
@@ -236,4 +211,12 @@ class PlaceRepository(context: Context) {
         }
     }
 
+    object RetrofitObject {
+        val retrofitService: KakaoApiService by lazy { Retrofit.Builder()
+            .baseUrl("https://dapi.kakao.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(KakaoApiService::class.java)
+        }
+    }
 }

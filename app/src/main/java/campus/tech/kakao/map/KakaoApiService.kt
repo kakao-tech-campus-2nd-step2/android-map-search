@@ -10,8 +10,5 @@ interface KakaoApiService {
     fun getPlace(
         @Header("Authorization") apiKey: String,
         @Query("category_group_code") categoryGroupCode: String,
-        @Query("x") x: String,
-        @Query("y") y: String,
-        @Query("radius") radius: Int
     ): Call<KakaoResponse>
 }

@@ -44,9 +44,11 @@ class MapViewActivity : AppCompatActivity() {
             Log.e("MapViewActivity", "Exception during mapView.start", e)
         }
 
-        searchTextview.setOnClickListener {
-            startActivity(Intent(this@MapViewActivity, MainActivity::class.java))
-        }
+        searchTextview.setOnClickListener { onSearchTextViewClick() }
+    }
+
+    private fun onSearchTextViewClick() {
+        startActivity(Intent(this@MapViewActivity, MainActivity::class.java))
     }
 
     override fun onResume() {

@@ -15,7 +15,7 @@ class PlaceDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME,
 
         private const val SQL_CREATE_PLACE_TABLE =
             "CREATE TABLE ${MyPlaceContract.Place.TABLE_NAME} (" +
-                    "${BaseColumns._ID} INTEGER PRIMARY KEY," +
+                    "${BaseColumns._ID} INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "${MyPlaceContract.Place.COLUMN_IMG} INTEGER," +
                     "${MyPlaceContract.Place.COLUMN_NAME} TEXT," +
                     "${MyPlaceContract.Place.COLUMN_CATEGORY} TEXT," +
@@ -23,7 +23,7 @@ class PlaceDbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME,
 
         private const val SQL_CREATE_RESEARCH_TABLE =
             "CREATE TABLE ${MyPlaceContract.Research.TABLE_NAME} (" +
-                "${BaseColumns._ID} INTEGER PRIMARY KEY," +
+                "${BaseColumns._ID} INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "${MyPlaceContract.Research.COLUMN_IMG} INTEGER," +
                 "${MyPlaceContract.Research.COLUMN_NAME} TEXT," +
                 "${MyPlaceContract.Research.COLUMN_CATEGORY} TEXT," +
