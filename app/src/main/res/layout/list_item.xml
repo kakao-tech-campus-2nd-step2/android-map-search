@@ -4,8 +4,8 @@
 
     <data>
         <variable
-            name="location"
-            type="campus.tech.kakao.map.model.Location" />
+            name="place"
+            type="campus.tech.kakao.map.domain.model.Place" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -25,27 +25,27 @@
             android:id="@+id/tvName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{location.name}"
-            android:textSize="32sp"
+            android:text="@{place.place}"
+            android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/imgLocation"
             app:layout_constraintTop_toTopOf="parent"/>
 
         <TextView
-            android:id="@+id/tvLocation"
+            android:id="@+id/tvPlace"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{location.location}"
+            android:text="@{place.address}"
             android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/imgLocation"
             app:layout_constraintTop_toBottomOf="@id/tvName"/>
 
         <TextView
-            android:id="@+id/tvType"
+            android:id="@+id/tvCategory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{location.type}"
+            android:text="@{place.category}"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"

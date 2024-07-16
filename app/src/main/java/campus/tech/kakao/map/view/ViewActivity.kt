@@ -1,103 +1,80 @@
 package campus.tech.kakao.map.view
 
-import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import campus.tech.kakao.map.BuildConfig
+import campus.tech.kakao.map.PlaceApplication
 import campus.tech.kakao.map.R
+import campus.tech.kakao.map.domain.model.ResultSearchKeyword
 import campus.tech.kakao.map.databinding.ActivityMainBinding
-import campus.tech.kakao.map.model.Location
-import campus.tech.kakao.map.model.Repository
-import campus.tech.kakao.map.view.adapter.LocationAdapter
+import campus.tech.kakao.map.view.adapter.SearchedPlaceAdapter
 import campus.tech.kakao.map.view.adapter.LogAdapter
-import campus.tech.kakao.map.viewmodel.LocationViewModel
-import campus.tech.kakao.map.viewmodel.LocationViewModelFactory
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import campus.tech.kakao.map.data.net.RetrofitApiClient
+import campus.tech.kakao.map.domain.model.Place
+import campus.tech.kakao.map.util.PlaceMapper
+import com.kakao.sdk.common.util.Utility
 
 class ViewActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var viewModel: LocationViewModel
-    private lateinit var locationAdapter: LocationAdapter
+    private lateinit var searchedPlaceAdapter: SearchedPlaceAdapter
     private lateinit var logAdapter: LogAdapter
+    private lateinit var viewModel: PlaceViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         init()
     }
 
-    override fun onStop() {
-        super.onStop()
-        saveLog()
-    }
-    private fun saveLog(){
-        viewModel.saveLog()
-    }
-
-    private fun init(){
-        initBinding()
+    private fun init() {
         initViewModel()
+        initBinding()
         setupRecyclerViews()
         observeViewModel()
+    }
+
+    private fun initViewModel() {
+        viewModel = ViewModelProvider(this, PlaceViewModel.provideFactory(application as PlaceApplication))
+            .get(PlaceViewModel::class.java)
     }
 
     private fun initBinding() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.lifecycleOwner = this
-    }
-
-    private fun initViewModel() {
-        val factory = createViewModelFactory()
-        viewModel = ViewModelProvider(this,factory).get(LocationViewModel::class.java)
         binding.viewModel = viewModel
     }
 
-    private fun createViewModelFactory(): LocationViewModelFactory{
-        val repository = createRepository()
-        return LocationViewModelFactory(repository)
-    }
-
-    private fun createRepository() = Repository(this)
-
     private fun setupRecyclerViews() {
-        setupLocationRecyclerView()
+        setupSearchedPlaceRecyclerView()
         setupLogRecyclerView()
     }
 
-    private fun setupLocationRecyclerView(){
-        initLocationAdapter()
-        configureLocationRecyclerView()
-    }
+    private fun setupSearchedPlaceRecyclerView() {
+        val searchedPlaceRecyclerView = binding.recyclerPlace
+        searchedPlaceAdapter = SearchedPlaceAdapter { place -> viewModel.updateLogs(place) }
 
-    private fun initLocationAdapter() {
-        locationAdapter = LocationAdapter { location -> viewModel.addLog(location) }
-    }
-
-    private fun configureLocationRecyclerView(){
-        val locationRecyclerView = binding.recyclerLocation
-
-        locationRecyclerView.apply {
+        searchedPlaceRecyclerView.apply {
             layoutManager = LinearLayoutManager(this@ViewActivity)
-            adapter = locationAdapter
+            adapter = searchedPlaceAdapter
         }
     }
 
-    private fun setupLogRecyclerView(){
-        initLogAdapter()
-        configureLogRecyclerView()
-    }
-
-    private fun initLogAdapter() {
-        logAdapter = LogAdapter{position -> viewModel.removeLog(position)}
-    }
-
-    private fun configureLogRecyclerView(){
+    private fun setupLogRecyclerView() {
         val logRecyclerView = binding.recyclerLog
+        logAdapter = LogAdapter { id -> viewModel.removeLog(id) }
+        logAdapter.submitList(viewModel.getLogs())
 
         logRecyclerView.apply {
             layoutManager = LinearLayoutManager(this@ViewActivity, RecyclerView.HORIZONTAL, false)
@@ -106,9 +83,11 @@ class ViewActivity : AppCompatActivity() {
     }
 
     private fun observeViewModel() {
-        viewModel.searchText.observe(this, Observer { searchText ->
-            updateLocationList(searchText)
-            updateHelpMessageVisibility()
+
+        viewModel.places.observe(this, Observer { places ->
+            updateSearchedPlaceList(places)
+            binding.tvHelpMessage.visibility=
+                if (places.isEmpty()) View.VISIBLE else View.GONE
         })
 
         viewModel.logList.observe(this, Observer { logList ->
@@ -116,14 +95,7 @@ class ViewActivity : AppCompatActivity() {
         })
     }
 
-    private fun updateLocationList(searchText: String){
-        val foundLocations =viewModel.findData(searchText)
-
-        locationAdapter.submitList(foundLocations)
-    }
-
-    private fun updateHelpMessageVisibility(){
-        binding.tvHelpMessage.visibility =
-            if (locationAdapter.itemCount > 0) View.GONE else View.VISIBLE
+    private fun updateSearchedPlaceList(places: List<Place>) {
+        searchedPlaceAdapter.submitList(places)
     }
 }
