@@ -17,12 +17,17 @@ class KakaoLocalRepository {
     suspend fun getPlaceData(text: String) : List<Place> {
         Log.d("inputField", "inputText : ${text} ")
         Log.d("coroutineTest", "getPlaceData")
+        val emptyList = listOf<Place>()
         val retrofitService = Retrofit.Builder()
             .baseUrl(BuildConfig.KAKAO_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val kakaoApi = retrofitService.create(KakaoLocalApi::class.java)
-        val placeList = kakaoApi.getPlaceData(BuildConfig.KAKAO_LOCAL_API_KEY, text)
-        return placeList.documents
+        return try{
+            val placeList = kakaoApi.getPlaceData(BuildConfig.KAKAO_LOCAL_API_KEY, text)
+            placeList.documents ?: emptyList
+        } catch (e : Exception){
+            emptyList
+        }
     }
 }
