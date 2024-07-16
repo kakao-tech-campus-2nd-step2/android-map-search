@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
     private lateinit var locationDbHelper: LocationDbHelper
     private lateinit var locationDbAccessor: LocationLocalRepository
     private lateinit var locationRemoteRepository: LocationRemoteRepository
+    private lateinit var locationDbAccessor: LocationDbAccessor
 
     private lateinit var clearButton: ImageView
     private lateinit var searchEditText: EditText

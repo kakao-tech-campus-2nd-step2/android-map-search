@@ -11,6 +11,7 @@ class LocationViewModel(
     private val locationLocalRepository: LocationLocalRepository,
     private val locationRemoteRepository: LocationRemoteRepository
 ) : ViewModel() {
+
     private val _locations = MutableLiveData<List<Location>>()
 
     private val _searchedLocations = MutableLiveData<List<Location>>()
