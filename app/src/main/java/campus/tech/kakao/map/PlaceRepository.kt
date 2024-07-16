@@ -5,11 +5,14 @@ import android.content.Context
 import android.provider.BaseColumns
 import android.util.Log
 import androidx.core.database.getIntOrNull
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 class PlaceRepository(context: Context) {
     private val dbHelper = PlaceDbHelper(context)
@@ -87,18 +90,37 @@ class PlaceRepository(context: Context) {
     fun insertInitialData() {
         //kakao에서 데이터 가져와서 place 객체 생성하기
         val apiKey = "KakaoAK " + BuildConfig.KAKAO_REST_API_KEY
+        Log.d("KakaoAPI", BuildConfig.KAKAO_REST_API_KEY)
+
+        var instance: Retrofit? = null
+        val CONNECT_TIMEOUT_SEC = 20000L
+
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+
+        // OKHttpClient에 로깅인터셉터 등록
+        val client = OkHttpClient.Builder()
+            .addInterceptor(interceptor)
+            .connectTimeout(CONNECT_TIMEOUT_SEC, TimeUnit.SECONDS)
+            .build()
         val retrofitService = Retrofit.Builder()
             .baseUrl("https://dapi.kakao.com/")
             .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
             .build()
             .create(KakaoApiService::class.java)
 
-        retrofitService.getPlace(apiKey, "CE7")
+        val centerX = "127.027610"
+        val centerY = "37.497942"
+        val radius = 20000
+
+        retrofitService.getPlace(apiKey, "CE7", centerX, centerY, radius)
             .enqueue(object : Callback<KakaoResponse> {
                 override fun onResponse(
                     call: Call<KakaoResponse>,
                     response: Response<KakaoResponse>
                 ) {
+                    Log.d("KakaoApi", "KakaoAPI")
                     if (response.isSuccessful) {
                         val documentList = response.body()?.documents
                         documentList?.forEach {
@@ -117,7 +139,7 @@ class PlaceRepository(context: Context) {
                 }
             })
 
-        retrofitService.getPlace(apiKey, "PM9")
+        retrofitService.getPlace(apiKey, "PM9", centerX, centerY, radius)
             .enqueue(object : Callback<KakaoResponse> {
                 override fun onResponse(
                     call: Call<KakaoResponse>,

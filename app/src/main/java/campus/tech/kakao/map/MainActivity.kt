@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         placeRepository.reset()
         placeRepository.insertInitialData()
         placeList = placeRepository.returnPlaceList()
-
+        Log.d("test_arieum", "$placeList")
         //resultAdapter = RecyclerViewAdapter(placeList, placeRepository)
         resultAdapter = RecyclerViewAdapter(placeList) {
             placeRepository.insertLog(it)
