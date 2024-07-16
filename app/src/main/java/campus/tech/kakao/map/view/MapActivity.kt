@@ -25,6 +25,7 @@ class MapActivity : AppCompatActivity() {
         mapView = findViewById(R.id.map_view)
         inputText = findViewById(R.id.MapinputText)
 
+
         mapView.start(
             object : MapLifeCycleCallback() {
                 override fun onMapDestroy() {}
@@ -38,8 +39,6 @@ class MapActivity : AppCompatActivity() {
                     val mapCenter = LatLng.from(37.566, 126.978)  // 서울시청 좌표
                     kakaoMap.moveCamera(CameraUpdateFactory.newCenterPosition(mapCenter))
                     kakaoMap.moveCamera(CameraUpdateFactory.zoomTo(15))
-
-
                 }
             }
         )
@@ -48,6 +47,21 @@ class MapActivity : AppCompatActivity() {
             val intent = Intent(this@MapActivity, MainActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mapView.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView.pause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mapView.finish()
     }
 
 }

@@ -9,7 +9,9 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import campus.tech.kakao.map.BuildConfig
@@ -21,6 +23,7 @@ import campus.tech.kakao.map.Model.Place
 import campus.tech.kakao.map.R
 import campus.tech.kakao.map.Model.SearchCallback
 import campus.tech.kakao.map.Model.SearchResult
+import campus.tech.kakao.map.viewmodel.MainViewModel
 import campus.tech.kakao.map.viewmodel.SearchViewAdapter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -39,9 +42,18 @@ class MainActivity : AppCompatActivity() {
     private var locationList = ArrayList<LocationData>()
     private var searchList = ArrayList<LocationData>()
 
+    private val mainViewModel: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        mainViewModel.setUiStateChangedListener {uiState ->
+            locationList.clear()
+            locationList.addAll(uiState.locationList)
+            updateRecyclerView()
+            resultView.isVisible = uiState.isShowText
+        }
 
         initialize()
         loadSearchList()
@@ -122,7 +134,7 @@ class MainActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                searchLocations(s.toString())
+                mainViewModel.searchLocations(s.toString())
             }
 
             override fun afterTextChanged(s: Editable?) {}
@@ -147,31 +159,9 @@ class MainActivity : AppCompatActivity() {
         saveSearchList()
         Log.d("MainActivity", "Item clicked: ${locationData.name}")
     }
-    private fun searchLocations(key: String) {
-        val apiService = RetrofitClient.instance
-        val call: Call<SearchResult> = apiService.searchPlaces(BuildConfig.API_KEY, key)
-        call.enqueue(SearchCallback(this))
-    }
-
-    fun updateSearchResults(results: List<Place>) {
-        locationList.clear()
-        for (result in results) {
-            locationList.add(LocationData(result.place_name, result.address_name, result.category_group_name))
-        }
-        updateRecyclerView()
-        isShowText()
-    }
 
     private fun updateRecyclerView() {
         locationAdapter.notifyDataSetChanged()
-    }
-
-    private fun isShowText() {
-        if (locationList.isEmpty()) {
-            resultView.visibility = View.VISIBLE
-        } else {
-            resultView.visibility = View.GONE
-        }
     }
 
     override fun onDestroy() {
