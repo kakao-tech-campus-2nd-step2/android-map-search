@@ -8,7 +8,9 @@ plugins {
 android {
     namespace = "campus.tech.kakao.map"
     compileSdk = 34
-
+    buildFeatures {
+        buildConfig = true
+    }
     defaultConfig {
         applicationId = "campus.tech.kakao.map"
         minSdk = 26
@@ -16,8 +18,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        resValue("string", "KAKAO_API_KEY", getApiKey("KAKAO_API_KEY"))
-        resValue("string", "KAKAO_REST_API_KEY", getApiKey("KAKAO_REST_API_KEY"))
+        buildConfigField("String", "KAKAO_API_KEY", getApiKey("KAKAO_API_KEY"))
+        buildConfigField("String", "KAKAO_REST_API_KEY", getApiKey("KAKAO_REST_API_KEY"))
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

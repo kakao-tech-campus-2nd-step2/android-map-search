@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import campus.tech.kakao.map.BuildConfig
 import campus.tech.kakao.map.R
 import campus.tech.kakao.map.view.search.MainActivity
 import com.kakao.vectormap.KakaoMap
@@ -39,7 +40,7 @@ class MapActivity : AppCompatActivity() {
     }
 
     private fun setupMapView() {
-        KakaoMapSdk.init(this, getKakaoNativeApiKey());
+        KakaoMapSdk.init(this, BuildConfig.KAKAO_API_KEY);
         mapView.start(object : MapLifeCycleCallback() {
             override fun onMapDestroy() {
                 // 지도 API 가 정상적으로 종료될 때 호출됨
@@ -56,10 +57,5 @@ class MapActivity : AppCompatActivity() {
                 Log.d("jieun", "onMapReady")
             }
         })
-    }
-
-    private fun getKakaoNativeApiKey(): String {
-        val restApiKey = getString(R.string.KAKAO_API_KEY)
-        return restApiKey
     }
 }

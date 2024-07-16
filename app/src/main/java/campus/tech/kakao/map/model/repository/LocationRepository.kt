@@ -26,7 +26,7 @@ class LocationRepository(
         return locationLocalRepository.getLocations()
     }
 
-    suspend fun getLocationRemote(restApiKey: String, query: String): List<Location> {
-        return locationRemoteRepository.getLocations(restApiKey, query)
+    suspend fun getLocationRemote(query: String): List<Location> {
+        return locationRemoteRepository.getLocations(query)
     }
 }

@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import campus.tech.kakao.map.BuildConfig
 import campus.tech.kakao.map.model.datasource.LocationLocalDataSource
 import campus.tech.kakao.map.model.datasource.LocationRemoteDataSource
 import campus.tech.kakao.map.R
@@ -55,11 +56,6 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         setupRecyclerViews()
     }
 
-    private fun getKakaoRestApiKey(): String {
-        val kakaoRestApiKey = "KakaoAK " + getString(R.string.KAKAO_REST_API_KEY)
-        return kakaoRestApiKey
-    }
-
     private fun initViews() {
         locationDbHelper = LocationDbHelper(this)
         locationLocalDataSource = LocationLocalDataSource(locationDbHelper)
@@ -86,7 +82,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val query = s.toString()
-                locationViewModel.searchLocationsFromKakaoAPI(getKakaoRestApiKey(), query) {searchLocationsSize ->
+                locationViewModel.searchLocationsFromKakaoAPI(query) {searchLocationsSize ->
                     if (searchLocationsSize > 0) {
                         noResultTextView.visibility = View.GONE
                     } else {
