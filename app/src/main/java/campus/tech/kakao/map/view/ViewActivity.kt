@@ -83,13 +83,6 @@ class ViewActivity : AppCompatActivity() {
     }
 
     private fun observeViewModel() {
-        viewModel.searchText.observe(this, Observer { searchText ->
-            if(searchText.isEmpty()) {
-                viewModel.updatePlaces(emptyList())
-            } else {
-            searchKeyword(searchText)
-        }
-        })
 
         viewModel.places.observe(this, Observer { places ->
             updateSearchedPlaceList(places)
@@ -99,46 +92,6 @@ class ViewActivity : AppCompatActivity() {
 
         viewModel.logList.observe(this, Observer { logList ->
             logAdapter.submitList(logList)
-        })
-    }
-
-
-    fun searchKeyword(keyword: String) {
-        val places = mutableListOf<Place>()
-        searchKeyword(keyword, places, 1)
-    }
-    private fun searchKeyword(keyword: String, places: MutableList<Place>, page: Int) {
-        if (page > 5) {
-            viewModel.updatePlaces(places)
-            return
-        }
-
-        val retrofit = RetrofitApiClient.api
-            .getSearchKeyword(BuildConfig.KAKAO_REST_API_KEY, keyword, 15, page)
-
-        retrofit.enqueue(object : Callback<ResultSearchKeyword> {
-            override fun onResponse(
-                call: Call<ResultSearchKeyword>,
-                response: Response<ResultSearchKeyword>
-            ) {
-                if (response.isSuccessful) {
-                    response.body()?.let { result ->
-                        val mappedplaces = PlaceMapper.mapPlaces(result.documents)
-                        places.addAll(mappedplaces)
-                        if (!result.meta.is_end) {
-                            searchKeyword(keyword, places, page + 1)
-                        } else {
-                            viewModel.updatePlaces(places)
-                        }
-                    }
-                } else {
-                    viewModel.updatePlaces(places)
-                }
-            }
-
-            override fun onFailure(call: Call<ResultSearchKeyword>, t: Throwable) {
-                Log.w("pjh", "통신 실패: ${t.message}")
-            }
         })
     }
 

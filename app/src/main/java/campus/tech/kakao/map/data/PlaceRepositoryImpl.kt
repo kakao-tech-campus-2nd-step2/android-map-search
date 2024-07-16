@@ -40,6 +40,24 @@ class PlaceRepositoryImpl(context: Context):
         return places
     }
 
+    override fun getAllPlaces(): List<Place> {
+        val places = mutableListOf<Place>()
+        val cursor = readableDatabase.query(
+            PlaceContract.TABLE_NAME,
+            null, null, null, null, null, null
+        )
+        cursor?.use {
+            while (it.moveToNext()) {
+                val id = it.getString(it.getColumnIndexOrThrow(PlaceContract.COLUMN_ID))
+                val name = it.getString(it.getColumnIndexOrThrow(PlaceContract.COLUMN_NAME))
+                val place = it.getString(it.getColumnIndexOrThrow(PlaceContract.COLUMN_LOCATION))
+                val type = it.getString(it.getColumnIndexOrThrow(PlaceContract.COLUMN_TYPE))
+                places.add(Place(id, name, place, type))
+            }
+        }
+        return places
+    }
+
     override fun updatePlaces(places: List<Place>) {
         val db = writableDatabase
 
