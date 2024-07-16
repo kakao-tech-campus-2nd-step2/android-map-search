@@ -3,6 +3,7 @@ package campus.tech.kakao.map
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
@@ -26,6 +27,8 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
     private lateinit var savedLocationRecyclerView: RecyclerView
 
     private lateinit var locationDbHelper: LocationDbHelper
+    private lateinit var locationDbAccessor: LocationLocalRepository
+    private lateinit var locationRemoteRepository: LocationRemoteRepository
     private lateinit var locationDbAccessor: LocationDbAccessor
 
     private lateinit var clearButton: ImageView
@@ -37,18 +40,23 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         setContentView(R.layout.activity_main)
 
         initViews()
-        locationViewModel.insertLocation()
-
         setupSearchEditText()
         setupClearButton()
         setupViewModels()
         setupRecyclerViews()
     }
+
+    private fun getKakaoRestApiKey(): String {
+        val kakaoRestApiKey = "KakaoAK " + getString(R.string.KAKAO_REST_API_KEY)
+        return kakaoRestApiKey
+    }
+
     private fun initViews() {
         locationDbHelper = LocationDbHelper(this)
-        locationDbAccessor = LocationDbAccessor(locationDbHelper)
+        locationDbAccessor = LocationLocalRepository(locationDbHelper)
+        locationRemoteRepository = LocationRemoteRepository()
 
-        locationViewModel = ViewModelProvider(this, LocationViewModelFactory(locationDbAccessor)
+        locationViewModel = ViewModelProvider(this, LocationViewModelFactory(locationDbAccessor, locationRemoteRepository)
         ).get(LocationViewModel::class.java)
         locationRecyclerView = findViewById(R.id.locationRecyclerView)
 
@@ -67,12 +75,12 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val query = s.toString()
-                val size: Int = locationViewModel.searchLocations(query)
-
-                if (size > 0) {
-                    noResultTextView.visibility = View.GONE
-                } else {
-                    noResultTextView.visibility = View.VISIBLE
+                locationViewModel.searchLocationsFromKakaoAPI(getKakaoRestApiKey(),query){
+                    if (locationViewModel.getSearchedLocationsSize() > 0) {
+                        noResultTextView.visibility = View.GONE
+                    } else {
+                        noResultTextView.visibility = View.VISIBLE
+                    }
                 }
             }
 
@@ -90,7 +98,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         savedLocationViewModel.setSavedLocation()
         observeSavedLocationViewModel()
 
-        locationViewModel.setLocations()
+        locationViewModel.setLocationsFromKakaoAPI()
         observeLocationsViewModel()
     }
 

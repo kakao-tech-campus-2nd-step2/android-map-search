@@ -6,11 +6,12 @@ import androidx.lifecycle.viewmodel.CreationExtras
 
 class ViewModelFactory {
     class LocationViewModelFactory(
-        private val locationDbAccessor: LocationDbAccessor
+        private val locationLocalRepository: LocationLocalRepository,
+        private val locationRemoteRepository: LocationRemoteRepository
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
             if (modelClass.isAssignableFrom(LocationViewModel::class.java)) {
-                return LocationViewModel(locationDbAccessor) as T
+                return LocationViewModel(locationLocalRepository, locationRemoteRepository) as T
             } else {
                 throw IllegalArgumentException()
             }
@@ -18,7 +19,7 @@ class ViewModelFactory {
     }
 
     class SavedLocationViewModelFactory(
-        private val locationDbAccessor: LocationDbAccessor
+        private val locationDbAccessor: LocationLocalRepository
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
             if (modelClass.isAssignableFrom(SavedLocationViewModel::class.java)) {
