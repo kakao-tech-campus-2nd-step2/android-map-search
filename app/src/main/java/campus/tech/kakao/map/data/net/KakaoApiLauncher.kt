@@ -32,7 +32,6 @@ class KakaoApiLauncher {
                 if (response.isSuccessful) {
                     response.body()?.let {
                         val places = PlaceMapper.mapPlaces(it.documents)
-                        Log.d("kakaoapi", places.toString())
                         onSuccess(places)
                     }
                 } else {
