@@ -9,6 +9,7 @@ import campus.tech.kakao.map.retrofit.KakaoAPI
 import campus.tech.kakao.map.retrofit.RetrofitInstance
 import com.android.identity.BuildConfig
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class LocationRemoteDataSource {
     companion object{
@@ -20,11 +21,12 @@ class LocationRemoteDataSource {
     suspend fun getLocations(keyword: String): List<Location> {
         val kakaoRestApiKey = "KakaoAK " + campus.tech.kakao.map.BuildConfig.KAKAO_REST_API_KEY
 
-        val response = client.searchFromKeyword(kakaoRestApiKey, keyword, RESULT_SIZE)
-        val locationDtos: List<LocationDto> = response.body()?.documents ?: emptyList()
-        Log.d("jieun", "locationDtos: " + locationDtos)
-
-        return toLocations(locationDtos)
+        return withContext(Dispatchers.IO){
+            val response = client.searchFromKeyword(kakaoRestApiKey, keyword, RESULT_SIZE)
+            val locationDtos: List<LocationDto> = response.body()?.documents ?: emptyList()
+            Log.d("jieun", "locationDtos: " + locationDtos)
+            toLocations(locationDtos)
+        }
     }
 
     private fun toLocations(locationDtos: List<LocationDto>) =
