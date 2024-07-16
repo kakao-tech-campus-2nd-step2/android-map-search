@@ -8,19 +8,27 @@
     tools:context=".view.map.MapActivity"
     android:background="@color/white">
 
+    <com.kakao.vectormap.MapView
+        android:id="@+id/map_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="parent" />
+
     <EditText
         android:id="@+id/SearchEditTextInMap"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="80dp"
         android:hint="검색어를 입력해주세요."
-        app:layout_constraintHeight_percent="0.08"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:focusable="false"
-        android:layout_margin="10dp"
+        android:layout_margin="15dp"
         android:paddingLeft="15dp"
-        android:background="@drawable/edittext_shadow"/>
+        android:background="@drawable/edittext_shadow"
+        android:elevation="4dp"/>
 
     <ImageView
         android:layout_width="30dp"
@@ -29,13 +37,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/SearchEditTextInMap"
         app:layout_constraintEnd_toEndOf="@+id/SearchEditTextInMap"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginRight="10dp"/>
-
-    <com.kakao.vectormap.MapView
-        android:id="@+id/map_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.9"
-        app:layout_constraintTop_toBottomOf="@+id/SearchEditTextInMap" />
+        android:layout_marginRight="10dp"
+        android:elevation="4dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
