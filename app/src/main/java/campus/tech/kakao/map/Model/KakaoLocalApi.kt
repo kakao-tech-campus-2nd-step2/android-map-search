@@ -1,4 +1,4 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.map.Model
 
 import retrofit2.Call
 import retrofit2.http.GET

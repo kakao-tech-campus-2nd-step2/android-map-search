@@ -1,7 +1,17 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import java.util.Properties
+
+fun getApiKey(key: String): String {
+    return gradleLocalProperties(rootDir, providers).getProperty(key) ?: ""
+}
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
+
+val properties = Properties()
+properties.load(project.rootProject.file("local.properties").inputStream())
 
 android {
     namespace = "campus.tech.kakao.map"
@@ -15,6 +25,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "API_KEY", "\"${getApiKey("API_KEY")}\"")
+        buildConfigField("String", "MAP_API_KEY", "\"${getApiKey("MAP_API_KEY")}\"")
+
     }
 
     buildTypes {
@@ -36,6 +50,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -51,6 +66,9 @@ dependencies {
     implementation("com.google.code.gson:gson:2.9.0")
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.kakao.maps.open:android:2.9.5")
+    implementation("com.kakao.sdk:v2-all:2.20.3")
+    implementation("androidx.activity:activity:1.9.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

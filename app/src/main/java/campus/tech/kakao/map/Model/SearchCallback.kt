@@ -1,11 +1,13 @@
-package campus.tech.kakao.map
+package campus.tech.kakao.map.Model
 
 import android.util.Log
+import campus.tech.kakao.map.view.MainActivity
+import campus.tech.kakao.map.viewmodel.MainViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class SearchCallback(private val activity: MainActivity) : Callback<SearchResult> {
+class SearchCallback(private val activity: MainViewModel) : Callback<SearchResult> {
     override fun onResponse(call: Call<SearchResult>, response: Response<SearchResult>) {
         if (response.isSuccessful) {
             val result = response.body()
