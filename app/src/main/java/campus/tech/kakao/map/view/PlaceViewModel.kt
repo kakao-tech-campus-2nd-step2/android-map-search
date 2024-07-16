@@ -65,7 +65,6 @@ class PlaceViewModel(
     }
 
     private fun getAllLiveDataPlaces(): List<Place>{
-        Log.d("expect2", "Updating places with fetched data")
         return getAllPlacesUseCase()
     }
 
@@ -104,7 +103,6 @@ class PlaceViewModel(
                 onSuccess = { places ->
                     tempPlaces.addAll(places)
                     if (i == MAX_PAGE) {
-                        Log.d("expect1", "Updating places with fetched data")
                         updatePlaces(tempPlaces)
                         tempPlaces.clear()
                     }
