@@ -13,6 +13,10 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kakao.sdk.common.util.Utility
+import kotlinx.coroutines.flow.callbackFlow
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,7 +26,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var noResultTextView: TextView
     private lateinit var recyclerView: RecyclerView
     private lateinit var placeRepository: PlaceRepository
-    private var placeList = mutableListOf<Place>()
     private var researchList = mutableListOf<Place>()
     private lateinit var resultAdapter: RecyclerViewAdapter
     private lateinit var tapAdapter: TapViewAdapter
@@ -39,8 +42,6 @@ class MainActivity : AppCompatActivity() {
         tabRecyclerView = findViewById(R.id.tab_recyclerview)
 
         placeRepository = PlaceRepository(this)
-        placeRepository.reset()
-        placeList = placeRepository.insertInitialData()
 
         resultAdapter = RecyclerViewAdapter {
             placeRepository.insertLog(it)
@@ -48,7 +49,6 @@ class MainActivity : AppCompatActivity() {
         }
         recyclerView.adapter = resultAdapter
         recyclerView.layoutManager = LinearLayoutManager(this)
-        resultAdapter.submitList(placeList)
 
         researchList = placeRepository.getResearchEntries().toMutableList()
         tapAdapter = TapViewAdapter(researchList) {
@@ -70,7 +70,20 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                filterList(s.toString())
+                // ★ 여기서 구현해야함
+                // 유저입력값 = s.toString
+                // s.toString에 따라 retrofit 서비스가 쏘는 값(category_group query)이 달라져야함
+                // s.toString(카페) -> retorifit(카페) -> ★ db에 넣을 필요 없다 -> recyclerview.submitlist(list)
+                // s.toString(약국) -> retrofit(약국) -> ★ db에 넣을 필요 없다 -> recyclerview.submitlist(list)
+                // val list는 한번만 선언하고 매 카테고리마다 쓰면 된다
+                val query = s.toString()
+                if (query.isNotEmpty()) {
+                    placeRepository.insertData2ResultView(query) { updateRecyclerView(it) }
+                } else {
+                    resultAdapter.submitList(emptyList())
+                    noResultTextView.isVisible = true
+                    recyclerView.isGone = true
+                }
             }
         })
 
@@ -79,23 +92,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun filterList(query: String) {
-        val filteredList = if (query.isEmpty()) {
-            emptyList<Place>()
-        } else {
-            placeList.filter {
-                it.category.category.contains(query, ignoreCase = true) || it.name.contains(query, ignoreCase = true)
-            }
-        }
-
-        if (filteredList.isEmpty()) {
+    private fun updateRecyclerView(list: List<Place>) {
+        if (list.isEmpty()) {
             noResultTextView.isVisible = true
             recyclerView.isGone = true
         } else {
             noResultTextView.isGone = true
             recyclerView.isVisible = true
-            resultAdapter.submitList(filteredList.toMutableList())
+            resultAdapter.submitList(list)
         }
     }
 

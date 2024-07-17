@@ -5,6 +5,7 @@ import android.content.Context
 import android.provider.BaseColumns
 import android.util.Log
 import androidx.core.database.getIntOrNull
+import androidx.core.view.isVisible
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -16,24 +17,6 @@ import java.util.concurrent.TimeUnit
 
 class PlaceRepository(context: Context) {
     private val dbHelper = PlaceDbHelper(context)
-    private var placeList = mutableListOf<Place>()
-
-    fun insertPlace(place: Place) {
-        val db = dbHelper.writableDatabase
-
-        try {
-            val values = ContentValues().apply {
-                put(MyPlaceContract.Place.COLUMN_IMG, place.img)
-                put(MyPlaceContract.Place.COLUMN_NAME, place.name)
-                put(MyPlaceContract.Place.COLUMN_CATEGORY, place.category.category)
-                put(MyPlaceContract.Place.COLUMN_LOCATION, place.location)
-            }
-
-            db.insert(MyPlaceContract.Place.TABLE_NAME, null, values)
-        } finally {
-            db.close()
-        }
-    }
 
     fun insertLog(place: Place) {
         val db = dbHelper.writableDatabase
@@ -77,37 +60,31 @@ class PlaceRepository(context: Context) {
         }
     }
 
-    fun reset() {
-        val db = dbHelper.writableDatabase
-        try {
-            db.execSQL("DELETE FROM ${MyPlaceContract.Place.TABLE_NAME}")
-            //db.execSQL("DELETE FROM ${MyPlaceContract.Research.TABLE_NAME}")
-        } finally {
-            db.close()
-        }
-    }
-
-    fun insertInitialData(): MutableList<Place> {
-        //kakao에서 데이터 가져와서 place 객체 생성하기
+    fun insertData2ResultView(query: String, callback: (List<Place>) -> Unit){
+        var resultList: MutableList<Place>
         val apiKey = "KakaoAK " + BuildConfig.KAKAO_REST_API_KEY
+        val categoryGroupCode: String = when (query) {
+            "카페" -> "CE7"
+            "약국" -> "PM9"
+            else -> null
+        } ?: return
 
-        RetrofitObject.retrofitService.getPlace(apiKey, "CE7")
+        RetrofitObject.retrofitService.getPlace(apiKey, categoryGroupCode)
             .enqueue(object : Callback<KakaoResponse> {
                 override fun onResponse(
                     call: Call<KakaoResponse>,
                     response: Response<KakaoResponse>
                 ) {
-                    Log.d("KakaoApi", "KakaoAPI")
                     if (response.isSuccessful) {
-                        val documentList = response.body()?.documents
-                        documentList?.forEach {
-                            val place = Place(img = R.drawable.cafe, name = it.placeName, location = it.addressName, category = PlaceCategory.CAFE)
-                            placeList.add(place)
-                            insertPlace(place)
-                        }
+                        val documentList = response.body()?.documents ?: emptyList()
+                        resultList = (documentList.map {
+                            val category = PlaceCategory.fromCategory(query)
+                            Place(img = category.imgId, name = it.placeName, location = it.addressName, category = category)
+                        } ?: emptyList<Place>()).toMutableList()
+                        callback(resultList) // = updateRecyclerView(resultList)
                     } else {
                         val errorBody = response.errorBody()?.string()
-                        Log.d("KakaoAPI", "Error: $errorBody")
+                        callback(emptyList())
                     }
                 }
 
@@ -115,31 +92,6 @@ class PlaceRepository(context: Context) {
                     Log.d("KakaoAPI", "Failure: ${t.message}")
                 }
             })
-
-        RetrofitObject.retrofitService.getPlace(apiKey, "PM9")
-            .enqueue(object : Callback<KakaoResponse> {
-                override fun onResponse(
-                    call: Call<KakaoResponse>,
-                    response: Response<KakaoResponse>
-                ) {
-                    if (response.isSuccessful) {
-                        val documentList = response.body()?.documents
-                        documentList?.forEach {
-                            val place = Place(img = R.drawable.hospital, name = it.placeName, location = it.addressName, category = PlaceCategory.PHARMACY)
-                            placeList.add(place)
-                            insertPlace(place)
-                        }
-                    } else {
-                        val errorBody = response.errorBody()?.string()
-                        Log.d("KakaoAPI", "Error: $errorBody")
-                    }
-                }
-
-                override fun onFailure(call: Call<KakaoResponse>, t: Throwable) {
-                    Log.d("KakaoAPI", "Failure: ${t.message}")
-                }
-            })
-        return placeList
     }
 
     fun hasResearchEntries() : Boolean {
