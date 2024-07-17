@@ -22,7 +22,6 @@ import campus.tech.kakao.map.adapter.SavedPlaceViewAdapter
 import campus.tech.kakao.map.db.PlaceDBHelper
 import campus.tech.kakao.map.model.Place
 import campus.tech.kakao.map.model.SavedPlace
-import campus.tech.kakao.map.repository.KakaoLocalRepository
 import campus.tech.kakao.map.repository.PlaceRepository
 import campus.tech.kakao.map.repository.SavedPlaceRepository
 import campus.tech.kakao.map.viewmodel.MainActivityViewModel
@@ -39,7 +38,6 @@ class SearchActivity : AppCompatActivity(), OnClickPlaceListener, OnClickSavedPl
     lateinit var dbHelper: PlaceDBHelper
     lateinit var placeRepository: PlaceRepository
     lateinit var savedPlaceRepository: SavedPlaceRepository
-    lateinit var kakaoLocalRepository: KakaoLocalRepository
     lateinit var searchDeleteButton: ImageView
     lateinit var savedPlaceRecyclerViewAdapter: SavedPlaceViewAdapter
     lateinit var searchRecyclerViewAdapter: PlaceViewAdapter
@@ -72,12 +70,11 @@ class SearchActivity : AppCompatActivity(), OnClickPlaceListener, OnClickSavedPl
         dbHelper = PlaceDBHelper(this)
         placeRepository = PlaceRepository(dbHelper)
         savedPlaceRepository = SavedPlaceRepository(dbHelper)
-        kakaoLocalRepository = KakaoLocalRepository()
         searchDeleteButton = findViewById<ImageView>(R.id.button_X)
         viewModel =
             ViewModelProvider(
                 this,
-                ViewModelFactory(placeRepository, savedPlaceRepository, kakaoLocalRepository)
+                ViewModelFactory(placeRepository, savedPlaceRepository)
             )[MainActivityViewModel::class.java]
     }
 
@@ -107,6 +104,7 @@ class SearchActivity : AppCompatActivity(), OnClickPlaceListener, OnClickSavedPl
             override fun afterTextChanged(searchText: Editable?) {
                 val text = searchText.toString()
                 Log.d("inputField", "text : ${text}")
+                Log.d("coroutine", "입력변경")
                 lifecycleScope.launch {
                     viewModel.getKakaoLocalData(text)
                 }

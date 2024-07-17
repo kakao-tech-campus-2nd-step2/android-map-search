@@ -1,26 +1,18 @@
 package campus.tech.kakao.map.repository
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import campus.tech.kakao.map.BuildConfig
 import campus.tech.kakao.map.model.Place
-import campus.tech.kakao.map.model.ResultSearch
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
-import java.io.IOException
 
-class KakaoLocalRepository {
-
+class KakaoApiDataSource {
     object KakaoRetrofitInstance {
 
         val kakaoLocalApi : KakaoLocalApi = getApiClient().create()
-
 
         private fun getApiClient(): Retrofit {
             return Retrofit.Builder()
@@ -46,11 +38,16 @@ class KakaoLocalRepository {
         }
     }
 
-    suspend fun getPlaceData(text: String) : List<Place>? {
-
+    suspend fun getPlaceData(text: String) : List<Place> {
+        val emptyList = listOf<Place>()
         val kakaoApi = KakaoRetrofitInstance.kakaoLocalApi
-
-        val data = kakaoApi.getPlaceData(text)
-        return data.body()?.documents
+        return try{
+            val placeList = kakaoApi.getPlaceData(text)
+            Log.d("coroutineTest", "return")
+            placeList.documents ?: emptyList
+        } catch (e : Exception){
+            Log.d("coroutineTest", e.toString())
+            emptyList
+        }
     }
 }
