@@ -6,6 +6,7 @@ import campus.tech.kakao.map.db.PlaceDBHelper
 import campus.tech.kakao.map.model.Place
 
 class PlaceRepository (val dbHelper: PlaceDBHelper){
+    val kakaoApiDataSource = KakaoApiDataSource()
     fun getAllPlace() : List<Place>{
         val cursor = dbHelper.readPlaceData()
         val placeList = mutableListOf<Place>()
@@ -31,7 +32,10 @@ class PlaceRepository (val dbHelper: PlaceDBHelper){
     }
 
     fun writePlace(place: Place){
-        dbHelper.insertPlaceData(place.name, place.location, place.category)
+        val name = place.name
+        val location = place.location ?: ""
+        val category = place.category ?: ""
+        dbHelper.insertPlaceData(name, location, category)
     }
 
     fun getPlaceWithCategory(category : String): List<Place>{
@@ -56,6 +60,11 @@ class PlaceRepository (val dbHelper: PlaceDBHelper){
 
 
         cursor.close()
+        return placeList
+    }
+
+    suspend fun getKakaoLocalPlaceData(text : String) : List<Place>{
+        val placeList = kakaoApiDataSource.getPlaceData(text)
         return placeList
     }
 }

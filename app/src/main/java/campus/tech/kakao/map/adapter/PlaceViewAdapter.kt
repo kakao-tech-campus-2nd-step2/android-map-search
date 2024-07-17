@@ -33,7 +33,6 @@ class PlaceViewAdapter(
 
 class PlaceDiffCallBack : DiffUtil.ItemCallback<Place>() {
     override fun areItemsTheSame(oldItem: Place, newItem: Place): Boolean {
-        Log.d("testt", "areItemsTheSame: ${oldItem === newItem}")
         return oldItem === newItem
     }
 
@@ -60,7 +59,8 @@ class PlaceViewHolder(itemView: View, val listener: OnClickPlaceListener) :
     fun bind(place : Place){
         currentPlace = place
         name.text = place.name
-        location.text = place.location
-        category.text = place.category
+        location.text = place.location ?: ""
+        Log.d("testt", "입력값 : " + location.text.toString())
+        category.text = place.category ?: ""
     }
 }

@@ -1,5 +1,6 @@
 package campus.tech.kakao.map.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,7 +8,7 @@ import campus.tech.kakao.map.model.Place
 import campus.tech.kakao.map.model.SavedPlace
 import campus.tech.kakao.map.repository.PlaceRepository
 import campus.tech.kakao.map.repository.SavedPlaceRepository
-import java.util.Locale.Category
+
 
 class MainActivityViewModel(
     private val placeRepository: PlaceRepository,
@@ -17,20 +18,22 @@ class MainActivityViewModel(
     private val _savedPlace = MutableLiveData<List<SavedPlace>>()
     val place: LiveData<List<Place>> get() = _place
     val savedPlace: LiveData<List<SavedPlace>> get() = _savedPlace
-    init{
+
+    init {
         getSavedPlace()
         getPlaceWithCategory("")
     }
+
     fun getPlace() {
-        _place.postValue(placeRepository.getAllPlace())
+        _place.value = (placeRepository.getAllPlace())
     }
 
     fun getPlaceWithCategory(category: String) {
-        _place.postValue(placeRepository.getPlaceWithCategory(category))
+        _place.value = (placeRepository.getPlaceWithCategory(category))
     }
 
     fun getSavedPlace() {
-        _savedPlace.postValue(savedPlaceRepository.getAllSavedPlace())
+        _savedPlace.value = (savedPlaceRepository.getAllSavedPlace())
     }
 
     fun savePlace(place: Place) {
@@ -38,10 +41,18 @@ class MainActivityViewModel(
         getSavedPlace()
     }
 
-    fun deleteSavedPlace(savedPlace: SavedPlace){
+    fun deleteSavedPlace(savedPlace: SavedPlace) {
         savedPlaceRepository.deleteSavedPlace(savedPlace)
         getSavedPlace()
     }
 
 
+    suspend fun getKakaoLocalData(text: String) {
+        Log.d("coroutineTest", "getKakaoLocalData")
+        if (text.isNotEmpty()) {
+            val placeList = placeRepository.getKakaoLocalPlaceData(text)
+            Log.d("coroutineTest", "getKakaoLocalDataReturn")
+            _place.value = (placeList)
+        } else _place.value = listOf<Place>()
+    }
 }
