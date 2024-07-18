@@ -5,26 +5,32 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
 class TapViewAdapter(
-    var researchList: MutableList<Place>,
     private val onItemRemoved: (Place) -> Unit
-) : RecyclerView.Adapter<TapViewAdapter.ViewHolder>() {
+) : ListAdapter<Place, TapViewAdapter.ViewHolder>(
+    object : DiffUtil.ItemCallback<Place>(){
+        override fun areItemsTheSame(oldItem: Place, newItem: Place): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: Place, newItem: Place): Boolean {
+            return oldItem == newItem
+        }
+
+    }
+) {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val cancelButton: ImageView
-        val placeName: TextView
-        init {
-            cancelButton = itemView.findViewById(R.id.tab_close_button)
-            placeName = itemView.findViewById(R.id.tab_place_textview)
-
+        private val cancelButton: ImageView = itemView.findViewById(R.id.tab_close_button)
+        private val placeName: TextView = itemView.findViewById(R.id.tab_place_textview)
+        fun bind(place: Place) {
+            placeName.text = place.name
             cancelButton.setOnClickListener {
-                val position = bindingAdapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    val item = researchList[position]
-                    onItemRemoved(item)
-                }
+                onItemRemoved(place)
             }
         }
     }
@@ -36,9 +42,7 @@ class TapViewAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val research: Place = researchList[position]
-        holder.placeName.text = research.name
+        val place: Place = getItem(position)
+        holder.bind(place)
     }
-
-    override fun getItemCount(): Int = researchList.size
 }

@@ -10,5 +10,4 @@ object MyPlaceContract {
         const val COLUMN_LOCATION = "location"
         const val COLUMN_CATEGORY = "category"
     }
-
 }

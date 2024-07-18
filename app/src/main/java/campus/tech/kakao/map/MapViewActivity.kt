@@ -4,26 +4,38 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
+import campus.tech.kakao.map.databinding.ActivityMapViewBinding
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
-import com.kakao.vectormap.MapAuthException
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
 
 class MapViewActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMapViewBinding
+    private lateinit var mapModel: MapModel
+    private lateinit var mapViewModel: MapViewModel
+
     private lateinit var mapView: MapView
     private lateinit var searchTextview: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_map_view)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_map_view)
 
-        mapView = findViewById(R.id.map)
-        searchTextview = findViewById(R.id.search)
+        mapModel = MapModel(application as MyApplication)
+
+        val viewModelFactory = MapViewModelFactory(application as MyApplication, mapModel)
+        mapViewModel = ViewModelProvider(this, viewModelFactory)[MapViewModel::class.java]
+
+        binding.viewModel = mapViewModel
+        binding.lifecycleOwner = this
+
+        mapView = binding.map
+        searchTextview = binding.search
 
         try {
             mapView.start(object : MapLifeCycleCallback() {
